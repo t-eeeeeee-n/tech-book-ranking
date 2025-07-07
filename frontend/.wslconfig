@@ -1,0 +1,13 @@
+[wsl2]
+# WSL2 kernel parameters
+kernelCommandLine = vsyscall=emulate
+
+[automount]
+# Set automount settings
+enabled = true
+root = /mnt/
+options = "metadata,umask=22,fmask=11"
+
+[filesystem]
+# Set case sensitivity for Windows drives
+umask = 0022
