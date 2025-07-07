@@ -278,13 +278,22 @@ function getSentimentIcon(sentiment: string): string {
   }
 }
 
-function formatDate(dateString: string): string {
-  const date = new Date(dateString)
-  return date.toLocaleDateString('ja-JP', {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric'
-  })
+function formatDate(dateString: string | number | Date | null | undefined): string {
+  if (!dateString) return ''
+  
+  try {
+    const date = new Date(dateString as string | number | Date)
+    if (isNaN(date.getTime())) {
+      return String(dateString)
+    }
+    return date.toLocaleDateString('ja-JP', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric'
+    })
+  } catch (error) {
+    return String(dateString)
+  }
 }
 
 // SEO設定

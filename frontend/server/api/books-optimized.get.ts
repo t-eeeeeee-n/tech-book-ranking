@@ -173,7 +173,7 @@ export default defineEventHandler(async (event) => {
     }
 
     filteredBooks = filteredBooks.filter(book => 
-      new Date(book.lastMentionDate) >= dateThreshold
+      new Date(book.lastMentionDate || 0) >= dateThreshold
     )
   }
 
@@ -183,9 +183,9 @@ export default defineEventHandler(async (event) => {
       case 'popularity':
         return b.mentionCount - a.mentionCount
       case 'recent':
-        return new Date(b.lastMentionDate).getTime() - new Date(a.lastMentionDate).getTime()
+        return new Date(b.lastMentionDate || 0).getTime() - new Date(a.lastMentionDate || 0).getTime()
       case 'newest':
-        return new Date(b.publishDate).getTime() - new Date(a.publishDate).getTime()
+        return new Date(b.publishDate || 0).getTime() - new Date(a.publishDate || 0).getTime()
       case 'rating':
         return (b.trendScore || 0) - (a.trendScore || 0)
       default:

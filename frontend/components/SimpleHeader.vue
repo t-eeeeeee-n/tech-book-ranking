@@ -132,6 +132,125 @@
       </div>
     </div>
 
+    <!-- Mobile Menu Overlay -->
+    <Transition
+      enter-active-class="mobile-menu-enter-active"
+      enter-from-class="mobile-menu-enter-from"
+      enter-to-class="mobile-menu-enter-to"
+      leave-active-class="mobile-menu-leave-active"
+      leave-from-class="mobile-menu-leave-from"
+      leave-to-class="mobile-menu-leave-to"
+    >
+      <div v-if="mobileMenuOpen" class="mobile-menu-overlay">
+        <div class="mobile-menu-container">
+          <div class="mobile-menu-header">
+            <div class="mobile-menu-title">
+              <h3>メニュー</h3>
+            </div>
+            <button @click="toggleMobileMenu" class="mobile-menu-close">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                <path d="M18 6L6 18M6 6L18 18" stroke="currentColor" stroke-width="2"/>
+              </svg>
+            </button>
+          </div>
+          
+          <div class="mobile-menu-content">
+            <!-- Navigation Links -->
+            <nav class="mobile-nav">
+              <NuxtLink 
+                to="/"
+                class="mobile-nav-link"
+                :class="{ 'mobile-nav-link--active': $route.path === '/' }"
+                @click="toggleMobileMenu"
+              >
+                <div class="mobile-nav-icon">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                    <path d="M3 9L12 2L21 9V20C21 20.5523 20.5523 21 20 21H4C3.44772 21 3 20.5523 3 20V9Z" stroke="currentColor" stroke-width="2"/>
+                    <path d="M9 22V12H15V22" stroke="currentColor" stroke-width="2"/>
+                  </svg>
+                </div>
+                <span class="mobile-nav-text">ホーム</span>
+              </NuxtLink>
+              
+              <NuxtLink 
+                to="/ranking"
+                class="mobile-nav-link"
+                :class="{ 'mobile-nav-link--active': $route.path === '/ranking' }"
+                @click="toggleMobileMenu"
+              >
+                <div class="mobile-nav-icon">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                    <path d="M3 13L12 3L21 13" stroke="currentColor" stroke-width="2"/>
+                    <path d="M8 21V13H16V21" stroke="currentColor" stroke-width="2"/>
+                  </svg>
+                </div>
+                <span class="mobile-nav-text">ランキング</span>
+              </NuxtLink>
+              
+              <NuxtLink 
+                to="/categories"
+                class="mobile-nav-link"
+                :class="{ 'mobile-nav-link--active': $route.path === '/categories' }"
+                @click="toggleMobileMenu"
+              >
+                <div class="mobile-nav-icon">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                    <rect x="3" y="3" width="7" height="7" stroke="currentColor" stroke-width="2"/>
+                    <rect x="14" y="3" width="7" height="7" stroke="currentColor" stroke-width="2"/>
+                    <rect x="3" y="14" width="7" height="7" stroke="currentColor" stroke-width="2"/>
+                    <rect x="14" y="14" width="7" height="7" stroke="currentColor" stroke-width="2"/>
+                  </svg>
+                </div>
+                <span class="mobile-nav-text">カテゴリ</span>
+              </NuxtLink>
+              
+              <NuxtLink 
+                to="/trending"
+                class="mobile-nav-link"
+                :class="{ 'mobile-nav-link--active': $route.path === '/trending' }"
+                @click="toggleMobileMenu"
+              >
+                <div class="mobile-nav-icon">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                    <path d="M13 2L3 14H12L11 22L21 10H12L13 2Z" stroke="currentColor" stroke-width="2"/>
+                  </svg>
+                </div>
+                <span class="mobile-nav-text">トレンド</span>
+              </NuxtLink>
+            </nav>
+            
+            <!-- Action Buttons -->
+            <div class="mobile-actions">
+              <button
+                @click="toggleMobileSearch"
+                class="mobile-action-button"
+              >
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                  <circle cx="11" cy="11" r="8" stroke="currentColor" stroke-width="2"/>
+                  <path d="M21 21L16.65 16.65" stroke="currentColor" stroke-width="2"/>
+                </svg>
+                <span>検索</span>
+              </button>
+              
+              <button
+                @click="toggleTheme"
+                class="mobile-action-button"
+              >
+                <svg v-if="!isDark" width="20" height="20" viewBox="0 0 24 24" fill="none">
+                  <circle cx="12" cy="12" r="5" stroke="currentColor" stroke-width="2"/>
+                  <path d="M12 1V3M12 21V23M4.22 4.22L5.64 5.64M18.36 18.36L19.78 19.78M1 12H3M21 12H23M4.22 19.78L5.64 18.36M18.36 5.64L19.78 4.22" stroke="currentColor" stroke-width="2"/>
+                </svg>
+                <svg v-else width="20" height="20" viewBox="0 0 24 24" fill="none">
+                  <path d="M21 12.79A9 9 0 1 1 11.21 3A7 7 0 0 0 21 12.79Z" stroke="currentColor" stroke-width="2"/>
+                </svg>
+                <span>{{ isDark ? 'ライト' : 'ダーク' }}モード</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </Transition>
+
     <!-- Search Overlay -->
     <Transition
       enter-active-class="search-enter-active"
@@ -207,6 +326,11 @@ const closeSearch = () => {
 
 const toggleMobileMenu = () => {
   mobileMenuOpen.value = !mobileMenuOpen.value
+}
+
+const toggleMobileSearch = () => {
+  toggleMobileMenu()
+  toggleSearch()
 }
 
 const performSearch = () => {
@@ -537,6 +661,205 @@ onMounted(() => {
 
 .hamburger-line:nth-child(3) {
   width: 100%;
+}
+
+.mobile-menu-button--open .hamburger-line:nth-child(1) {
+  transform: rotate(45deg) translate(5px, 5px);
+}
+
+.mobile-menu-button--open .hamburger-line:nth-child(2) {
+  opacity: 0;
+}
+
+.mobile-menu-button--open .hamburger-line:nth-child(3) {
+  transform: rotate(-45deg) translate(7px, -6px);
+}
+
+/* Mobile Menu Overlay */
+.mobile-menu-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-end;
+  padding: 1rem;
+  padding-top: 5rem;
+}
+
+.mobile-menu-container {
+  width: 100%;
+  max-width: 20rem;
+  background: white;
+  border-radius: 1rem;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  overflow: hidden;
+}
+
+.mobile-menu-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.5rem;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.mobile-menu-title h3 {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #111827;
+}
+
+.mobile-menu-close {
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+  color: #6b7280;
+  transition: all 0.2s ease;
+}
+
+.mobile-menu-close:hover {
+  background: #f3f4f6;
+  color: #111827;
+}
+
+.mobile-menu-content {
+  padding: 1rem;
+}
+
+.mobile-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.mobile-nav-link {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.875rem 1rem;
+  border-radius: 0.75rem;
+  color: #374151;
+  transition: all 0.2s ease;
+}
+
+.mobile-nav-link:hover {
+  background: #f3f4f6;
+  color: #111827;
+}
+
+.mobile-nav-link--active {
+  background: rgba(6, 182, 212, 0.1);
+  color: #06b6d4;
+}
+
+.mobile-nav-icon {
+  color: #6b7280;
+  transition: color 0.2s ease;
+}
+
+.mobile-nav-link:hover .mobile-nav-icon,
+.mobile-nav-link--active .mobile-nav-icon {
+  color: #06b6d4;
+}
+
+.mobile-nav-text {
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+.mobile-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid #e5e7eb;
+}
+
+.mobile-action-button {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.875rem 1rem;
+  border-radius: 0.75rem;
+  color: #374151;
+  background: #f9fafb;
+  transition: all 0.2s ease;
+}
+
+.mobile-action-button:hover {
+  background: #f3f4f6;
+  color: #111827;
+}
+
+/* Mobile Menu Transitions */
+.mobile-menu-enter-active, .mobile-menu-leave-active {
+  transition: all 0.3s ease;
+}
+
+.mobile-menu-enter-from, .mobile-menu-leave-to {
+  opacity: 0;
+}
+
+.mobile-menu-enter-from .mobile-menu-container,
+.mobile-menu-leave-to .mobile-menu-container {
+  transform: translateX(100%);
+}
+
+/* Dark mode mobile menu */
+.dark .mobile-menu-container {
+  background: #1f2937;
+}
+
+.dark .mobile-menu-header {
+  border-bottom-color: #374151;
+}
+
+.dark .mobile-menu-title h3 {
+  color: #f9fafb;
+}
+
+.dark .mobile-menu-close {
+  color: #9ca3af;
+}
+
+.dark .mobile-menu-close:hover {
+  background: #374151;
+  color: #f9fafb;
+}
+
+.dark .mobile-nav-link {
+  color: #d1d5db;
+}
+
+.dark .mobile-nav-link:hover {
+  background: #374151;
+  color: #f9fafb;
+}
+
+.dark .mobile-nav-link--active {
+  background: rgba(6, 182, 212, 0.2);
+  color: #06b6d4;
+}
+
+.dark .mobile-nav-icon {
+  color: #9ca3af;
+}
+
+.dark .mobile-actions {
+  border-top-color: #374151;
+}
+
+.dark .mobile-action-button {
+  background: #374151;
+  color: #d1d5db;
+}
+
+.dark .mobile-action-button:hover {
+  background: #4b5563;
+  color: #f9fafb;
 }
 
 /* Search Overlay */

@@ -386,9 +386,9 @@ const filteredBooks = computed(() => {
       case 'popularity':
         return b.mentionCount - a.mentionCount
       case 'recent':
-        return new Date(b.lastMentionDate) - new Date(a.lastMentionDate)
+        return new Date(b.lastMentionDate || 0).getTime() - new Date(a.lastMentionDate || 0).getTime()
       case 'newest':
-        return new Date(b.publishDate) - new Date(a.publishDate)
+        return new Date(b.publishDate || 0).getTime() - new Date(a.publishDate || 0).getTime()
       case 'rating':
         return (b.trendScore || 0) - (a.trendScore || 0)
       default:
