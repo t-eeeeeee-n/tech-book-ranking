@@ -59,6 +59,71 @@
                   </p>
                 </div>
 
+                <!-- いい本スコア -->
+                <div v-if="book.goodBookScore !== undefined" class="mb-8">
+                  <div class="bg-gradient-to-r from-blue-50 to-cyan-50 dark:from-blue-900/20 dark:to-cyan-900/20 rounded-xl p-6 border border-blue-200 dark:border-blue-800">
+                    <div class="flex items-center justify-between mb-4">
+                      <h3 class="text-lg font-semibold text-gray-900 dark:text-white">いい本スコア</h3>
+                      <div class="flex items-center gap-2">
+                        <span class="text-3xl font-bold text-blue-600 dark:text-blue-400">{{ Math.round(book.goodBookScore) }}</span>
+                        <span class="text-lg text-gray-500 dark:text-gray-400">/ 100</span>
+                      </div>
+                    </div>
+                    
+                    <!-- Progress Bar -->
+                    <div class="mb-4">
+                      <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-3">
+                        <div 
+                          class="h-3 rounded-full transition-all duration-700 ease-out"
+                          :class="getScoreProgressClass(book.goodBookScore)"
+                          :style="{ width: `${Math.min(100, Math.max(0, book.goodBookScore))}%` }"
+                        ></div>
+                      </div>
+                    </div>
+                    
+                    <!-- Score Label -->
+                    <div class="flex items-center justify-between text-sm">
+                      <span class="font-medium text-gray-600 dark:text-gray-400">おすすめ度</span>
+                      <span 
+                        class="font-bold px-3 py-1 rounded-full"
+                        :class="getScoreLabelClass(book.goodBookScore)"
+                      >
+                        {{ getScoreLabel(book.goodBookScore) }}
+                      </span>
+                    </div>
+                  </div>
+                  
+                  <!-- Score Breakdown -->
+                  <div v-if="book.articleCount || book.totalLikes || book.newestArticleDate" class="mt-4 pt-4 border-t border-blue-200 dark:border-blue-700">
+                    <h4 class="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">スコア構成要素</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      <div v-if="book.articleCount" class="text-center p-3 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
+                        <div class="text-lg font-bold text-green-600 dark:text-green-400">{{ book.articleCount }}</div>
+                        <div class="text-xs text-gray-500 dark:text-gray-400">紹介記事数</div>
+                        <div class="text-xs text-gray-400 dark:text-gray-500 mt-1">40% 重要度</div>
+                      </div>
+                      <div v-if="book.totalLikes" class="text-center p-3 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
+                        <div class="text-lg font-bold text-purple-600 dark:text-purple-400">{{ book.totalLikes }}</div>
+                        <div class="text-xs text-gray-500 dark:text-gray-400">総LGTM数</div>
+                        <div class="text-xs text-gray-400 dark:text-gray-500 mt-1">35% 重要度</div>
+                      </div>
+                      <div v-if="book.newestArticleDate" class="text-center p-3 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
+                        <div class="text-lg font-bold text-orange-600 dark:text-orange-400">{{ getRecencyLabel(book.newestArticleDate) }}</div>
+                        <div class="text-xs text-gray-500 dark:text-gray-400">最新記事</div>
+                        <div class="text-xs text-gray-400 dark:text-gray-500 mt-1">25% 重要度</div>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <!-- Explanation Text -->
+                  <div class="mt-4 p-4 bg-blue-50 dark:bg-blue-900/10 rounded-lg">
+                    <p class="text-sm text-blue-800 dark:text-blue-300 leading-relaxed">
+                      <Icon name="heroicons:information-circle" class="w-4 h-4 inline mr-1" />
+                      {{ getScoreExplanation(book) }}
+                    </p>
+                  </div>
+                </div>
+
                 <!-- 統計情報 -->
                 <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
                   <div class="text-center p-4 bg-blue-50 dark:bg-blue-900/30 rounded-lg">
@@ -218,6 +283,10 @@ interface Book {
   pages?: number
   isbn?: string
   rating?: number
+  goodBookScore?: number
+  articleCount?: number
+  totalLikes?: number
+  newestArticleDate?: string
 }
 
 interface Mention {
@@ -293,6 +362,63 @@ function formatDate(dateString: string | number | Date | null | undefined): stri
     })
   } catch (error) {
     return String(dateString)
+  }
+}
+
+// Score related functions
+function getScoreProgressClass(score: number): string {
+  if (score >= 90) return 'bg-gradient-to-r from-emerald-500 to-emerald-600'
+  if (score >= 80) return 'bg-gradient-to-r from-green-500 to-green-600'
+  if (score >= 70) return 'bg-gradient-to-r from-blue-500 to-blue-600'
+  if (score >= 60) return 'bg-gradient-to-r from-yellow-500 to-yellow-600'
+  if (score >= 40) return 'bg-gradient-to-r from-orange-500 to-orange-600'
+  return 'bg-gradient-to-r from-red-500 to-red-600'
+}
+
+function getScoreLabel(score: number): string {
+  if (score >= 90) return '🏆 殿堂入り'
+  if (score >= 80) return '⭐ 超おすすめ'
+  if (score >= 70) return '🌟 おすすめ'
+  if (score >= 60) return '👍 良書'
+  if (score >= 40) return '📚 普通'
+  return '💭 要検討'
+}
+
+function getScoreLabelClass(score: number): string {
+  if (score >= 90) return 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900 dark:text-emerald-200'
+  if (score >= 80) return 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
+  if (score >= 70) return 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200'
+  if (score >= 60) return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200'
+  if (score >= 40) return 'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200'
+  return 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'
+}
+
+function getRecencyLabel(dateString: string): string {
+  const date = new Date(dateString)
+  const now = new Date()
+  const monthsAgo = Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60 * 24 * 30))
+  
+  if (monthsAgo < 1) return '今月'
+  if (monthsAgo < 3) return `${monthsAgo}ヶ月前`
+  if (monthsAgo < 12) return `${monthsAgo}ヶ月前`
+  const yearsAgo = Math.floor(monthsAgo / 12)
+  return `${yearsAgo}年前`
+}
+
+function getScoreExplanation(book: any): string {
+  if (!book.goodBookScore) return 'スコア情報が利用できません。'
+  
+  const score = book.goodBookScore
+  const articleCount = book.articleCount || 0
+  const totalLikes = book.totalLikes || 0
+  const isRecent = book.newestArticleDate && new Date(book.newestArticleDate) > new Date(Date.now() - 6 * 30 * 24 * 60 * 60 * 1000)
+  
+  if (score >= 80) {
+    return `この本は${articleCount}件の記事で紹介され、合計${totalLikes}のLGTMを獲得しています。${isRecent ? '最近も言及があり、' : ''}開発者コミュニティから高く評価されている優秀な技術書です。`
+  } else if (score >= 60) {
+    return `この本は${articleCount}件の記事で紹介され、${totalLikes}のLGTMを獲得しています。${isRecent ? '最近も言及があり、' : ''}多くの開発者に読まれている良書です。`
+  } else {
+    return `この本は${articleCount}件の記事で紹介されています。${isRecent ? '最近も言及があり、' : ''}特定の分野で参考にされている技術書です。`
   }
 }
 

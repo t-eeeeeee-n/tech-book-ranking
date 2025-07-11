@@ -1,4 +1,5 @@
 import type { Book, PaginatedResponse } from '~/types'
+import { getGoodBookScore, type BookScoreInput } from '~/utils/bookScore'
 
 const mockBooks: Book[] = [
   {
@@ -240,6 +241,211 @@ const mockBooks: Book[] = [
   }
 ]
 
+// 完全に安全なローカル画像を生成（Data URI使用）
+const generateLocalImageUrl = (bookId: number, category: string): string => {
+  const categoryColors = {
+    'プログラミング': '#4f46e5',
+    'Web開発': '#059669', 
+    'モバイル開発': '#dc2626',
+    'AI・機械学習': '#7c3aed',
+    'インフラ・DevOps': '#ea580c',
+    'データベース': '#0891b2',
+    'セキュリティ': '#be123c',
+    'デザイン・UI/UX': '#c2410c'
+  }
+  
+  const color = categoryColors[category] || '#6b7280'
+  const icons = ['📚', '📖', '📝', '💻', '⚡']
+  const icon = icons[bookId % icons.length]
+  
+  // SVG を Data URI として生成
+  const svg = `
+    <svg width="300" height="400" xmlns="http://www.w3.org/2000/svg">
+      <rect width="300" height="400" fill="${color}"/>
+      <text x="150" y="200" font-family="Arial" font-size="60" fill="white" text-anchor="middle" dominant-baseline="middle">${icon}</text>
+      <text x="150" y="280" font-family="Arial" font-size="16" fill="white" text-anchor="middle" dominant-baseline="middle">${category}</text>
+      <text x="150" y="320" font-family="Arial" font-size="14" fill="white" text-anchor="middle" dominant-baseline="middle">#${bookId}</text>
+    </svg>
+  `
+  
+  return `data:image/svg+xml;base64,${Buffer.from(svg).toString('base64')}`
+}
+
+// 安全なデフォルト画像を生成する関数
+const generateSafeImageUrl = (bookId: number, category: string): string => {
+  // 最優先でローカル生成のSVG画像を使用
+  return generateLocalImageUrl(bookId, category)
+}
+
+// 書籍の画像URLを生成する関数
+const generateBookImageUrl = (bookId: number, title: string, category: string): string => {
+  // 常に安全な画像を返す
+  return generateSafeImageUrl(bookId, category)
+}
+
+// 実際の技術書に似たタイトルを生成
+const generateRealisticTitle = (id: number, category: string): string => {
+  const titleTemplates = {
+    'プログラミング': [
+      'プログラミング入門',
+      'コードの書き方',
+      'アルゴリズムとデータ構造',
+      'プログラミング思考',
+      'コーディング規約',
+      'リファクタリング入門',
+      'プログラミングパターン',
+      'ソフトウェア設計'
+    ],
+    'Web開発': [
+      'Web開発入門',
+      'フロントエンド開発',
+      'バックエンド開発',
+      'レスポンシブデザイン',
+      'Web API設計',
+      'フルスタック開発',
+      'Webパフォーマンス',
+      'モダンWeb開発'
+    ],
+    'AI・機械学習': [
+      '機械学習入門',
+      'AIプログラミング',
+      '深層学習',
+      'データサイエンス',
+      '自然言語処理',
+      'コンピュータビジョン',
+      '機械学習実践',
+      'AI開発手法'
+    ],
+    'インフラ・DevOps': [
+      'DevOps入門',
+      'クラウド設計',
+      'Docker実践',
+      'Kubernetes入門',
+      'CI/CD実装',
+      'インフラ自動化',
+      '監視とログ',
+      'セキュリティ対策'
+    ]
+  }
+  
+  const templates = titleTemplates[category] || titleTemplates['プログラミング']
+  const template = templates[id % templates.length]
+  
+  return `${template} 第${Math.floor(id / templates.length) + 1}版`
+}
+
+// スコア計算用のリアルなデータを生成
+const generateScoreData = (bookId: number, mentionCount: number): { articleCount: number, totalLikes: number, newestArticleDate: string } => {
+  // 記事数は mentionCount をベースに調整（1-50の範囲）
+  const articleCount = Math.min(50, Math.max(1, mentionCount + Math.floor(Math.random() * 10) - 5))
+  
+  // 総いいね数は記事数と相関がある（記事数 * 5-25の範囲）
+  const likesPerArticle = Math.floor(Math.random() * 20) + 5
+  const totalLikes = articleCount * likesPerArticle + Math.floor(Math.random() * 100)
+  
+  // 最新記事日を生成（過去2年以内）
+  const daysAgo = Math.floor(Math.random() * 730) // 0-730日前
+  const newestDate = new Date()
+  newestDate.setDate(newestDate.getDate() - daysAgo)
+  const newestArticleDate = newestDate.toISOString().split('T')[0]
+  
+  return { articleCount, totalLikes, newestArticleDate }
+}
+
+// 大きなデータセットを生成（無限スクロールテスト用）
+const generateMockBooks = (count: number = 200): Book[] => {
+  const baseBooks = [...mockBooks]
+  const categories = ['プログラミング', 'Web開発', 'モバイル開発', 'AI・機械学習', 'インフラ・DevOps', 'データベース', 'セキュリティ', 'デザイン・UI/UX']
+  const publishers = ['オライリー・ジャパン', '技術評論社', '翔泳社', 'マイナビ出版', 'インプレス', 'SBクリエイティブ', '日経BP', 'アスキー']
+  const authors = ['田中 太郎', '佐藤 花子', '山田 次郎', '鈴木 美咲', '高橋 健太', '渡辺 愛', 'John Smith', 'Jane Doe', 'Mike Johnson', 'Sarah Wilson']
+  
+  // 既存の書籍にもスコアデータを追加
+  baseBooks.forEach(book => {
+    book.imageUrl = generateBookImageUrl(book.id, book.title, book.category)
+    
+    // スコア計算用データを追加
+    const scoreData = generateScoreData(book.id, book.mentionCount)
+    book.articleCount = scoreData.articleCount
+    book.totalLikes = scoreData.totalLikes
+    book.newestArticleDate = scoreData.newestArticleDate
+    
+    // 「いい本スコア」を計算
+    const bookScoreInput: BookScoreInput = {
+      id: book.id,
+      title: book.title,
+      articleCount: book.articleCount,
+      totalLikes: book.totalLikes,
+      newestArticleDate: book.newestArticleDate
+    }
+    book.goodBookScore = getGoodBookScore(bookScoreInput)
+    
+    // 既存のratingとの互換性維持
+    if (!book.rating) {
+      book.rating = Math.round((book.goodBookScore / 100 * 2 + 3) * 10) / 10 // 3.0-5.0の範囲
+    }
+  })
+  
+  // 追加の書籍データを生成
+  for (let i = baseBooks.length; i < count; i++) {
+    const category = categories[Math.floor(Math.random() * categories.length)]
+    const publisher = publishers[Math.floor(Math.random() * publishers.length)]
+    const author = authors[Math.floor(Math.random() * authors.length)]
+    const mentionCount = Math.floor(Math.random() * 100) + 10
+    const title = generateRealisticTitle(i + 1, category)
+    
+    // スコア計算用データを生成
+    const scoreData = generateScoreData(i + 1, mentionCount)
+    const bookScoreInput: BookScoreInput = {
+      id: i + 1,
+      title,
+      articleCount: scoreData.articleCount,
+      totalLikes: scoreData.totalLikes,
+      newestArticleDate: scoreData.newestArticleDate
+    }
+    const goodBookScore = getGoodBookScore(bookScoreInput)
+    const rating = Math.round((goodBookScore / 100 * 2 + 3) * 10) / 10 // 3.0-5.0の範囲
+    
+    baseBooks.push({
+      id: i + 1,
+      title,
+      author,
+      isbn: `978-4-${String(Math.floor(Math.random() * 900000) + 100000).padStart(6, '0')}-${Math.floor(Math.random() * 10)}`,
+      publisher,
+      publishDate: `2023-${String(Math.floor(Math.random() * 12) + 1).padStart(2, '0')}-${String(Math.floor(Math.random() * 28) + 1).padStart(2, '0')}`,
+      mentionCount,
+      category,
+      tags: [category, 'プログラミング', 'エンジニア'],
+      imageUrl: generateBookImageUrl(i + 1, title, category),
+      amazonUrl: `https://amazon.co.jp/book-${i + 1}`,
+      description: `${category}に関する技術書です。実践的な内容で、エンジニアのスキルアップに役立ちます。`,
+      firstMentionDate: "2023-01-01",
+      lastMentionDate: "2024-03-20",
+      // スコア関連データ
+      articleCount: scoreData.articleCount,
+      totalLikes: scoreData.totalLikes,
+      newestArticleDate: scoreData.newestArticleDate,
+      goodBookScore,
+      rating,
+      topQiitaArticles: [
+        {
+          id: `article-${i + 1}`,
+          title: `技術書紹介: ${category}の学習について`,
+          url: `https://qiita.com/example/items/article-${i + 1}`,
+          author: `user_${i + 1}`,
+          publishedAt: "2024-03-15",
+          likesCount: Math.floor(Math.random() * 200) + 50,
+          tags: [category, "書籍", "学習"]
+        }
+      ]
+    })
+  }
+  
+  return baseBooks
+}
+
+// 大きなデータセットを生成
+const allMockBooks = generateMockBooks(500)
+
 export default defineEventHandler(async (event) => {
   const query = getQuery(event)
   const page = parseInt(query.page as string) || 1
@@ -248,7 +454,9 @@ export default defineEventHandler(async (event) => {
   const search = query.search as string
   const period = query.period as string
 
-  let filteredBooks = [...mockBooks]
+  console.log('📚 API Request:', { page, limit, category, search, period })
+
+  let filteredBooks = [...allMockBooks]
 
   if (category && category !== 'all') {
     filteredBooks = filteredBooks.filter(book => 
@@ -296,7 +504,7 @@ export default defineEventHandler(async (event) => {
   const endIndex = startIndex + limit
   const paginatedBooks = filteredBooks.slice(startIndex, endIndex)
 
-  return {
+  const result = {
     success: true,
     data: paginatedBooks,
     total: filteredBooks.length,
@@ -304,4 +512,16 @@ export default defineEventHandler(async (event) => {
     limit,
     hasMore: endIndex < filteredBooks.length
   }
+
+  console.log('📤 API Response:', {
+    total: result.total,
+    page: result.page,
+    limit: result.limit,
+    hasMore: result.hasMore,
+    dataLength: result.data.length,
+    startIndex,
+    endIndex
+  })
+
+  return result
 })

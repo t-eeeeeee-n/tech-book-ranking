@@ -3,36 +3,45 @@
     <!-- Header -->
     <SimpleHeader />
     
-    <!-- Hero Section -->
-    <section class="py-20 bg-gradient-to-br from-blue-50 to-cyan-50 dark:from-gray-900 dark:to-gray-800 transition-colors duration-300">
+    <!-- Modern Hero Section -->
+    <ModernHeroSection 
+      :total-books="totalBooks" 
+      :total-categories="12"
+      update-frequency="毎日"
+    />
+    
+    <!-- Infinite Scroll Ranking Section -->
+    <section class="py-20 bg-white dark:bg-gray-900 transition-colors duration-300">
       <div class="container mx-auto px-6">
-        <!-- Page Header -->
+        <!-- Section Header -->
         <div class="text-center mb-16">
-          <h1 class="text-4xl md:text-6xl font-bold text-gray-900 dark:text-white mb-6">
-            🏆 技術書
+          <h2 class="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-6">
+            人気技術書
             <span class="block bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent">
               完全ランキング
             </span>
-          </h1>
+          </h2>
           <p class="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto mb-8">
-            Qiita記事で言及された
-            <span class="font-semibold text-blue-600">{{ totalBooks.toLocaleString() }}冊</span>
-            の技術書から、実際に参考にされている書籍をランキング形式でご紹介
+            Qiita記事で最も言及されている技術書を無限スクロールで表示。実際の開発現場で参考にされている書籍をご紹介します。
           </p>
           
-          <!-- Progress Stats -->
+          <!-- Stats -->
           <div class="flex flex-wrap justify-center gap-6 text-sm text-gray-600 dark:text-gray-400">
             <div class="flex items-center gap-2">
               <Icon name="heroicons:book-open" class="w-4 h-4 text-blue-600" />
-              <span>{{ startRank }}〜{{ endRank }}位表示中</span>
+              <span>{{ books.length }}冊表示中</span>
             </div>
             <div class="flex items-center gap-2">
               <Icon name="heroicons:chart-bar" class="w-4 h-4 text-green-600" />
-              <span>{{ totalBooks }}冊該当</span>
+              <span>{{ totalBooks }}冊総計</span>
             </div>
             <div class="flex items-center gap-2">
               <Icon name="heroicons:clock" class="w-4 h-4 text-purple-600" />
               <span>{{ formattedLastUpdate }}</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <Icon name="heroicons:arrow-path" class="w-4 h-4 text-orange-600" />
+              <span>ページ {{ currentPage }} | {{ hasMore ? 'もっと読む' : '完了' }}</span>
             </div>
           </div>
         </div>
@@ -109,12 +118,7 @@
             </div>
           </div>
         </div>
-      </div>
-    </section>
 
-    <!-- Ranking List Section -->
-    <section class="py-16 bg-white dark:bg-gray-900 transition-colors duration-300">
-      <div class="container mx-auto px-6">
         <!-- Initial Loading -->
         <div v-if="loading" class="mb-12">
           <SkeletonLoader :count="24" />
@@ -180,6 +184,16 @@
           </div>
         </div>
 
+        <!-- View Full Ranking Button -->
+        <div class="text-center mt-16">
+          <NuxtLink 
+            to="/ranking"
+            class="inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-blue-600 to-cyan-600 text-white rounded-xl font-semibold text-lg hover:shadow-lg hover:-translate-y-1 transition-all duration-200"
+          >
+            <span>従来のページネーション版を見る</span>
+            <Icon name="heroicons:arrow-right" class="w-5 h-5" />
+          </NuxtLink>
+        </div>
       </div>
     </section>
 
@@ -230,19 +244,21 @@ const lastUpdate = ref(new Date())
 
 
 // Computed properties
-const startRank = computed(() => {
-  return books.value.length > 0 ? 1 : 0
-})
-
-const endRank = computed(() => {
-  return books.value.length
-})
-
 const formattedLastUpdate = computed(() => {
   return `最終更新: ${lastUpdate.value.toLocaleDateString('ja-JP')}`
 })
 
 // Methods
+const getRankBadgeClass = (rank) => {
+  if (rank <= 3) {
+    return 'rank-gold'
+  } else if (rank <= 10) {
+    return 'rank-silver'
+  } else {
+    return 'rank-bronze'
+  }
+}
+
 const viewBookDetails = (bookId) => {
   navigateTo(`/book/${bookId}`)
 }
@@ -300,498 +316,4 @@ useHead(() => ({
 }))
 </script>
 
-<style scoped>
-/* Book card styles are now handled by the BookCard component with Tailwind CSS */
-
-/* 2025 Minimal Pagination Styles */
-.minimal-pagination {
-  /* Vercel-inspired clean container */
-  background: rgba(255, 255, 255, 0.8);
-  backdrop-filter: blur(8px);
-  border: 1px solid rgb(229, 229, 229);
-  border-radius: 12px;
-  padding: 20px;
-  margin-top: 32px;
-  
-  /* Subtle shadow for depth */
-  box-shadow: 
-    0 1px 3px rgba(0, 0, 0, 0.1),
-    0 1px 2px rgba(0, 0, 0, 0.06);
-  
-  /* Layout */
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  align-items: center;
-}
-
-/* Main Controls - Linear/Raycast inspired */
-.pagination-main {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.nav-btn {
-  /* Clean button design */
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 32px;
-  height: 32px;
-  border: 1px solid rgb(229, 229, 229);
-  border-radius: 6px;
-  background: white;
-  color: rgb(107, 114, 128);
-  
-  /* Smooth transitions */
-  transition: all 0.15s ease;
-  
-  /* Focus for accessibility */
-  cursor: pointer;
-}
-
-.nav-btn:focus-visible {
-  outline: 2px solid rgb(59, 130, 246);
-  outline-offset: 2px;
-}
-
-.nav-btn:hover:not(.disabled) {
-  border-color: rgb(156, 163, 175);
-  color: rgb(17, 24, 39);
-  transform: translateY(-1px);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.nav-btn.disabled {
-  opacity: 0.4;
-  cursor: not-allowed;
-  border-color: rgb(243, 244, 246);
-  color: rgb(156, 163, 175);
-}
-
-/* Page Status - Minimal typography */
-.page-status {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  font-family: ui-monospace, Monaco, 'Cascadia Code', 'Segoe UI Mono', monospace;
-  font-size: 14px;
-  font-weight: 500;
-  color: rgb(75, 85, 99);
-  padding: 6px 12px;
-  background: rgb(249, 250, 251);
-  border-radius: 6px;
-  border: 1px solid rgb(243, 244, 246);
-  min-width: 120px;
-  justify-content: center;
-}
-
-.status-text {
-  color: rgb(17, 24, 39);
-  font-weight: 600;
-}
-
-.status-divider {
-  color: rgb(156, 163, 175);
-  margin: 0 2px;
-}
-
-.status-total {
-  color: rgb(107, 114, 128);
-}
-
-/* Progress - Minimal track */
-.progress-wrapper {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  align-items: center;
-  width: 100%;
-  max-width: 280px;
-}
-
-.progress-track {
-  position: relative;
-  width: 100%;
-  height: 2px;
-  background: rgb(229, 231, 235);
-  border-radius: 1px;
-  overflow: hidden;
-}
-
-.progress-thumb {
-  position: absolute;
-  top: -3px;
-  width: 8px;
-  height: 8px;
-  background: rgb(59, 130, 246);
-  border-radius: 50%;
-  transform: translateX(-50%);
-  transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 0 0 2px white, 0 2px 4px rgba(59, 130, 246, 0.3);
-}
-
-.progress-hint {
-  font-size: 12px;
-  color: rgb(107, 114, 128);
-  font-weight: 500;
-}
-
-/* Quick Navigation - Desktop only */
-.quick-nav {
-  display: none;
-  gap: 4px;
-  padding: 4px;
-  background: rgb(249, 250, 251);
-  border: 1px solid rgb(229, 231, 235);
-  border-radius: 8px;
-}
-
-@media (min-width: 768px) {
-  .quick-nav {
-    display: flex;
-  }
-}
-
-.quick-btn {
-  min-width: 28px;
-  height: 28px;
-  border: none;
-  border-radius: 4px;
-  background: transparent;
-  color: rgb(107, 114, 128);
-  font-size: 13px;
-  font-weight: 500;
-  transition: all 0.15s ease;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.quick-btn:hover:not(.dots) {
-  background: white;
-  color: rgb(17, 24, 39);
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-}
-
-.quick-btn.active {
-  background: rgb(59, 130, 246);
-  color: white;
-  font-weight: 600;
-}
-
-.quick-btn.dots {
-  cursor: default;
-  color: rgb(156, 163, 175);
-}
-
-/* Jump Section - Collapsible */
-.jump-section {
-  position: relative;
-}
-
-.jump-toggle {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 6px 10px;
-  font-size: 12px;
-  font-weight: 500;
-  color: rgb(107, 114, 128);
-  background: transparent;
-  border: 1px solid rgb(229, 231, 235);
-  border-radius: 6px;
-  cursor: pointer;
-  transition: all 0.15s ease;
-  list-style: none;
-}
-
-.jump-toggle::-webkit-details-marker {
-  display: none;
-}
-
-.jump-toggle:hover {
-  border-color: rgb(156, 163, 175);
-  color: rgb(17, 24, 39);
-}
-
-.jump-content {
-  position: absolute;
-  top: 100%;
-  left: 50%;
-  transform: translateX(-50%);
-  margin-top: 4px;
-  display: flex;
-  gap: 4px;
-  padding: 8px;
-  background: white;
-  border: 1px solid rgb(229, 231, 235);
-  border-radius: 8px;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-  z-index: 10;
-}
-
-.jump-input {
-  width: 48px;
-  height: 28px;
-  padding: 0 8px;
-  border: 1px solid rgb(229, 231, 235);
-  border-radius: 4px;
-  font-size: 12px;
-  font-weight: 500;
-  text-align: center;
-  color: rgb(17, 24, 39);
-  transition: all 0.15s ease;
-}
-
-.jump-input:focus {
-  outline: none;
-  border-color: rgb(59, 130, 246);
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-}
-
-.jump-btn {
-  width: 28px;
-  height: 28px;
-  border: none;
-  border-radius: 4px;
-  background: rgb(59, 130, 246);
-  color: white;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.15s ease;
-}
-
-.jump-btn:hover {
-  background: rgb(37, 99, 235);
-  transform: translateY(-1px);
-}
-
-/* Dark Mode - 2025 Minimal Style */
-.dark .minimal-pagination {
-  background: rgba(31, 41, 59, 0.8);
-  border-color: rgb(75, 85, 99);
-}
-
-.dark .nav-btn {
-  background: rgb(55, 65, 81);
-  border-color: rgb(75, 85, 99);
-  color: rgb(156, 163, 175);
-}
-
-.dark .nav-btn:hover:not(.disabled) {
-  border-color: rgb(107, 114, 128);
-  color: rgb(229, 231, 235);
-  background: rgb(75, 85, 99);
-}
-
-.dark .nav-btn.disabled {
-  background: rgb(31, 41, 59);
-  border-color: rgb(55, 65, 81);
-  color: rgb(75, 85, 99);
-}
-
-.dark .page-status {
-  background: rgb(55, 65, 81);
-  border-color: rgb(75, 85, 99);
-  color: rgb(156, 163, 175);
-}
-
-.dark .status-text {
-  color: rgb(229, 231, 235);
-}
-
-.dark .status-divider {
-  color: rgb(107, 114, 128);
-}
-
-.dark .status-total {
-  color: rgb(156, 163, 175);
-}
-
-.dark .progress-track {
-  background: rgb(75, 85, 99);
-}
-
-.dark .progress-thumb {
-  background: rgb(96, 165, 250);
-  box-shadow: 0 0 0 2px rgb(31, 41, 59), 0 2px 4px rgba(96, 165, 250, 0.3);
-}
-
-.dark .progress-hint {
-  color: rgb(156, 163, 175);
-}
-
-.dark .quick-nav {
-  background: rgb(55, 65, 81);
-  border-color: rgb(75, 85, 99);
-}
-
-.dark .quick-btn {
-  color: rgb(156, 163, 175);
-}
-
-.dark .quick-btn:hover:not(.dots) {
-  background: rgb(75, 85, 99);
-  color: rgb(229, 231, 235);
-}
-
-.dark .quick-btn.active {
-  background: rgb(96, 165, 250);
-  color: rgb(17, 24, 39);
-}
-
-.dark .jump-toggle {
-  border-color: rgb(75, 85, 99);
-  color: rgb(156, 163, 175);
-}
-
-.dark .jump-toggle:hover {
-  border-color: rgb(107, 114, 128);
-  color: rgb(229, 231, 235);
-}
-
-.dark .jump-content {
-  background: rgb(31, 41, 59);
-  border-color: rgb(75, 85, 99);
-}
-
-.dark .jump-input {
-  background: rgb(55, 65, 81);
-  border-color: rgb(75, 85, 99);
-  color: rgb(229, 231, 235);
-}
-
-.dark .jump-input:focus {
-  border-color: rgb(96, 165, 250);
-  box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.1);
-}
-
-.dark .jump-btn {
-  background: rgb(96, 165, 250);
-}
-
-.dark .jump-btn:hover {
-  background: rgb(59, 130, 246);
-}
-
-/* Mobile-First Responsive Design */
-@media (max-width: 768px) {
-  .minimal-pagination {
-    padding: 16px;
-    gap: 12px;
-  }
-  
-  .pagination-main {
-    gap: 8px;
-  }
-  
-  .page-status {
-    min-width: 100px;
-    padding: 4px 8px;
-    font-size: 12px;
-  }
-  
-  .progress-wrapper {
-    max-width: 240px;
-  }
-  
-  .quick-nav {
-    display: none; /* Hide on mobile for simplicity */
-  }
-  
-  .jump-section {
-    font-size: 11px;
-  }
-  
-  .jump-content {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    margin-top: 0;
-    padding: 12px;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
-  }
-}
-
-@media (max-width: 480px) {
-  .minimal-pagination {
-    padding: 12px;
-    gap: 8px;
-  }
-  
-  .nav-btn {
-    width: 28px;
-    height: 28px;
-  }
-  
-  .page-status {
-    font-size: 11px;
-    padding: 3px 6px;
-  }
-  
-  .progress-wrapper {
-    max-width: 200px;
-  }
-  
-  .progress-hint {
-    font-size: 10px;
-  }
-}
-
-/* Touch-friendly enhancements */
-@media (pointer: coarse) {
-  .nav-btn {
-    width: 36px;
-    height: 36px;
-  }
-  
-  .quick-btn {
-    min-width: 32px;
-    height: 32px;
-  }
-  
-  .jump-btn {
-    width: 32px;
-    height: 32px;
-  }
-}
-
-/* Responsive Design */
-@media (max-width: 1280px) {
-  .ranking-card {
-    padding: 1rem;
-  }
-  
-  .book-cover {
-    height: 180px;
-  }
-}
-
-@media (max-width: 768px) {
-  .book-cover {
-    height: 160px;
-  }
-  
-  .book-title {
-    font-size: 0.85rem;
-  }
-  
-  .book-author {
-    font-size: 0.75rem;
-  }
-}
-
-@media (max-width: 640px) {
-  .ranking-card {
-    padding: 1rem;
-  }
-  
-  .book-cover {
-    height: 200px;
-  }
-}
-</style>
+<!-- All styles now handled by Tailwind CSS in BookCard component -->

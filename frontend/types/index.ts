@@ -16,6 +16,12 @@ export interface Book {
     trendScore?: number
     rank?: number
     topQiitaArticles?: QiitaArticle[]
+    // 「いい本スコア」関連フィールド
+    articleCount?: number        // 紹介記事数
+    totalLikes?: number         // 記事のいいね合計
+    newestArticleDate?: string  // 最新記事日（ISO形式）
+    goodBookScore?: number      // 「いい本スコア」（0-100）
+    rating?: number             // 既存の評価（互換性維持）
 }
 
 export interface QiitaArticle {
