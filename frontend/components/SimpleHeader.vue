@@ -73,6 +73,20 @@
                 </div>
                 <span class="nav-text">トレンド</span>
               </NuxtLink>
+              
+              <NuxtLink 
+                to="/favorites"
+                class="nav-link"
+                :class="{ 'nav-link--active': $route.path === '/favorites' }"
+              >
+                <div class="nav-icon">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" stroke="currentColor" stroke-width="2"/>
+                  </svg>
+                </div>
+                <span class="nav-text">お気に入り</span>
+                <span v-if="favoriteCount > 0" class="favorite-count">{{ favoriteCount }}</span>
+              </NuxtLink>
             </div>
             
             <!-- Action Buttons -->
@@ -217,6 +231,23 @@
                 </div>
                 <span class="mobile-nav-text">トレンド</span>
               </NuxtLink>
+              
+              <NuxtLink 
+                to="/favorites"
+                class="mobile-nav-link"
+                :class="{ 'mobile-nav-link--active': $route.path === '/favorites' }"
+                @click="toggleMobileMenu"
+              >
+                <div class="mobile-nav-icon">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" stroke="currentColor" stroke-width="2"/>
+                  </svg>
+                </div>
+                <div class="flex items-center gap-2">
+                  <span class="mobile-nav-text">お気に入り</span>
+                  <span v-if="favoriteCount > 0" class="px-2 py-1 bg-gradient-to-r from-pink-500 to-red-500 text-white text-xs rounded-full shadow-lg">{{ favoriteCount }}</span>
+                </div>
+              </NuxtLink>
             </nav>
             
             <!-- Action Buttons -->
@@ -289,11 +320,17 @@
 </template>
 
 <script setup>
+import { useFavoritesStore } from '~/stores/favorites'
+
 // State management
 const searchOpen = ref(false)
 const mobileMenuOpen = ref(false)
 const searchQuery = ref('')
 const searchInput = ref(null)
+
+// お気に入りストアを使用
+const favoritesStore = useFavoritesStore()
+const favoriteCount = computed(() => favoritesStore.favoriteCount)
 
 // Theme management
 const isDark = ref(false)
@@ -1046,5 +1083,44 @@ onMounted(() => {
   background: rgba(34, 197, 94, 0.2);
   color: #4ade80;
   border-color: rgba(34, 197, 94, 0.3);
+}
+
+/* Favorite count badge */
+.favorite-count {
+  min-width: 1.25rem;
+  height: 1.25rem;
+  background: linear-gradient(135deg, #ec4899 0%, #ef4444 50%, #f43f5e 100%);
+  color: white;
+  border-radius: 9999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0 0.375rem;
+  margin-left: 0.25rem;
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4);
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.2s ease;
+}
+
+.favorite-count:hover {
+  transform: scale(1.1);
+}
+
+.favorite-count::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+  transition: left 0.5s ease;
+}
+
+.favorite-count:hover::before {
+  left: 100%;
 }
 </style>

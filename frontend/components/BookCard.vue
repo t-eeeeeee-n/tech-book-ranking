@@ -101,6 +101,27 @@
           <span>Amazon</span>
         </button>
 
+        <!-- お気に入りボタン -->
+        <button 
+          @click="toggleFavorite"
+          class="w-full flex items-center justify-center space-x-2 px-4 py-2.5 font-medium text-sm rounded-lg shadow-md hover:shadow-lg transition-all duration-200 transform hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-offset-2 dark:focus:ring-offset-gray-800 group relative overflow-hidden"
+          :class="isFavorite ? 
+            'bg-gradient-to-r from-pink-500 via-red-500 to-rose-500 hover:from-pink-600 hover:via-red-600 hover:to-rose-600 text-white focus:ring-pink-500' : 
+            'bg-white border border-gray-300 text-gray-700 hover:bg-gradient-to-r hover:from-pink-50 hover:to-rose-50 focus:ring-pink-500 dark:bg-gray-800 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700 hover:border-pink-300'"
+        >
+          <!-- ハートアイコン -->
+          <Icon 
+            :name="isFavorite ? 'heroicons:heart-solid' : 'heroicons:heart'" 
+            class="w-4 h-4 transition-all duration-200 relative z-10"
+            :class="isFavorite ? 'text-white' : 'text-gray-500 group-hover:text-pink-500'"
+          />
+          
+          <!-- テキスト -->
+          <span class="relative z-10 transition-all duration-200">
+            お気に入り
+          </span>
+        </button>
+
         <!-- SNS Share Buttons -->
         <div class="flex space-x-2">
           <!-- Facebook Button -->
@@ -132,6 +153,7 @@
 
 <script setup lang="ts">
 import type { Book } from '~/types'
+import { useFavoritesStore } from '~/stores/favorites'
 
 interface Props {
   book: Book
@@ -147,6 +169,29 @@ interface Emits {
 
 const props = defineProps<Props>()
 const emit = defineEmits<Emits>()
+
+// お気に入りストアを使用
+const favoritesStore = useFavoritesStore()
+
+// お気に入り状態を計算
+const isFavorite = computed(() => favoritesStore.isFavorite(props.book.id))
+
+// お気に入りの切り替え
+const toggleFavorite = () => {
+  favoritesStore.toggleFavorite(props.book)
+  
+  // 簡単なフィードバック効果
+  if (typeof window !== 'undefined') {
+    // ハートアニメーション用の一時的なクラス追加
+    const button = document.activeElement as HTMLElement
+    if (button) {
+      button.classList.add('animate-pulse')
+      setTimeout(() => {
+        button.classList.remove('animate-pulse')
+      }, 1000)
+    }
+  }
+}
 
 // ランクバッジのクラスを計算
 const rankBadgeClass = computed(() => {
