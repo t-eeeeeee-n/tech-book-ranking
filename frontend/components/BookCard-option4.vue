@@ -36,6 +36,23 @@
         @error="handleImageError"
       />
       
+      <!-- お気に入りボタン - 画像上にオーバーレイ配置 -->
+      <div class="absolute top-3 right-3 z-20" @click.stop>
+        <button 
+          @click="toggleFavorite"
+          class="w-9 h-9 rounded-full flex items-center justify-center backdrop-blur-sm shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-110 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500"
+          :class="isFavorite ? 
+            'bg-white/95 text-pink-500 hover:bg-white' : 
+            'bg-black/40 text-white hover:bg-black/60'"
+          :aria-label="isFavorite ? 'お気に入りから削除' : 'お気に入りに追加'"
+        >
+          <Icon 
+            :name="isFavorite ? 'heroicons:heart-solid' : 'heroicons:heart'" 
+            class="w-5 h-5 transition-all duration-200"
+          />
+        </button>
+      </div>
+      
       <!-- Overlay on hover -->
       <div v-if="!imageError" class="absolute inset-0 bg-black bg-opacity-60 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
         <Icon name="heroicons:eye" class="w-6 h-6 text-white" />
@@ -44,29 +61,11 @@
 
     <!-- Book Info -->
     <div class="text-center flex flex-col flex-grow">
-      <!-- Title with Heart Icon - Fixed Height with proper line clamping -->
+      <!-- Title - Fixed Height with proper line clamping -->
       <div class="mb-3 h-12 flex items-center justify-center">
-        <div class="flex items-center space-x-2">
-          <h3 class="text-sm sm:text-base font-semibold text-gray-900 dark:text-white line-clamp-2 leading-tight text-center">
-            {{ book.title }}
-          </h3>
-          <!-- お気に入りボタン - タイトル右隣にインライン配置 -->
-          <div @click.stop>
-            <button 
-              @click="toggleFavorite"
-              class="w-6 h-6 rounded-full flex items-center justify-center transition-all duration-200 hover:scale-110 focus:outline-none"
-              :class="isFavorite ? 
-                'text-red-500 hover:text-red-600' : 
-                'text-gray-400 hover:text-red-500'"
-              :aria-label="isFavorite ? 'お気に入りから削除' : 'お気に入りに追加'"
-            >
-              <Icon 
-                :name="isFavorite ? 'heroicons:heart-solid' : 'heroicons:heart'" 
-                class="w-4 h-4 transition-all duration-200"
-              />
-            </button>
-          </div>
-        </div>
+        <h3 class="text-sm sm:text-base font-semibold text-gray-900 dark:text-white line-clamp-2 leading-tight text-center">
+          {{ book.title }}
+        </h3>
       </div>
       
       <!-- Good Book Score (if available) -->

@@ -70,7 +70,7 @@
                   </div>
                   
                   <!-- アクションボタン -->
-                  <div class="flex flex-col sm:flex-row gap-3 justify-center sm:justify-start">
+                  <div class="flex flex-col sm:flex-row gap-3 justify-center sm:justify-start items-center sm:items-start">
                     <a 
                       v-if="book.amazonUrl"
                       :href="book.amazonUrl"
@@ -83,22 +83,16 @@
                     </a>
                     <button 
                       @click="toggleFavorite"
-                      class="inline-flex items-center gap-2 px-6 py-3 font-semibold rounded-xl transition-all duration-200 shadow-md hover:shadow-lg transform hover:-translate-y-0.5 group relative overflow-hidden"
+                      class="w-10 h-10 rounded-full flex items-center justify-center transition-all duration-200 shadow-md hover:shadow-lg transform hover:-translate-y-0.5 focus:outline-none"
                       :class="isFavorite ? 
-                        'bg-gradient-to-r from-pink-500 via-red-500 to-rose-500 hover:from-pink-600 hover:via-red-600 hover:to-rose-600 text-white' : 
-                        'bg-white border border-gray-300 text-gray-700 hover:bg-gradient-to-r hover:from-pink-50 hover:to-rose-50 hover:border-pink-300 dark:bg-gray-800 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700'"
+                        'bg-red-500 hover:bg-red-600 text-white' : 
+                        'bg-white border border-gray-300 text-gray-500 hover:bg-red-50 hover:text-red-500 hover:border-red-300 dark:bg-gray-800 dark:border-gray-600 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-red-400'"
+                      :aria-label="isFavorite ? 'お気に入りから削除' : 'お気に入りに追加'"
                     >
-                      <!-- ハートアイコン -->
                       <Icon 
                         :name="isFavorite ? 'heroicons:heart-solid' : 'heroicons:heart'" 
-                        class="w-5 h-5 transition-all duration-200 relative z-10"
-                        :class="isFavorite ? 'text-white' : 'text-gray-500 group-hover:text-pink-500'"
+                        class="w-5 h-5 transition-all duration-200"
                       />
-                      
-                      <!-- テキスト -->
-                      <span class="relative z-10 transition-all duration-200">
-                        お気に入り
-                      </span>
                     </button>
                   </div>
                 </div>

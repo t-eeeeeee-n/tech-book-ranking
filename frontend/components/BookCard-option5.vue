@@ -44,29 +44,11 @@
 
     <!-- Book Info -->
     <div class="text-center flex flex-col flex-grow">
-      <!-- Title with Heart Icon - Fixed Height with proper line clamping -->
+      <!-- Title - Fixed Height with proper line clamping -->
       <div class="mb-3 h-12 flex items-center justify-center">
-        <div class="flex items-center space-x-2">
-          <h3 class="text-sm sm:text-base font-semibold text-gray-900 dark:text-white line-clamp-2 leading-tight text-center">
-            {{ book.title }}
-          </h3>
-          <!-- お気に入りボタン - タイトル右隣にインライン配置 -->
-          <div @click.stop>
-            <button 
-              @click="toggleFavorite"
-              class="w-6 h-6 rounded-full flex items-center justify-center transition-all duration-200 hover:scale-110 focus:outline-none"
-              :class="isFavorite ? 
-                'text-red-500 hover:text-red-600' : 
-                'text-gray-400 hover:text-red-500'"
-              :aria-label="isFavorite ? 'お気に入りから削除' : 'お気に入りに追加'"
-            >
-              <Icon 
-                :name="isFavorite ? 'heroicons:heart-solid' : 'heroicons:heart'" 
-                class="w-4 h-4 transition-all duration-200"
-              />
-            </button>
-          </div>
-        </div>
+        <h3 class="text-sm sm:text-base font-semibold text-gray-900 dark:text-white line-clamp-2 leading-tight text-center">
+          {{ book.title }}
+        </h3>
       </div>
       
       <!-- Good Book Score (if available) -->
@@ -118,8 +100,8 @@
           <span>Amazon</span>
         </button>
 
-        <!-- SNS Share Buttons -->
-        <div class="flex space-x-2">
+        <!-- Social & Favorite Buttons -->
+        <div class="flex items-center space-x-2">
           <!-- Facebook Button -->
           <button 
             @click="$emit('facebook-share', book)"
@@ -129,6 +111,21 @@
             <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
               <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
             </svg>
+          </button>
+
+          <!-- お気に入りボタン - SNSボタンの間に配置 -->
+          <button 
+            @click="toggleFavorite"
+            class="w-10 h-10 rounded-lg flex items-center justify-center shadow-md hover:shadow-lg transition-all duration-200 transform hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-offset-2 dark:focus:ring-offset-gray-800 focus:ring-pink-500"
+            :class="isFavorite ? 
+              'bg-pink-500 hover:bg-pink-600 text-white' : 
+              'bg-white border border-gray-300 text-gray-500 hover:bg-pink-50 hover:text-pink-500 hover:border-pink-300 dark:bg-gray-800 dark:border-gray-600 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-pink-400'"
+            :aria-label="isFavorite ? 'お気に入りから削除' : 'お気に入りに追加'"
+          >
+            <Icon 
+              :name="isFavorite ? 'heroicons:heart-solid' : 'heroicons:heart'" 
+              class="w-4 h-4 transition-all duration-200"
+            />
           </button>
 
           <!-- X (Twitter) Button -->

@@ -44,29 +44,11 @@
 
     <!-- Book Info -->
     <div class="text-center flex flex-col flex-grow">
-      <!-- Title with Heart Icon - Fixed Height with proper line clamping -->
+      <!-- Title - Fixed Height with proper line clamping -->
       <div class="mb-3 h-12 flex items-center justify-center">
-        <div class="flex items-center space-x-2">
-          <h3 class="text-sm sm:text-base font-semibold text-gray-900 dark:text-white line-clamp-2 leading-tight text-center">
-            {{ book.title }}
-          </h3>
-          <!-- お気に入りボタン - タイトル右隣にインライン配置 -->
-          <div @click.stop>
-            <button 
-              @click="toggleFavorite"
-              class="w-6 h-6 rounded-full flex items-center justify-center transition-all duration-200 hover:scale-110 focus:outline-none"
-              :class="isFavorite ? 
-                'text-red-500 hover:text-red-600' : 
-                'text-gray-400 hover:text-red-500'"
-              :aria-label="isFavorite ? 'お気に入りから削除' : 'お気に入りに追加'"
-            >
-              <Icon 
-                :name="isFavorite ? 'heroicons:heart-solid' : 'heroicons:heart'" 
-                class="w-4 h-4 transition-all duration-200"
-              />
-            </button>
-          </div>
-        </div>
+        <h3 class="text-sm sm:text-base font-semibold text-gray-900 dark:text-white line-clamp-2 leading-tight text-center">
+          {{ book.title }}
+        </h3>
       </div>
       
       <!-- Good Book Score (if available) -->
@@ -83,11 +65,28 @@
         {{ book.author }}
       </p>
 
-      <!-- Category Tag -->
-      <div class="flex justify-center mb-3">
+      <!-- Category Tag with Heart Icon -->
+      <div class="flex items-center justify-center space-x-2 mb-3">
         <span class="inline-flex items-center px-2 py-1 text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300 rounded-full">
           {{ book.category }}
         </span>
+        
+        <!-- お気に入りボタン - カテゴリタグの右隣に配置 -->
+        <div @click.stop>
+          <button 
+            @click="toggleFavorite"
+            class="w-6 h-6 rounded-full flex items-center justify-center transition-all duration-200 hover:scale-110 focus:outline-none focus:ring-2 focus:ring-offset-2 dark:focus:ring-offset-gray-800 focus:ring-pink-500"
+            :class="isFavorite ? 
+              'text-pink-500 hover:text-pink-600' : 
+              'text-gray-400 hover:text-pink-500'"
+            :aria-label="isFavorite ? 'お気に入りから削除' : 'お気に入りに追加'"
+          >
+            <Icon 
+              :name="isFavorite ? 'heroicons:heart-solid' : 'heroicons:heart'" 
+              class="w-4 h-4 transition-all duration-200"
+            />
+          </button>
+        </div>
       </div>
 
       <!-- Spacer to push content to bottom -->
