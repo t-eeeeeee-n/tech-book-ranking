@@ -60,7 +60,7 @@
           <div class="w-32 h-32 mx-auto bg-gradient-to-br from-pink-100 to-rose-100 dark:from-pink-900/30 dark:to-rose-900/30 rounded-full flex items-center justify-center">
             <Icon name="heroicons:heart" class="w-16 h-16 text-pink-400 dark:text-pink-500" />
           </div>
-          <div class="absolute -top-2 -right-2 w-8 h-8 bg-yellow-400 rounded-full flex items-center justify-center animate-bounce">
+          <div class="absolute -top-2 -right-2 w-8 h-8 bg-yellow-400 rounded-full flex items-center justify-center">
             <span class="text-sm">📚</span>
           </div>
         </div>
@@ -328,29 +328,5 @@ const getScoreLabel = (score: number): string => {
 .masonry-item {
   break-inside: avoid;
   page-break-inside: avoid;
-  animation: fadeInUp 0.5s ease-out;
 }
-
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* Stagger animation for items */
-.masonry-item:nth-child(1) { animation-delay: 0.1s; }
-.masonry-item:nth-child(2) { animation-delay: 0.2s; }
-.masonry-item:nth-child(3) { animation-delay: 0.3s; }
-.masonry-item:nth-child(4) { animation-delay: 0.4s; }
-.masonry-item:nth-child(5) { animation-delay: 0.5s; }
-.masonry-item:nth-child(6) { animation-delay: 0.6s; }
-.masonry-item:nth-child(7) { animation-delay: 0.7s; }
-.masonry-item:nth-child(8) { animation-delay: 0.8s; }
-.masonry-item:nth-child(9) { animation-delay: 0.9s; }
-.masonry-item:nth-child(10) { animation-delay: 1.0s; }
 </style>
