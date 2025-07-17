@@ -111,7 +111,7 @@
       <div class="space-y-3 mt-auto" @click.stop>
         <!-- Amazon Button -->
         <button 
-          @click="$emit('amazon-click', book.amazonUrl)"
+          @click="handleAmazonClick"
           class="w-full flex items-center justify-center space-x-2 px-4 py-2.5 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white font-medium text-sm rounded-lg shadow-md hover:shadow-lg transition-all duration-200 transform hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800"
         >
           <Icon name="heroicons:shopping-cart" class="w-4 h-4" />
@@ -122,22 +122,22 @@
         <div class="flex space-x-2">
           <!-- Facebook Button -->
           <button 
-            @click="$emit('facebook-share', book)"
+            @click="handleFacebookShare"
             class="flex-1 flex items-center justify-center p-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg shadow-md hover:shadow-lg transition-all duration-200 transform hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800"
             title="Facebookでシェア"
           >
-            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+            <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24">
               <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
             </svg>
           </button>
 
           <!-- X (Twitter) Button -->
           <button 
-            @click="$emit('twitter-share', book)"
+            @click="handleTwitterShare"
             class="flex-1 flex items-center justify-center p-2.5 bg-black hover:bg-gray-800 text-white rounded-lg shadow-md hover:shadow-lg transition-all duration-200 transform hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800"
             title="X(Twitter)でシェア"
           >
-            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+            <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24">
               <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
             </svg>
           </button>
@@ -156,15 +156,22 @@ interface Props {
   rank: number
 }
 
-interface Emits {
-  (e: 'click', bookId: number): void
-  (e: 'amazon-click', amazonUrl: string): void
-  (e: 'facebook-share', book: Book): void
-  (e: 'twitter-share', book: Book): void
-}
+const emit = defineEmits(['click', 'amazon-click', 'facebook-share', 'twitter-share'])
 
 const props = defineProps<Props>()
-const emit = defineEmits<Emits>()
+
+// Event handlers
+const handleAmazonClick = () => {
+  emit('amazon-click', props.book.amazonUrl)
+}
+
+const handleFacebookShare = () => {
+  emit('facebook-share', props.book)
+}
+
+const handleTwitterShare = () => {
+  emit('twitter-share', props.book)
+}
 
 // お気に入りストアを使用
 const favoritesStore = useFavoritesStore()
@@ -242,8 +249,7 @@ const handleImageError = (event: Event) => {
   if (!fallbackImageUsed.value) {
     // 最初のエラー時は完全にローカルなSVG画像を使用
     fallbackImageUsed.value = true
-    const localSvg = generateLocalSVG(props.book.id, props.book.category)
-    target.src = localSvg
+    target.src = generateLocalSVG(props.book.id, props.book.category)
   } else {
     // 2回目のエラー時も画像を非表示にして代替表示
     imageError.value = true
@@ -253,26 +259,40 @@ const handleImageError = (event: Event) => {
 
 // ローカルでSVG画像を生成する関数
 const generateLocalSVG = (bookId: number, category: string): string => {
-  const categoryColors = {
-    'プログラミング': '#4f46e5',
-    'Web開発': '#059669', 
-    'モバイル開発': '#dc2626',
-    'AI・機械学習': '#7c3aed',
-    'インフラ・DevOps': '#ea580c',
-    'データベース': '#0891b2',
-    'セキュリティ': '#be123c',
-    'デザイン・UI/UX': '#c2410c'
+  // カテゴリ表示名から内部キーへのマッピング関数
+  const getCategoryKey = (category: string): string => {
+    if (category === 'プログラミング') return 'programming'
+    if (category === 'Web開発') return 'web_development'
+    if (category === 'モバイル開発') return 'mobile_development'
+    if (category === 'AI・機械学習') return 'ai_ml'
+    if (category === 'インフラ・DevOps') return 'infrastructure'
+    if (category === 'データベース') return 'database'
+    if (category === 'セキュリティ') return 'security'
+    if (category === 'デザイン・UI/UX') return 'design'
+    return 'programming' // デフォルト
   }
   
-  const color = categoryColors[category] || '#6b7280'
+  const categoryColors: Record<string, string> = {
+    'programming': '#4f46e5',
+    'web_development': '#059669',
+    'mobile_development': '#dc2626',
+    'ai_ml': '#7c3aed',
+    'infrastructure': '#ea580c',
+    'database': '#0891b2',
+    'security': '#be123c',
+    'design': '#c2410c'
+  }
+  
+  const categoryKey = getCategoryKey(category)
+  const color = categoryColors[categoryKey] || '#6b7280'
   const icons = ['📚', '📖', '📝', '💻', '⚡']
   const icon = icons[bookId % icons.length]
   
   const svg = `
     <svg width="300" height="400" xmlns="http://www.w3.org/2000/svg">
-      <rect width="300" height="400" fill="${color}"/>
-      <text x="150" y="200" font-family="Arial" font-size="60" fill="white" text-anchor="middle" dominant-baseline="middle">${icon}</text>
-      <text x="150" y="280" font-family="Arial" font-size="16" fill="white" text-anchor="middle" dominant-baseline="middle">${category}</text>
+      <rect width="300" height="400" style="fill:${color}"/>
+      <text x="150" y="200" font-family="Arial" font-size="60" style="fill:white" text-anchor="middle" dominant-baseline="middle">${icon}</text>
+      <text x="150" y="280" font-family="Arial" font-size="16" style="fill:white" text-anchor="middle" dominant-baseline="middle">${category}</text>
     </svg>
   `
   
@@ -285,6 +305,7 @@ const generateLocalSVG = (bookId: number, category: string): string => {
 .line-clamp-1 {
   display: -webkit-box;
   -webkit-line-clamp: 1;
+  line-clamp: 1;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
@@ -292,6 +313,7 @@ const generateLocalSVG = (bookId: number, category: string): string => {
 .line-clamp-2 {
   display: -webkit-box;
   -webkit-line-clamp: 2;
+  line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }

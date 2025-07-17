@@ -10,7 +10,6 @@
     @keydown.enter="$emit('viewDetails', book.id)"
     @keydown.space.prevent="$emit('viewDetails', book.id)"
     tabindex="0"
-    role="button"
     :aria-label="`${rank}位: ${book.title} の詳細を見る。${book.mentionCount}回言及`"
   >
     <!-- TOP3 Special Layout -->
@@ -52,7 +51,7 @@
 
       <!-- Title & Meta -->
       <div>
-        <h3 class="text-lg font-bold text-primary leading-tight mb-2 group-hover:text-accent transition-colors line-clamp-2">
+        <h3 class="text-lg font-bold text-primary leading-tight mb-2 group-hover:text-accent transition-colors line-clamp-2 [line-clamp:2]">
           {{ book.title }}
         </h3>
         <div class="text-sm text-secondary mb-3">
@@ -120,7 +119,7 @@
       <div class="flex-1 min-w-0">
         <div class="flex items-start justify-between mb-2">
           <div class="flex-1 min-w-0">
-            <h3 class="text-lg font-semibold text-primary leading-tight mb-1 group-hover:text-accent transition-colors line-clamp-2">
+            <h3 class="text-lg font-semibold text-primary leading-tight mb-1 group-hover:text-accent transition-colors line-clamp-2 [line-clamp:2]">
               {{ book.title }}
             </h3>
             <div class="text-sm text-secondary mb-2">
@@ -337,27 +336,9 @@ const openAmazon = () => {
 </script>
 
 <style scoped>
-.line-clamp-1 {
-  display: -webkit-box;
-  -webkit-line-clamp: 1;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-
-.line-clamp-2 {
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-
-/* Special animations for TOP3 */
-.group:hover .group-hover\:scale-105 {
-  transform: scale(1.05);
-}
 
 /* Focus styles */
 article:focus {
-  outline: none;
+  @apply outline-none;
 }
 </style>

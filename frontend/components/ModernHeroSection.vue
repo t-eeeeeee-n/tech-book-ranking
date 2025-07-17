@@ -15,13 +15,13 @@
         <div class="announcement-banner">
           <div class="announcement-content">
             <div class="announcement-icon">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+              <svg width="16" height="16" viewBox="0 0 24 24" class="fill-none">
                 <path d="M13 2L3 14H12L11 22L21 10H12L13 2Z" stroke="currentColor" stroke-width="2"/>
               </svg>
             </div>
             <span class="announcement-text">2025年版 最新技術書ランキング公開中</span>
             <div class="announcement-arrow">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+              <svg width="14" height="14" viewBox="0 0 24 24" class="fill-none">
                 <path d="M7 17L17 7M17 7H7M17 7V17" stroke="currentColor" stroke-width="2"/>
               </svg>
             </div>
@@ -60,7 +60,7 @@
               <div class="stat-label">{{ stat.label }}</div>
             </div>
             <div class="stat-trend" v-if="stat.trend">
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
+              <svg width="12" height="12" viewBox="0 0 24 24" class="fill-none">
                 <path d="M7 17L17 7M17 7H7M17 7V17" stroke="currentColor" stroke-width="2"/>
               </svg>
               <span>{{ stat.trend }}</span>
@@ -73,7 +73,7 @@
           <div class="search-container">
             <div class="search-input-group">
               <div class="search-icon">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                <svg width="20" height="20" viewBox="0 0 24 24" class="fill-none">
                   <circle cx="11" cy="11" r="8" stroke="currentColor" stroke-width="2"/>
                   <path d="M21 21L16.65 16.65" stroke="currentColor" stroke-width="2"/>
                 </svg>
@@ -87,7 +87,7 @@
               />
               <button @click="performSearch" class="search-button">
                 <span class="search-button-text">検索</span>
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                <svg width="16" height="16" viewBox="0 0 24 24" class="fill-none">
                   <path d="M7 17L17 7M17 7H7M17 7V17" stroke="currentColor" stroke-width="2"/>
                 </svg>
               </button>
@@ -133,7 +133,7 @@
     <div class="scroll-indicator">
       <div class="scroll-text">ランキングを見る</div>
       <div class="scroll-arrow">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+        <svg width="16" height="16" viewBox="0 0 24 24" class="fill-none">
           <path d="M7 13L12 18L17 13M7 6L12 11L17 6" stroke="currentColor" stroke-width="2"/>
         </svg>
       </div>
@@ -141,7 +141,7 @@
   </section>
 </template>
 
-<script setup>
+<script setup lang="ts">
 // Props
 const props = defineProps({
   totalBooks: {
@@ -166,25 +166,25 @@ const statsData = computed(() => [
   {
     value: `${props.totalBooks.toLocaleString()}+`,
     label: '技術書を収録',
-    icon: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" stroke="currentColor" stroke-width="2"/><path d="M6.5 2H20V22H6.5A2.5 2.5 0 0 1 4 19.5V4.5A2.5 2.5 0 0 1 6.5 2Z" stroke="currentColor" stroke-width="2"/></svg>',
+    icon: '<svg width="24" height="24" viewBox="0 0 24 24" class="fill-none"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" stroke="currentColor" stroke-width="2"/><path d="M6.5 2H20V22H6.5A2.5 2.5 0 0 1 4 19.5V4.5A2.5 2.5 0 0 1 6.5 2Z" stroke="currentColor" stroke-width="2"/></svg>',
     trend: '+24%'
   },
   {
     value: props.updateFrequency,
     label: 'データ更新',
-    icon: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M3 12A9 9 0 0 1 12 3A9 9 0 0 1 21 12A9 9 0 0 1 12 21" stroke="currentColor" stroke-width="2"/><path d="M12 7V12L16 14" stroke="currentColor" stroke-width="2"/></svg>',
+    icon: '<svg width="24" height="24" viewBox="0 0 24 24" class="fill-none"><path d="M3 12A9 9 0 0 1 12 3A9 9 0 0 1 21 12A9 9 0 0 1 12 21" stroke="currentColor" stroke-width="2"/><path d="M12 7V12L16 14" stroke="currentColor" stroke-width="2"/></svg>',
     trend: null
   },
   {
     value: `${props.totalCategories}`,
     label: '専門カテゴリ',
-    icon: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="7" height="7" stroke="currentColor" stroke-width="2"/><rect x="14" y="3" width="7" height="7" stroke="currentColor" stroke-width="2"/><rect x="3" y="14" width="7" height="7" stroke="currentColor" stroke-width="2"/><rect x="14" y="14" width="7" height="7" stroke="currentColor" stroke-width="2"/></svg>',
+    icon: '<svg width="24" height="24" viewBox="0 0 24 24" class="fill-none"><rect x="3" y="3" width="7" height="7" stroke="currentColor" stroke-width="2"/><rect x="14" y="3" width="7" height="7" stroke="currentColor" stroke-width="2"/><rect x="3" y="14" width="7" height="7" stroke="currentColor" stroke-width="2"/><rect x="14" y="14" width="7" height="7" stroke="currentColor" stroke-width="2"/></svg>',
     trend: '+2'
   },
   {
     value: '信頼できる',
     label: 'ランキング',
-    icon: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M9 12L11 14L15 10M21 12A9 9 0 1 1 3 12A9 9 0 0 1 21 12Z" stroke="currentColor" stroke-width="2"/></svg>',
+    icon: '<svg width="24" height="24" viewBox="0 0 24 24" class="fill-none"><path d="M9 12L11 14L15 10M21 12A9 9 0 1 1 3 12A9 9 0 0 1 21 12Z" stroke="currentColor" stroke-width="2"/></svg>',
     trend: null
   }
 ])
@@ -200,17 +200,17 @@ const features = [
   {
     title: 'リアルタイム分析',
     description: 'Qiita記事の言及データを毎日分析して最新のトレンドを反映',
-    icon: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M3 3V21L9 18L15 21L21 18V6L15 9L9 6L3 3Z" stroke="currentColor" stroke-width="2"/></svg>'
+    icon: '<svg width="20" height="20" viewBox="0 0 24 24" class="fill-none"><path d="M3 3V21L9 18L15 21L21 18V6L15 9L9 6L3 3Z" stroke="currentColor" stroke-width="2"/></svg>'
   },
   {
     title: '実証済みの品質',
     description: '実際の開発現場で参考にされている技術書のみをランキング',
-    icon: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M9 12L11 14L15 10M21 12A9 9 0 1 1 3 12A9 9 0 0 1 21 12Z" stroke="currentColor" stroke-width="2"/></svg>'
+    icon: '<svg width="20" height="20" viewBox="0 0 24 24" class="fill-none"><path d="M9 12L11 14L15 10M21 12A9 9 0 1 1 3 12A9 9 0 0 1 21 12Z" stroke="currentColor" stroke-width="2"/></svg>'
   },
   {
     title: '詳細な分析',
     description: 'カテゴリ別、トレンド分析、関連記事まで包括的に提供',
-    icon: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M3 3V21H21V3H3Z" stroke="currentColor" stroke-width="2"/><path d="M7 12H17M7 8H17M7 16H17" stroke="currentColor" stroke-width="2"/></svg>'
+    icon: '<svg width="20" height="20" viewBox="0 0 24 24" class="fill-none"><path d="M3 3V21H21V3H3Z" stroke="currentColor" stroke-width="2"/><path d="M7 12H17M7 8H17M7 16H17" stroke="currentColor" stroke-width="2"/></svg>'
   }
 ]
 

@@ -26,7 +26,12 @@ export default defineEventHandler(async (event) => {
       pages: 260,
       isbn: '978-4873115658',
       uniqueArticleCount: 156,
-      trendScore: 95
+      trendScore: 95,
+      firstMentionDate: '2012-07-15T09:30:00Z',
+      lastMentionDate: '2024-12-15T14:22:00Z',
+      articleCount: 156,
+      totalLikes: 3420,
+      newestArticleDate: '2024-12-15T14:22:00Z'
     },
     {
       id: 2,
@@ -44,7 +49,12 @@ export default defineEventHandler(async (event) => {
       pages: 464,
       isbn: '978-4048676885',
       uniqueArticleCount: 134,
-      trendScore: 89
+      trendScore: 89,
+      firstMentionDate: '2018-01-20T10:15:00Z',
+      lastMentionDate: '2024-12-10T16:45:00Z',
+      articleCount: 134,
+      totalLikes: 2890,
+      newestArticleDate: '2024-12-10T16:45:00Z'
     },
     {
       id: 3,
@@ -62,7 +72,12 @@ export default defineEventHandler(async (event) => {
       pages: 176,
       isbn: '978-4873113913',
       uniqueArticleCount: 98,
-      trendScore: 76
+      trendScore: 76,
+      firstMentionDate: '2009-02-10T08:20:00Z',
+      lastMentionDate: '2024-11-28T11:33:00Z',
+      articleCount: 98,
+      totalLikes: 1876,
+      newestArticleDate: '2024-11-28T11:33:00Z'
     },
     {
       id: 4,
@@ -80,7 +95,12 @@ export default defineEventHandler(async (event) => {
       pages: 552,
       isbn: '978-4621303252',
       uniqueArticleCount: 87,
-      trendScore: 82
+      trendScore: 82,
+      firstMentionDate: '2018-11-15T13:45:00Z',
+      lastMentionDate: '2024-12-05T09:12:00Z',
+      articleCount: 87,
+      totalLikes: 2145,
+      newestArticleDate: '2024-12-05T09:12:00Z'
     },
     {
       id: 5,
@@ -98,29 +118,48 @@ export default defineEventHandler(async (event) => {
       pages: 424,
       isbn: '978-4797311129',
       uniqueArticleCount: 76,
-      trendScore: 71
+      trendScore: 71,
+      firstMentionDate: '2000-03-12T15:30:00Z',
+      lastMentionDate: '2024-11-20T12:18:00Z',
+      articleCount: 76,
+      totalLikes: 1654,
+      newestArticleDate: '2024-11-20T12:18:00Z'
     }
   ]
 
   // Additional mock books for pagination demo
-  const additionalBooks = Array.from({ length: 45 }, (_, i) => ({
-    id: i + 6,
-    title: `技術書 ${i + 6}`,
-    author: `著者 ${i + 6}`,
-    imageUrl: 'https://m.media-amazon.com/images/I/51MgH8Jmr+L._SX350_BO1,204,203,200_.jpg',
-    amazonUrl: `https://www.amazon.co.jp/dp/example${i + 6}`,
-    mentionCount: Math.floor(Math.random() * 500) + 50,
-    rating: Math.round((Math.random() * 2 + 3) * 10) / 10,
-    category: ['プログラミング', 'Web開発', 'AI・機械学習', 'インフラ'][Math.floor(Math.random() * 4)],
-    description: `技術書 ${i + 6} の詳細説明です。この書籍は技術者にとって重要な知識を提供します。`,
-    tags: ['技術', 'プログラミング', '学習'],
-    publishedDate: '2023-01-01',
-    publisher: 'テスト出版',
-    pages: Math.floor(Math.random() * 400) + 200,
-    isbn: `978-${String(Math.floor(Math.random() * 9000000000) + 1000000000)}`,
-    uniqueArticleCount: Math.floor(Math.random() * 50) + 10,
-    trendScore: Math.floor(Math.random() * 100)
-  }))
+  const additionalBooks = Array.from({ length: 45 }, (_, i) => {
+    const mentionCount = Math.floor(Math.random() * 500) + 50
+    const articleCount = Math.floor(Math.random() * 50) + 10
+    const totalLikes = Math.floor(Math.random() * 2000) + 100
+    const firstMentionDate = new Date(2020 + Math.floor(Math.random() * 4), Math.floor(Math.random() * 12), Math.floor(Math.random() * 28) + 1)
+    const lastMentionDate = new Date(2024, Math.floor(Math.random() * 12), Math.floor(Math.random() * 28) + 1)
+    const newestArticleDate = new Date(2024, Math.floor(Math.random() * 12), Math.floor(Math.random() * 28) + 1)
+    
+    return {
+      id: i + 6,
+      title: `技術書 ${i + 6}`,
+      author: `著者 ${i + 6}`,
+      imageUrl: 'https://m.media-amazon.com/images/I/51MgH8Jmr+L._SX350_BO1,204,203,200_.jpg',
+      amazonUrl: `https://www.amazon.co.jp/dp/example${i + 6}`,
+      mentionCount,
+      rating: Math.round((Math.random() * 2 + 3) * 10) / 10,
+      category: ['プログラミング', 'Web開発', 'AI・機械学習', 'インフラ'][Math.floor(Math.random() * 4)],
+      description: `技術書 ${i + 6} の詳細説明です。この書籍は技術者にとって重要な知識を提供します。`,
+      tags: ['技術', 'プログラミング', '学習'],
+      publishedDate: '2023-01-01',
+      publisher: 'テスト出版',
+      pages: Math.floor(Math.random() * 400) + 200,
+      isbn: `978-${String(Math.floor(Math.random() * 9000000000) + 1000000000)}`,
+      uniqueArticleCount: articleCount,
+      trendScore: Math.floor(Math.random() * 100),
+      firstMentionDate: firstMentionDate.toISOString(),
+      lastMentionDate: lastMentionDate.toISOString(),
+      articleCount,
+      totalLikes,
+      newestArticleDate: newestArticleDate.toISOString()
+    }
+  })
 
   const allBooks = [...mockBooks, ...additionalBooks]
   const book = allBooks.find(b => b.id === parseInt(id))

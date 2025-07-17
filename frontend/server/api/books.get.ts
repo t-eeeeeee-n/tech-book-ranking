@@ -22,6 +22,9 @@ const mockBooks: Book[] = [
     description: "より良いコードを書くためのシンプルで実践的なテクニック",
     firstMentionDate: "2023-01-15",
     lastMentionDate: "2024-03-20",
+    articleCount: 25,
+    totalLikes: 590,
+    newestArticleDate: "2024-03-20",
     topQiitaArticles: [
       {
         id: "1a2b3c4d",
@@ -67,6 +70,9 @@ const mockBooks: Book[] = [
     description: "オブジェクト指向の本質を理解するための入門書",
     firstMentionDate: "2023-02-10",
     lastMentionDate: "2024-03-18",
+    articleCount: 18,
+    totalLikes: 312,
+    newestArticleDate: "2024-03-18",
     topQiitaArticles: [
       {
         id: "oop1a2b3c",
@@ -103,6 +109,9 @@ const mockBooks: Book[] = [
     description: "Rails 5を使った実践的なWebアプリケーション開発",
     firstMentionDate: "2023-01-20",
     lastMentionDate: "2024-03-15",
+    articleCount: 15,
+    totalLikes: 390,
+    newestArticleDate: "2024-03-15",
     topQiitaArticles: [
       {
         id: "rails1x2y3z",
@@ -139,6 +148,9 @@ const mockBooks: Book[] = [
     description: "システム開発の職人から名匠への道",
     firstMentionDate: "2023-03-05",
     lastMentionDate: "2024-03-12",
+    articleCount: 12,
+    totalLikes: 510,
+    newestArticleDate: "2024-03-12",
     topQiitaArticles: [
       {
         id: "pragmatic1",
@@ -182,6 +194,9 @@ const mockBooks: Book[] = [
     description: "モダンスタイルによる基礎から現場での応用まで",
     firstMentionDate: "2023-02-28",
     lastMentionDate: "2024-03-08",
+    articleCount: 20,
+    totalLikes: 510,
+    newestArticleDate: "2024-03-08",
     topQiitaArticles: [
       {
         id: "js1book2",
@@ -218,6 +233,9 @@ const mockBooks: Book[] = [
     description: "Javaプラットフォームでもっとも効果的な使い方",
     firstMentionDate: "2023-04-12",
     lastMentionDate: "2024-02-25",
+    articleCount: 10,
+    totalLikes: 345,
+    newestArticleDate: "2024-02-25",
     topQiitaArticles: [
       {
         id: "java1eff2",
@@ -243,18 +261,32 @@ const mockBooks: Book[] = [
 
 // 完全に安全なローカル画像を生成（Data URI使用）
 const generateLocalImageUrl = (bookId: number, category: string): string => {
-  const categoryColors = {
-    'プログラミング': '#4f46e5',
-    'Web開発': '#059669', 
-    'モバイル開発': '#dc2626',
-    'AI・機械学習': '#7c3aed',
-    'インフラ・DevOps': '#ea580c',
-    'データベース': '#0891b2',
-    'セキュリティ': '#be123c',
-    'デザイン・UI/UX': '#c2410c'
+  // カテゴリ表示名から内部キーへのマッピング関数
+  const getCategoryKey = (category: string): string => {
+    if (category === 'プログラミング') return 'programming'
+    if (category === 'Web開発') return 'web_development'
+    if (category === 'モバイル開発') return 'mobile_development'
+    if (category === 'AI・機械学習') return 'ai_ml'
+    if (category === 'インフラ・DevOps') return 'infrastructure'
+    if (category === 'データベース') return 'database'
+    if (category === 'セキュリティ') return 'security'
+    if (category === 'デザイン・UI/UX') return 'design'
+    return 'programming' // デフォルト
   }
   
-  const color = categoryColors[category] || '#6b7280'
+  const categoryColors: Record<string, string> = {
+    'programming': '#4f46e5',
+    'web_development': '#059669', 
+    'mobile_development': '#dc2626',
+    'ai_ml': '#7c3aed',
+    'infrastructure': '#ea580c',
+    'database': '#0891b2',
+    'security': '#be123c',
+    'design': '#c2410c'
+  }
+  
+  const categoryKey = getCategoryKey(category)
+  const color = categoryColors[categoryKey] || '#6b7280'
   const icons = ['📚', '📖', '📝', '💻', '⚡']
   const icon = icons[bookId % icons.length]
   
@@ -285,8 +317,21 @@ const generateBookImageUrl = (bookId: number, title: string, category: string): 
 
 // 実際の技術書に似たタイトルを生成
 const generateRealisticTitle = (id: number, category: string): string => {
-  const titleTemplates = {
-    'プログラミング': [
+  // カテゴリ表示名から内部キーへのマッピング関数
+  const getCategoryKey = (category: string): string => {
+    if (category === 'プログラミング') return 'programming'
+    if (category === 'Web開発') return 'web_development'
+    if (category === 'モバイル開発') return 'mobile_development'
+    if (category === 'AI・機械学習') return 'ai_ml'
+    if (category === 'インフラ・DevOps') return 'infrastructure'
+    if (category === 'データベース') return 'database'
+    if (category === 'セキュリティ') return 'security'
+    if (category === 'デザイン・UI/UX') return 'design'
+    return 'programming' // デフォルト
+  }
+  
+  const titleTemplates: Record<string, string[]> = {
+    'programming': [
       'プログラミング入門',
       'コードの書き方',
       'アルゴリズムとデータ構造',
@@ -296,7 +341,7 @@ const generateRealisticTitle = (id: number, category: string): string => {
       'プログラミングパターン',
       'ソフトウェア設計'
     ],
-    'Web開発': [
+    'web_development': [
       'Web開発入門',
       'フロントエンド開発',
       'バックエンド開発',
@@ -306,7 +351,7 @@ const generateRealisticTitle = (id: number, category: string): string => {
       'Webパフォーマンス',
       'モダンWeb開発'
     ],
-    'AI・機械学習': [
+    'ai_ml': [
       '機械学習入門',
       'AIプログラミング',
       '深層学習',
@@ -316,7 +361,7 @@ const generateRealisticTitle = (id: number, category: string): string => {
       '機械学習実践',
       'AI開発手法'
     ],
-    'インフラ・DevOps': [
+    'infrastructure': [
       'DevOps入門',
       'クラウド設計',
       'Docker実践',
@@ -328,7 +373,8 @@ const generateRealisticTitle = (id: number, category: string): string => {
     ]
   }
   
-  const templates = titleTemplates[category] || titleTemplates['プログラミング']
+  const categoryKey = getCategoryKey(category)
+  const templates = titleTemplates[categoryKey] || titleTemplates['programming']
   const template = templates[id % templates.length]
   
   return `${template} 第${Math.floor(id / templates.length) + 1}版`
@@ -363,19 +409,21 @@ const generateMockBooks = (count: number = 200): Book[] => {
   baseBooks.forEach(book => {
     book.imageUrl = generateBookImageUrl(book.id, book.title, book.category)
     
-    // スコア計算用データを追加
-    const scoreData = generateScoreData(book.id, book.mentionCount)
-    book.articleCount = scoreData.articleCount
-    book.totalLikes = scoreData.totalLikes
-    book.newestArticleDate = scoreData.newestArticleDate
+    // スコア計算用データが既に存在する場合はそのまま使用、存在しない場合は生成
+    if (!book.articleCount || !book.totalLikes || !book.newestArticleDate) {
+      const scoreData = generateScoreData(book.id, book.mentionCount)
+      book.articleCount = book.articleCount || scoreData.articleCount
+      book.totalLikes = book.totalLikes || scoreData.totalLikes
+      book.newestArticleDate = book.newestArticleDate || scoreData.newestArticleDate
+    }
     
     // 「いい本スコア」を計算
     const bookScoreInput: BookScoreInput = {
       id: book.id,
       title: book.title,
-      articleCount: book.articleCount,
-      totalLikes: book.totalLikes,
-      newestArticleDate: book.newestArticleDate
+      articleCount: book.articleCount!,
+      totalLikes: book.totalLikes!,
+      newestArticleDate: book.newestArticleDate!
     }
     book.goodBookScore = getGoodBookScore(bookScoreInput)
     

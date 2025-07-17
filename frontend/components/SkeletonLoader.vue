@@ -49,11 +49,10 @@ interface Props {
   count?: number
   animate?: boolean
 }
-
-const props = withDefaults(defineProps<Props>(), {
+withDefaults(defineProps<Props>(), {
   count: 8,
   animate: true
-})
+});
 </script>
 
 <!-- All styles are now handled by Tailwind CSS -->

@@ -151,7 +151,7 @@
 </template>
 
 <script setup lang="ts">
-import { getScoreLevel, getScoreColorClass } from '~/utils/bookScore'
+import { getScoreLevel } from '~/utils/bookScore'
 
 interface Props {
   score: number
@@ -255,9 +255,6 @@ const strokeDashoffset = computed(() => {
 </script>
 
 <style scoped>
-.book-score-badge {
-  /* 必要に応じてカスタムアニメーション */
-}
 
 /* Tabular numsでスコア数値を等幅に */
 .tabular-nums {
