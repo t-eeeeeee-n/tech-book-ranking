@@ -55,7 +55,7 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { getGoodBookScore } from '~/utils/bookScore'
 
 // Get featured books data
@@ -209,25 +209,35 @@ const topBooks = computed(() => {
   }))
 })
 
+// Define Book interface
+interface Book {
+  id: number
+  title: string
+  author: string
+  mentionCount: number
+  rating: number
+  amazonUrl: string
+}
+
 // Methods
-const viewBookDetails = (bookId) => {
+const viewBookDetails = (bookId: number) => {
   navigateTo(`/book/${bookId}`)
 }
 
 // SNS Share functions
-const shareOnFacebook = (book) => {
+const shareOnFacebook = (book: Book) => {
   const url = encodeURIComponent(`${window.location.origin}/book/${book.id}`)
   const text = encodeURIComponent(`📚 ${book.title} - ${book.author} がQiitaで${book.mentionCount}回言及されています！`)
   window.open(`https://www.facebook.com/sharer/sharer.php?u=${url}&quote=${text}`, '_blank', 'width=600,height=400')
 }
 
-const shareOnTwitter = (book) => {
+const shareOnTwitter = (book: Book) => {
   const url = encodeURIComponent(`${window.location.origin}/book/${book.id}`)
   const text = encodeURIComponent(`📚 ${book.title} - ${book.author}\nQiitaで${book.mentionCount}回言及されている技術書です！\n⭐ 評価: ${book.rating}\n\n#技術書 #プログラミング #TechRankBooks`)
   window.open(`https://twitter.com/intent/tweet?text=${text}&url=${url}`, '_blank', 'width=600,height=400')
 }
 
-const openAmazonLink = (amazonUrl) => {
+const openAmazonLink = (amazonUrl: string) => {
   window.open(amazonUrl, '_blank')
 }
 

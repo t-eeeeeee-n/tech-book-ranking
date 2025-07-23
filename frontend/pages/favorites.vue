@@ -87,11 +87,11 @@
       </div>
 
       <!-- Favorites Grid -->
-      <div v-else class="masonry-grid">
+      <div v-else class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-6">
         <div 
           v-for="book in sortedFavoriteBooks" 
           :key="book.id"
-          class="masonry-item group"
+          class="break-inside-avoid group"
         >
           <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden hover:shadow-xl transition-all duration-300 cursor-pointer transform hover:-translate-y-1 hover:border-pink-300 dark:hover:border-pink-700"
                @click="navigateTo(`/book/${book.id}`)"
@@ -136,10 +136,10 @@
             <div class="p-5">
               <!-- Title & Author -->
               <div class="mb-4">
-                <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2 line-clamp-2 leading-snug">
+                <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2 leading-snug line-clamp-2">
                   {{ book.title }}
                 </h3>
-                <p class="text-sm text-gray-600 dark:text-gray-400 line-clamp-1">
+                <p class="text-sm text-gray-600 dark:text-gray-400 truncate">
                   {{ book.author }}
                 </p>
               </div>
@@ -291,52 +291,3 @@ const navigateTo = (path: string) => {
 }
 </script>
 
-<style scoped>
-.line-clamp-1 {
-  display: -webkit-box;
-  -webkit-line-clamp: 1;
-  line-clamp: 1;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-
-.line-clamp-2 {
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-
-/* Masonry Grid Layout */
-.masonry-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 1.5rem;
-  grid-auto-flow: dense;
-}
-
-@media (min-width: 768px) {
-  .masonry-grid {
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  }
-}
-
-@media (min-width: 1024px) {
-  .masonry-grid {
-    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-  }
-}
-
-@media (min-width: 1280px) {
-  .masonry-grid {
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 2rem;
-  }
-}
-
-.masonry-item {
-  break-inside: avoid;
-  page-break-inside: avoid;
-}
-</style>

@@ -186,7 +186,7 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 // SEO設定
 useHead({
   title: 'サイトについて - テクランBooks',
