@@ -79,7 +79,7 @@
       </div>
 
       <!-- Author -->
-      <p class="text-xs sm:text-sm text-gray-600 dark:text-gray-400 line-clamp-1 mb-3">
+      <p class="text-xs sm:text-sm text-gray-600 dark:text-gray-400 truncate mb-3">
         {{ book.author }}
       </p>
 
@@ -300,21 +300,3 @@ const generateLocalSVG = (bookId: number, category: string): string => {
 }
 </script>
 
-<style scoped>
-/* Tailwind CSSのみを使用するため、カスタムCSSは最小限 */
-.line-clamp-1 {
-  display: -webkit-box;
-  -webkit-line-clamp: 1;
-  line-clamp: 1;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-
-.line-clamp-2 {
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-</style>

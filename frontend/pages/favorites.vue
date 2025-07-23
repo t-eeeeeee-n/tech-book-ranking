@@ -202,6 +202,9 @@
 <script setup lang="ts">
 import { useFavoritesStore } from '~/stores/favorites'
 
+// ルーターを使用
+const $router = useRouter()
+
 // SEO設定
 useHead({
   title: 'お気に入り - Tech Book Rank',
@@ -281,12 +284,18 @@ const getScoreLabel = (score: number): string => {
   if (score >= 40) return '普通'
   return '要検討'
 }
+
+// ナビゲーション関数
+const navigateTo = (path: string) => {
+  return $router.push(path)
+}
 </script>
 
 <style scoped>
 .line-clamp-1 {
   display: -webkit-box;
   -webkit-line-clamp: 1;
+  line-clamp: 1;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
@@ -294,6 +303,7 @@ const getScoreLabel = (score: number): string => {
 .line-clamp-2 {
   display: -webkit-box;
   -webkit-line-clamp: 2;
+  line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }

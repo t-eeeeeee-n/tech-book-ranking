@@ -1,11 +1,11 @@
 <template>
-  <div class="flex justify-center items-center p-8 animate-fadeIn" :class="{ 'fixed inset-0 bg-white/90 dark:bg-gray-900/90 backdrop-blur-sm z-[1000]': overlay }">
+  <div class="flex justify-center items-center p-8 animate-fade-in" :class="{ 'fixed inset-0 bg-white/90 dark:bg-gray-900/90 backdrop-blur-sm z-[1000]': overlay }">
     <div class="flex flex-col items-center gap-4">
       <!-- Spinner -->
       <div class="relative inline-block" :class="sizeClasses">
-        <div class="absolute border-transparent rounded-full animate-spin border-t-blue-500 dark:border-t-blue-400" :class="[ringClasses, 'animate-delay-[-450ms]']"></div>
-        <div class="absolute border-transparent rounded-full animate-spin border-t-cyan-500 dark:border-t-cyan-400" :class="[ringClasses, 'animate-delay-[-300ms]']"></div>
-        <div class="absolute border-transparent rounded-full animate-spin border-t-purple-500 dark:border-t-purple-400" :class="[ringClasses, 'animate-delay-[-150ms]']"></div>
+        <div class="absolute border-transparent rounded-full animate-spin border-t-blue-500 dark:border-t-blue-400" :class="ringClasses" style="animation-delay: -450ms"></div>
+        <div class="absolute border-transparent rounded-full animate-spin border-t-cyan-500 dark:border-t-cyan-400" :class="ringClasses" style="animation-delay: -300ms"></div>
+        <div class="absolute border-transparent rounded-full animate-spin border-t-purple-500 dark:border-t-purple-400" :class="ringClasses" style="animation-delay: -150ms"></div>
         <div class="absolute border-transparent rounded-full animate-spin border-t-pink-500 dark:border-t-pink-400" :class="ringClasses"></div>
       </div>
       
@@ -58,33 +58,3 @@ const ringClasses = computed(() => {
 })
 </script>
 
-<style scoped>
-/* Custom animation delays (not available in Tailwind by default) */
-.animate-delay-\[-450ms\] {
-  animation-delay: -450ms;
-}
-
-.animate-delay-\[-300ms\] {
-  animation-delay: -300ms;
-}
-
-.animate-delay-\[-150ms\] {
-  animation-delay: -150ms;
-}
-
-/* Smooth entrance animation */
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.animate-fadeIn {
-  animation: fadeIn 0.2s ease-in-out;
-}
-</style>

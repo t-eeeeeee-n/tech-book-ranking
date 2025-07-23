@@ -12,8 +12,8 @@
         <h2 class="text-2xl font-bold text-gray-800 dark:text-white mb-4">書籍が見つかりません</h2>
         <p class="text-gray-600 dark:text-gray-300 mb-8">指定された書籍は存在しないか、削除された可能性があります。</p>
         <button 
-          @click="navigateTo('/')"
-          class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+          @click="goHome"
+          class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 hover:scale-105"
         >
           トップページに戻る
         </button>
@@ -76,14 +76,14 @@
                       :href="book.amazonUrl"
                       target="_blank"
                       rel="noopener noreferrer"
-                      class="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-orange-500 to-orange-600 text-white rounded-xl font-semibold hover:from-orange-600 hover:to-orange-700 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+                      class="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-orange-500 to-orange-600 text-white rounded-xl font-semibold hover:from-orange-600 hover:to-orange-700 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 hover:scale-105"
                     >
                       <Icon name="heroicons:shopping-cart" class="w-5 h-5" />
                       Amazon で購入
                     </a>
                     <button 
                       @click="toggleFavorite"
-                      class="w-10 h-10 rounded-full flex items-center justify-center transition-all duration-200 shadow-md hover:shadow-lg transform hover:-translate-y-0.5 focus:outline-none"
+                      class="w-10 h-10 rounded-full flex items-center justify-center transition-all duration-200 shadow-md hover:shadow-lg transform hover:-translate-y-0.5 hover:scale-110 focus:outline-none"
                       :class="isFavorite ? 
                         'bg-red-500 hover:bg-red-600 text-white' : 
                         'bg-white border border-gray-300 text-gray-500 hover:bg-red-50 hover:text-red-500 hover:border-red-300 dark:bg-gray-800 dark:border-gray-600 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-red-400'"
@@ -174,7 +174,7 @@
                       <button 
                         ref="scoreButton"
                         @click="toggleScoreDetails"
-                        class="text-sm text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 transition-colors flex items-center gap-1"
+                        class="text-sm text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 transition-all duration-200 flex items-center gap-1 hover:scale-105"
                       >
                         <Icon name="heroicons:information-circle" class="w-5 h-5" />
                         算出方法を見る
@@ -195,7 +195,7 @@
                             <h4 class="text-lg font-semibold text-gray-900 dark:text-white">スコア算出方法</h4>
                             <button 
                               @click="showScoreDetails = false"
-                              class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
+                              class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-all duration-200 hover:scale-110 rounded-full p-1"
                             >
                               <Icon name="heroicons:x-mark" class="w-5 h-5" />
                             </button>
@@ -271,7 +271,7 @@
                               <h4 class="text-lg font-semibold text-gray-900 dark:text-white">スコア算出方法</h4>
                               <button 
                                 @click="showScoreDetails = false"
-                                class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
+                                class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-all duration-200 hover:scale-110 rounded-full p-1"
                               >
                                 <Icon name="heroicons:x-mark" class="w-6 h-6" />
                               </button>
@@ -337,7 +337,7 @@
               <!-- 詳細指標 -->
               <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
                 <!-- 言及数 -->
-                <div class="bg-white dark:bg-gray-800 rounded-xl p-4 border border-gray-100 dark:border-gray-700 hover:shadow-md transition-all duration-200">
+                <div class="bg-white dark:bg-gray-800 rounded-xl p-4 border border-gray-100 dark:border-gray-700 hover:shadow-md transition-all duration-200 hover:-translate-y-0.5 hover:scale-105">
                   <div class="flex items-center gap-3 mb-2">
                     <div class="w-10 h-10 bg-orange-100 dark:bg-orange-900/30 rounded-lg flex items-center justify-center">
                       <Icon name="heroicons:fire" class="w-5 h-5 text-orange-600 dark:text-orange-400" />
@@ -350,7 +350,7 @@
                 </div>
 
                 <!-- 記事数 -->
-                <div class="bg-white dark:bg-gray-800 rounded-xl p-4 border border-gray-100 dark:border-gray-700 hover:shadow-md transition-all duration-200">
+                <div class="bg-white dark:bg-gray-800 rounded-xl p-4 border border-gray-100 dark:border-gray-700 hover:shadow-md transition-all duration-200 hover:-translate-y-0.5 hover:scale-105">
                   <div class="flex items-center gap-3 mb-2">
                     <div class="w-10 h-10 bg-green-100 dark:bg-green-900/30 rounded-lg flex items-center justify-center">
                       <Icon name="heroicons:document-text" class="w-5 h-5 text-green-600 dark:text-green-400" />
@@ -363,7 +363,7 @@
                 </div>
 
                 <!-- LGTM数 -->
-                <div class="bg-white dark:bg-gray-800 rounded-xl p-4 border border-gray-100 dark:border-gray-700 hover:shadow-md transition-all duration-200">
+                <div class="bg-white dark:bg-gray-800 rounded-xl p-4 border border-gray-100 dark:border-gray-700 hover:shadow-md transition-all duration-200 hover:-translate-y-0.5 hover:scale-105">
                   <div class="flex items-center gap-3 mb-2">
                     <div class="w-10 h-10 bg-purple-100 dark:bg-purple-900/30 rounded-lg flex items-center justify-center">
                       <Icon name="heroicons:heart" class="w-5 h-5 text-purple-600 dark:text-purple-400" />
@@ -376,7 +376,7 @@
                 </div>
 
                 <!-- ランク -->
-                <div class="bg-white dark:bg-gray-800 rounded-xl p-4 border border-gray-100 dark:border-gray-700 hover:shadow-md transition-all duration-200">
+                <div class="bg-white dark:bg-gray-800 rounded-xl p-4 border border-gray-100 dark:border-gray-700 hover:shadow-md transition-all duration-200 hover:-translate-y-0.5 hover:scale-105">
                   <div class="flex items-center gap-3 mb-2">
                     <div class="w-10 h-10 bg-blue-100 dark:bg-blue-900/30 rounded-lg flex items-center justify-center">
                       <Icon name="heroicons:trophy" class="w-5 h-5 text-blue-600 dark:text-blue-400" />
@@ -447,7 +447,7 @@
                 <span 
                   v-for="tag in book.tags" 
                   :key="tag"
-                  class="inline-block bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 text-sm px-3 py-1 rounded-full hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors cursor-pointer"
+                  class="inline-block bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 text-sm px-3 py-1 rounded-full hover:bg-gray-200 dark:hover:bg-gray-600 transition-all duration-200 cursor-pointer hover:scale-105"
                 >
                   #{{ tag }}
                 </span>
@@ -490,7 +490,7 @@
             <div 
               v-for="mention in mentions" 
               :key="mention.id"
-              class="p-6 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200"
+              class="p-6 hover:bg-gray-50 dark:hover:bg-gray-700 transition-all duration-200 hover:scale-[1.02]"
             >
               <div class="flex items-start justify-between">
                 <div class="flex-grow">
@@ -499,7 +499,7 @@
                       :href="mention.articleUrl" 
                       target="_blank"
                       rel="noopener noreferrer"
-                      class="hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+                      class="hover:text-blue-600 dark:hover:text-blue-400 transition-all duration-200 hover:underline"
                     >
                       {{ mention.articleTitle }}
                     </a>
@@ -540,30 +540,6 @@
 
 <script setup lang="ts">
 import { useFavoritesStore } from '~/stores/favorites'
-
-interface Book {
-  id: number
-  title: string
-  author: string
-  category: string
-  tags?: string[]
-  mentionCount: number
-  uniqueArticleCount?: number
-  trendScore?: number
-  description?: string
-  imageUrl?: string
-  amazonUrl?: string
-  publishedDate?: string
-  publisher?: string
-  pages?: number
-  isbn?: string
-  rating?: number
-  goodBookScore?: number
-  articleCount?: number
-  totalLikes?: number
-  newestArticleDate?: string
-}
-
 interface Mention {
   id: string
   articleTitle: string
@@ -597,6 +573,11 @@ const toggleFavorite = () => {
   if (book.value) {
     favoritesStore.toggleFavorite(book.value)
   }
+}
+
+// ホームに戻る
+const goHome = () => {
+  navigateTo('/')
 }
 
 // いい本スコア（仮データ）
@@ -678,14 +659,6 @@ function getScoreTextClass(score: number): string {
   if (score >= 60) return 'text-orange-500 dark:text-orange-400'
   return 'text-red-500 dark:text-red-400'
 }
-
-function getScoreProgressClass(score: number): string {
-  if (score >= 80) return 'bg-gradient-to-r from-green-500 to-green-600'
-  if (score >= 70) return 'bg-gradient-to-r from-amber-500 to-amber-600'
-  if (score >= 60) return 'bg-gradient-to-r from-orange-500 to-orange-600'
-  return 'bg-gradient-to-r from-red-500 to-red-600'
-}
-
 function getScoreLabel(score: number): string {
   if (score >= 90) return '🏆 殿堂入り'
   if (score >= 80) return '⭐ 超おすすめ'
@@ -694,16 +667,6 @@ function getScoreLabel(score: number): string {
   if (score >= 40) return '📚 普通'
   return '💭 要検討'
 }
-
-function getScoreLabelClass(score: number): string {
-  if (score >= 90) return 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900 dark:text-emerald-200'
-  if (score >= 80) return 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
-  if (score >= 70) return 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200'
-  if (score >= 60) return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200'
-  if (score >= 40) return 'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200'
-  return 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'
-}
-
 function getRecencyLabel(dateString: string): string {
   const date = new Date(dateString)
   const now = new Date()
@@ -826,38 +789,6 @@ onMounted(() => {
 if (typeof window !== 'undefined') {
   isMobile.value = window.innerWidth < 768
 }
-
-function getScoreExplanation(book: any): string {
-  if (!book.goodBookScore) return 'スコア情報が利用できません。'
-  
-  const score = book.goodBookScore
-  const articleCount = book.articleCount || 0
-  const totalLikes = book.totalLikes || 0
-  const isRecent = book.newestArticleDate && new Date(book.newestArticleDate) > new Date(Date.now() - 6 * 30 * 24 * 60 * 60 * 1000)
-  
-  if (score >= 80) {
-    return `この本は${articleCount}件の記事で紹介され、合計${totalLikes}のLGTMを獲得しています。${isRecent ? '最近も言及があり、' : ''}開発者コミュニティから高く評価されている優秀な技術書です。`
-  } else if (score >= 60) {
-    return `この本は${articleCount}件の記事で紹介され、${totalLikes}のLGTMを獲得しています。${isRecent ? '最近も言及があり、' : ''}多くの開発者に読まれている良書です。`
-  } else {
-    return `この本は${articleCount}件の記事で紹介されています。${isRecent ? '最近も言及があり、' : ''}特定の分野で参考にされている技術書です。`
-  }
-}
-
-// いい本スコアボックスの背景色クラス
-function getGoodBookScoreBoxClass(score: number): string {
-  if (score >= 80) return 'bg-green-50 dark:bg-green-900/30'
-  if (score >= 60) return 'bg-orange-50 dark:bg-orange-900/30'
-  return 'bg-red-50 dark:bg-red-900/30'
-}
-
-// いい本スコアテキストの色クラス
-function getGoodBookScoreTextClass(score: number): string {
-  if (score >= 80) return 'text-green-600 dark:text-green-400'
-  if (score >= 60) return 'text-orange-500 dark:text-orange-400'
-  return 'text-red-500 dark:text-red-400'
-}
-
 // 円グラフ用の計算
 const circumference = 2 * Math.PI * 70 // r=70
 
@@ -880,54 +811,3 @@ useHead({
 })
 </script>
 
-<style scoped>
-/* アニメーション - スライドダウン */
-.slide-down-enter-active,
-.slide-down-leave-active {
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.slide-down-enter-from {
-  opacity: 0;
-  transform: translateY(-10px);
-  max-height: 0;
-}
-
-.slide-down-leave-to {
-  opacity: 0;
-  transform: translateY(-10px);
-  max-height: 0;
-}
-
-.slide-down-enter-to,
-.slide-down-leave-from {
-  opacity: 1;
-  transform: translateY(0);
-  max-height: 300px;
-}
-
-/* ボタンのホバー効果 */
-.primary-action:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
-}
-
-.secondary-action:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-}
-
-/* スコア詳細カードのホバー効果 */
-.score-detail-card:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-}
-
-/* レスポンシブ調整 */
-@media (max-width: 640px) {
-  .slide-down-enter-to,
-  .slide-down-leave-from {
-    max-height: 400px;
-  }
-}
-</style>

@@ -130,8 +130,7 @@
           <!-- Mobile Menu Button -->
           <button 
             @click="toggleMobileMenu"
-            class="p-2 rounded-lg border border-white/30 bg-white/80 transition-all duration-300 ease-out w-6 h-6 flex flex-col justify-center gap-1 md:hidden"
-            :class="{ 'mobile-menu-button--open': mobileMenuOpen }"
+            class="p-2 rounded-lg border border-white/30 bg-white/80 transition-all duration-300 ease-out w-6 h-6 flex flex-col justify-center gap-1 md:hidden dark:bg-slate-800/80 dark:border-slate-600/30"
             :aria-label="mobileMenuOpen ? 'メニューを閉じる' : 'メニューを開く'"
           >
             <span class="h-0.5 bg-current rounded-full transition-all duration-300 ease-out w-full" :class="{ 'rotate-45 translate-x-1 translate-y-1': mobileMenuOpen }"></span>
@@ -144,15 +143,15 @@
 
     <!-- Mobile Menu Overlay -->
     <Transition
-      enter-active-class="mobile-menu-enter-active"
-      enter-from-class="mobile-menu-enter-from"
-      enter-to-class="mobile-menu-enter-to"
-      leave-active-class="mobile-menu-leave-active"
-      leave-from-class="mobile-menu-leave-from"
-      leave-to-class="mobile-menu-leave-to"
+      enter-active-class="transition-all duration-300 ease-out"
+      enter-from-class="opacity-0"
+      enter-to-class="opacity-100"
+      leave-active-class="transition-all duration-300 ease-out"
+      leave-from-class="opacity-100"
+      leave-to-class="opacity-0"
     >
       <div v-if="mobileMenuOpen" class="fixed inset-0 z-[100] bg-black/50 backdrop-blur-sm flex items-start justify-end p-4 pt-20">
-        <div class="w-full max-w-sm bg-white dark:bg-gray-800 rounded-2xl shadow-2xl overflow-hidden">
+        <div class="w-full max-w-sm bg-white dark:bg-gray-800 rounded-2xl shadow-2xl overflow-hidden transform transition-transform duration-300" :class="{ 'translate-x-0': mobileMenuOpen, 'translate-x-full': !mobileMenuOpen }">
           <div class="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
             <div>
               <h3 class="text-lg font-semibold text-gray-900 dark:text-white">メニュー</h3>
@@ -280,15 +279,15 @@
 
     <!-- Search Overlay -->
     <Transition
-      enter-active-class="search-enter-active"
-      enter-from-class="search-enter-from"
-      enter-to-class="search-enter-to"
-      leave-active-class="search-leave-active"
-      leave-from-class="search-leave-from"
-      leave-to-class="search-leave-to"
+      enter-active-class="transition-all duration-300 ease-out"
+      enter-from-class="opacity-0"
+      enter-to-class="opacity-100"
+      leave-active-class="transition-all duration-300 ease-out"
+      leave-from-class="opacity-100"
+      leave-to-class="opacity-0"
     >
       <div v-if="searchOpen" class="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-start justify-center pt-20">
-        <div class="w-full max-w-2xl mx-4">
+        <div class="w-full max-w-2xl mx-4 transform transition-transform duration-300" :class="{ 'translate-y-0': searchOpen, '-translate-y-5': !searchOpen }">
           <div class="relative">
             <svg class="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 fill-none" width="24" height="24" viewBox="0 0 24 24">
               <circle cx="11" cy="11" r="8" stroke="currentColor" stroke-width="2"/>
@@ -322,7 +321,7 @@ import { useFavoritesStore } from '~/stores/favorites'
 const searchOpen = ref(false)
 const mobileMenuOpen = ref(false)
 const searchQuery = ref('')
-const searchInput = ref(null)
+const searchInput = ref<HTMLInputElement | null>(null)
 
 // お気に入りストアを使用
 const favoritesStore = useFavoritesStore()
@@ -394,7 +393,7 @@ onMounted(() => {
     
     // Watch for system theme changes
     const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
-    const handleSystemThemeChange = (e) => {
+    const handleSystemThemeChange = (e: MediaQueryListEvent) => {
       if (!localStorage.getItem('theme')) {
         isDark.value = e.matches
         if (e.matches) {
@@ -407,7 +406,7 @@ onMounted(() => {
     mediaQuery.addEventListener('change', handleSystemThemeChange)
     
     // Keyboard shortcuts
-    const handleKeydown = (e) => {
+    const handleKeydown = (e: KeyboardEvent) => {
       // Open search with Cmd/Ctrl + K
       if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
         e.preventDefault()
@@ -430,45 +429,3 @@ onMounted(() => {
 })
 </script>
 
-<style scoped>
-/* Transitions for Vue components */
-.mobile-menu-enter-active, .mobile-menu-leave-active {
-  transition: all 0.3s ease;
-}
-
-.mobile-menu-enter-from, .mobile-menu-leave-to {
-  opacity: 0;
-}
-
-.mobile-menu-enter-from > div,
-.mobile-menu-leave-to > div {
-  transform: translateX(100%);
-}
-
-.search-enter-active, .search-leave-active {
-  transition: all 0.3s ease;
-}
-
-.search-enter-from, .search-leave-to {
-  opacity: 0;
-}
-
-.search-enter-from > div,
-.search-leave-to > div {
-  transform: translateY(-20px);
-}
-
-/* Dark mode adjustments for complex backgrounds */
-.dark header {
-  background: rgba(30, 41, 59, 0.95) !important;
-  border-bottom-color: rgba(51, 65, 85, 0.3) !important;
-}
-
-.dark .bg-white\/80 {
-  background: rgba(30, 41, 59, 0.8) !important;
-}
-
-.dark .border-white\/30 {
-  border-color: rgba(51, 65, 85, 0.3) !important;
-}
-</style>

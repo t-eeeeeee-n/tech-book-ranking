@@ -5,7 +5,7 @@
       <!-- スコア数値 -->
       <div class="flex items-center gap-1">
         <div 
-          class="text-xs font-bold tabular-nums"
+          class="text-xs font-bold font-mono"
           :class="scoreTextClass"
         >
           {{ Math.round(score) }}
@@ -29,7 +29,7 @@
       <div class="flex items-center justify-between">
         <div class="flex items-baseline gap-1">
           <span 
-            class="text-lg font-bold tabular-nums"
+            class="text-lg font-bold font-mono"
             :class="scoreTextClass"
           >
             {{ Math.round(score) }}
@@ -65,7 +65,7 @@
       <!-- スコアとラベル -->
       <div class="flex items-center gap-2">
         <span 
-          class="text-sm font-semibold tabular-nums"
+          class="text-sm font-semibold font-mono"
           :class="scoreTextClass"
         >
           {{ Math.round(score) }}
@@ -109,7 +109,7 @@
         <!-- 中央のスコア -->
         <div class="absolute inset-0 flex items-center justify-center">
           <span 
-            class="text-xs font-bold tabular-nums"
+            class="text-xs font-bold font-mono"
             :class="scoreTextClass"
           >
             {{ Math.round(score) }}
@@ -140,7 +140,7 @@
         :class="dotClass"
       ></div>
       <span 
-        class="text-sm font-semibold tabular-nums"
+        class="text-sm font-semibold font-mono"
         :class="pillTextClass"
       >
         {{ Math.round(score) }}
@@ -254,10 +254,3 @@ const strokeDashoffset = computed(() => {
 })
 </script>
 
-<style scoped>
-
-/* Tabular numsでスコア数値を等幅に */
-.tabular-nums {
-  font-variant-numeric: tabular-nums;
-}
-</style>

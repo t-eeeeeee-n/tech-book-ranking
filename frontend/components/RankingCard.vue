@@ -1,8 +1,9 @@
 <template>
   <article 
     :class="[
-      'group relative bg-surface border cursor-pointer focus-ring-enhanced gpu-accelerated',
-      'card-spatial interactive-surface ripple-effect',
+      'group relative bg-white dark:bg-gray-800 border cursor-pointer',
+      'focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:ring-offset-2',
+      'hover:shadow-lg transition-all duration-300',
       isTopThree ? 'rounded-xl border-2 p-6' : 'rounded-lg border p-4',
       getRankingBorderColor()
     ]"
@@ -51,7 +52,7 @@
 
       <!-- Title & Meta -->
       <div>
-        <h3 class="text-lg font-bold text-primary leading-tight mb-2 group-hover:text-accent transition-colors line-clamp-2 [line-clamp:2]">
+        <h3 class="text-lg font-bold text-gray-900 dark:text-white leading-tight mb-2 group-hover:text-cyan-500 transition-colors line-clamp-2">
           {{ book.title }}
         </h3>
         <div class="text-sm text-secondary mb-3">
@@ -119,7 +120,7 @@
       <div class="flex-1 min-w-0">
         <div class="flex items-start justify-between mb-2">
           <div class="flex-1 min-w-0">
-            <h3 class="text-lg font-semibold text-primary leading-tight mb-1 group-hover:text-accent transition-colors line-clamp-2 [line-clamp:2]">
+            <h3 class="text-lg font-semibold text-gray-900 dark:text-white leading-tight mb-1 group-hover:text-cyan-500 transition-colors line-clamp-2">
               {{ book.title }}
             </h3>
             <div class="text-sm text-secondary mb-2">
@@ -335,10 +336,3 @@ const openAmazon = () => {
 }
 </script>
 
-<style scoped>
-
-/* Focus styles */
-article:focus {
-  @apply outline-none;
-}
-</style>
