@@ -207,7 +207,7 @@ const categories: Category[] = [
   { value: 'career', label: 'キャリア・スキル' }
 ]
 
-// Mock data and state management (replace useInfiniteScroll)
+// Data and state management
 const books = ref<any[]>([])
 const loading = ref(false)
 const loadingMore = ref(false)
@@ -225,37 +225,98 @@ const filters = reactive({
   sort: 'mentions'
 })
 
-// Mock SEO meta
+// SEO meta
 const seoMeta = computed(() => ({
   title: '技術書ランキング - TechRank Books',
   description: 'Qiita記事で言及された技術書のランキング',
   keywords: '技術書,プログラミング,ランキング,Qiita'
 }))
 
-// Mock functions
+// API functions
 const fetchInitialData = async () => {
-  loading.value = true
-  // Simulate API call
-  await new Promise(resolve => setTimeout(resolve, 1000))
-  books.value = []
-  loading.value = false
+  try {
+    loading.value = true
+    error.value = null
+    currentPage.value = 1
+    
+    const { data: response } = await $fetch('/api/books', {
+      query: {
+        page: 1,
+        limit: 24,
+        category: filters.category || undefined,
+        period: filters.period !== 'all' ? filters.period : undefined,
+        search: filters.search || undefined,
+        sort: filters.sort
+      }
+    })
+    
+    if (response.success) {
+      books.value = response.data
+      hasMore.value = response.pagination.hasMore
+      totalBooks.value = response.meta.totalBooks
+    }
+  } catch (err) {
+    console.error('Failed to fetch initial data:', err)
+    error.value = 'データの取得に失敗しました'
+  } finally {
+    loading.value = false
+  }
 }
 
 const fetchNextPage = async () => {
-  loadingMore.value = true
-  await new Promise(resolve => setTimeout(resolve, 500))
-  loadingMore.value = false
+  if (loadingMore.value || !hasMore.value) return
+  
+  try {
+    loadingMore.value = true
+    const nextPage = currentPage.value + 1
+    
+    const { data: response } = await $fetch('/api/books', {
+      query: {
+        page: nextPage,
+        limit: 24,
+        category: filters.category || undefined,
+        period: filters.period !== 'all' ? filters.period : undefined,
+        search: filters.search || undefined,
+        sort: filters.sort
+      }
+    })
+    
+    if (response.success) {
+      books.value.push(...response.data)
+      hasMore.value = response.pagination.hasMore
+      currentPage.value = nextPage
+    }
+  } catch (err) {
+    console.error('Failed to fetch next page:', err)
+    error.value = 'データの取得に失敗しました'
+  } finally {
+    loadingMore.value = false
+  }
 }
 
 const setupIntersectionObserver = () => {
-  // Mock implementation
+  if (!targetRef.value) return
+  
+  const observer = new IntersectionObserver((entries) => {
+    const target = entries[0]
+    if (target.isIntersecting && hasMore.value && !loadingMore.value) {
+      fetchNextPage()
+    }
+  }, { threshold: 0.1 })
+  
+  observer.observe(targetRef.value)
+  
+  // Store observer for cleanup
+  ;(targetRef.value as any).__observer = observer
 }
 
 const cleanupIntersectionObserver = () => {
-  // Mock implementation
+  if (targetRef.value && (targetRef.value as any).__observer) {
+    ;(targetRef.value as any).__observer.disconnect()
+  }
 }
 
-// Mock data - in real app, this would come from API
+// Data
 const lastUpdate = ref(new Date())
 
 
@@ -303,6 +364,11 @@ const openAmazonLink = (amazonUrl: string) => {
   window.open(amazonUrl, '_blank')
 }
 
+// Watch for filter changes
+watch(filters, () => {
+  fetchInitialData()
+}, { deep: true })
+
 // ライフサイクル
 onMounted(() => {
   console.log('🔧 Component mounted')
@@ -312,11 +378,13 @@ onMounted(() => {
     currentPage: currentPage.value
   })
   
-  // 初期データが未読み込みの場合は読み込む
-  if (books.value.length === 0 && !loading.value) {
-    console.log('📚 No books loaded, fetching initial data...')
-    fetchInitialData()
-  }
+  // 初期データを読み込み
+  fetchInitialData()
+  
+  // Intersection observer をセットアップ
+  nextTick(() => {
+    setupIntersectionObserver()
+  })
 })
 
 onBeforeUnmount(() => {

@@ -58,155 +58,21 @@
 <script setup lang="ts">
 import { getGoodBookScore } from '~/utils/bookScore'
 
-// Get featured books data
-const totalBooks = ref(4000)
-
-// Top ranking books data (mock data)
-const rawTopBooks = [
-  {
-    id: 1,
-    title: 'リーダブルコード',
-    author: 'Dustin Boswell, Trevor Foucher',
-    imageUrl: 'https://m.media-amazon.com/images/I/51MgH8Jmr+L._SX350_BO1,204,203,200_.jpg',
-    amazonUrl: 'https://www.amazon.co.jp/dp/4873115655',
-    mentionCount: 892,
-    rating: 4.6,
-    category: 'プログラミング',
-    articleCount: 45,
-    totalLikes: 1250,
-    newestArticleDate: '2024-11-15'
-  },
-  {
-    id: 2,
-    title: 'Clean Code',
-    author: 'Robert C. Martin',
-    imageUrl: 'https://m.media-amazon.com/images/I/41SH-SvWPxL._SX376_BO1,204,203,200_.jpg',
-    amazonUrl: 'https://www.amazon.co.jp/dp/4048676881',
-    mentionCount: 756,
-    rating: 4.5,
-    category: 'プログラミング',
-    articleCount: 38,
-    totalLikes: 980,
-    newestArticleDate: '2024-10-20'
-  },
-  {
-    id: 3,
-    title: 'JavaScript: The Good Parts',
-    author: 'Douglas Crockford',
-    imageUrl: 'https://m.media-amazon.com/images/I/5131OWtQRaL._SX381_BO1,204,203,200_.jpg',
-    amazonUrl: 'https://www.amazon.co.jp/dp/4873113911',
-    mentionCount: 673,
-    rating: 4.4,
-    category: 'JavaScript',
-    articleCount: 32,
-    totalLikes: 720,
-    newestArticleDate: '2024-09-15'
-  },
-  {
-    id: 4,
-    title: 'Effective Java',
-    author: 'Joshua Bloch',
-    imageUrl: 'https://m.media-amazon.com/images/I/51WD-F3GobL._SX379_BO1,204,203,200_.jpg',
-    amazonUrl: 'https://www.amazon.co.jp/dp/4621303252',
-    mentionCount: 592,
-    rating: 4.7,
-    category: 'Java',
-    articleCount: 28,
-    totalLikes: 840,
-    newestArticleDate: '2024-08-10'
-  },
-  {
-    id: 5,
-    title: 'デザインパターン',
-    author: 'Gang of Four',
-    imageUrl: 'https://m.media-amazon.com/images/I/51szD9HC9pL._SX342_BO1,204,203,200_.jpg',
-    amazonUrl: 'https://www.amazon.co.jp/dp/4797311126',
-    mentionCount: 534,
-    rating: 4.3,
-    category: 'プログラミング',
-    articleCount: 25,
-    totalLikes: 650,
-    newestArticleDate: '2024-06-25'
-  },
-  {
-    id: 6,
-    title: 'React入門',
-    author: 'Stoyan Stefanov',
-    imageUrl: 'https://m.media-amazon.com/images/I/51vDl5D8NFL._SX352_BO1,204,203,200_.jpg',
-    amazonUrl: 'https://www.amazon.co.jp/dp/4873117194',
-    mentionCount: 487,
-    rating: 4.2,
-    category: 'React',
-    articleCount: 35,
-    totalLikes: 890,
-    newestArticleDate: '2024-12-01'
-  },
-  {
-    id: 7,
-    title: 'Pythonクックブック',
-    author: 'David Beazley, Brian K. Jones',
-    imageUrl: 'https://m.media-amazon.com/images/I/51Zy5DAH++L._SX389_BO1,204,203,200_.jpg',
-    amazonUrl: 'https://www.amazon.co.jp/dp/4873117690',
-    mentionCount: 432,
-    rating: 4.5,
-    category: 'Python',
-    articleCount: 30,
-    totalLikes: 750,
-    newestArticleDate: '2024-11-10'
-  },
-  {
-    id: 8,
-    title: 'Docker実践ガイド',
-    author: 'Matthias Karl',
-    imageUrl: 'https://m.media-amazon.com/images/I/41QrW7-xd4L._SX347_BO1,204,203,200_.jpg',
-    amazonUrl: 'https://www.amazon.co.jp/dp/4295008982',
-    mentionCount: 398,
-    rating: 4.1,
-    category: 'インフラ',
-    articleCount: 22,
-    totalLikes: 580,
-    newestArticleDate: '2024-05-15'
-  },
-  {
-    id: 9,
-    title: 'アルゴリズム図鑑',
-    author: '石田保輝, 宮崎修一',
-    imageUrl: 'https://m.media-amazon.com/images/I/51TdC0dE6bL._SX260_.jpg',
-    amazonUrl: 'https://www.amazon.co.jp/dp/4798149772',
-    mentionCount: 367,
-    rating: 4.4,
-    category: 'アルゴリズム',
-    articleCount: 20,
-    totalLikes: 520,
-    newestArticleDate: '2024-07-30'
-  },
-  {
-    id: 10,
-    title: 'Vue.js入門',
-    author: '川口和也, 喜多啓介, 野田陽平',
-    imageUrl: 'https://m.media-amazon.com/images/I/51KqTr3kQoL._SX350_BO1,204,203,200_.jpg',
-    amazonUrl: 'https://www.amazon.co.jp/dp/4774189677',
-    mentionCount: 321,
-    rating: 4.3,
-    category: 'Vue.js',
-    articleCount: 18,
-    totalLikes: 460,
-    newestArticleDate: '2024-04-20'
+// Fetch top books data from API
+const { data: topBooksResponse, pending } = await useFetch('/api/books', {
+  query: {
+    limit: 10,
+    sort: 'mentions'
   }
-]
+})
 
-// スコア計算付きの書籍データ
+// Extract data from API response
 const topBooks = computed(() => {
-  return rawTopBooks.map(book => ({
-    ...book,
-    goodBookScore: getGoodBookScore({
-      id: book.id,
-      title: book.title,
-      articleCount: book.articleCount,
-      totalLikes: book.totalLikes,
-      newestArticleDate: book.newestArticleDate
-    })
-  }))
+  return topBooksResponse.value?.data || []
+})
+
+const totalBooks = computed(() => {
+  return topBooksResponse.value?.meta?.totalBooks || 4000
 })
 
 // Define Book interface

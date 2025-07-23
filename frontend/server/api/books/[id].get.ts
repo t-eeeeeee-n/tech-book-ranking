@@ -1,178 +1,99 @@
+import type { Book } from '~/types'
+import { getMockBookById } from '../../utils/mockData'
+
 export default defineEventHandler(async (event) => {
-  const id = getRouterParam(event, 'id')
-  
-  if (!id) {
-    throw createError({
-      statusCode: 400,
-      statusMessage: 'Book ID is required'
-    })
-  }
-
-  // Mock book data - in real app, this would come from database
-  const mockBooks = [
-    {
-      id: 1,
-      title: 'リーダブルコード',
-      author: 'Dustin Boswell, Trevor Foucher',
-      imageUrl: 'https://m.media-amazon.com/images/I/51MgH8Jmr+L._SX350_BO1,204,203,200_.jpg',
-      amazonUrl: 'https://www.amazon.co.jp/dp/4873115655',
-      mentionCount: 892,
-      rating: 4.6,
-      category: 'プログラミング',
-      description: 'より良いコードを書くための実践的なテクニック集。コードの可読性を向上させるための具体的な手法について詳しく解説しています。プログラマーが日々直面する問題に対する実用的な解決策を提供します。',
-      tags: ['コーディング', '可読性', 'ベストプラクティス', 'プログラミング手法'],
-      publishedDate: '2012-06-23',
-      publisher: 'オライリージャパン',
-      pages: 260,
-      isbn: '978-4873115658',
-      uniqueArticleCount: 156,
-      trendScore: 95,
-      firstMentionDate: '2012-07-15T09:30:00Z',
-      lastMentionDate: '2024-12-15T14:22:00Z',
-      articleCount: 156,
-      totalLikes: 3420,
-      newestArticleDate: '2024-12-15T14:22:00Z'
-    },
-    {
-      id: 2,
-      title: 'Clean Code',
-      author: 'Robert C. Martin',
-      imageUrl: 'https://m.media-amazon.com/images/I/41SH-SvWPxL._SX376_BO1,204,203,200_.jpg',
-      amazonUrl: 'https://www.amazon.co.jp/dp/4048676881',
-      mentionCount: 756,
-      rating: 4.5,
-      category: 'プログラミング',
-      description: 'クリーンなコードの書き方について体系的に学べる一冊。ソフトウェア開発の名手が長年の経験から培った、保守性の高いコードを書くための原則と実践方法を詳しく解説します。',
-      tags: ['クリーンコード', 'リファクタリング', '設計', 'アーキテクチャ'],
-      publishedDate: '2017-12-28',
-      publisher: 'アスキードワンゴ',
-      pages: 464,
-      isbn: '978-4048676885',
-      uniqueArticleCount: 134,
-      trendScore: 89,
-      firstMentionDate: '2018-01-20T10:15:00Z',
-      lastMentionDate: '2024-12-10T16:45:00Z',
-      articleCount: 134,
-      totalLikes: 2890,
-      newestArticleDate: '2024-12-10T16:45:00Z'
-    },
-    {
-      id: 3,
-      title: 'JavaScript: The Good Parts',
-      author: 'Douglas Crockford',
-      imageUrl: 'https://m.media-amazon.com/images/I/5131OWtQRaL._SX381_BO1,204,203,200_.jpg',
-      amazonUrl: 'https://www.amazon.co.jp/dp/4873113911',
-      mentionCount: 673,
-      rating: 4.4,
-      category: 'JavaScript',
-      description: 'JavaScriptの「良い部分」に焦点を当てた実践的ガイド。言語の核となる部分を理解し、より良いJavaScriptプログラムを書くための知識と技術を身につけることができます。',
-      tags: ['JavaScript', 'プログラミング言語', 'Web開発', 'フロントエンド'],
-      publishedDate: '2008-12-22',
-      publisher: 'オライリージャパン',
-      pages: 176,
-      isbn: '978-4873113913',
-      uniqueArticleCount: 98,
-      trendScore: 76,
-      firstMentionDate: '2009-02-10T08:20:00Z',
-      lastMentionDate: '2024-11-28T11:33:00Z',
-      articleCount: 98,
-      totalLikes: 1876,
-      newestArticleDate: '2024-11-28T11:33:00Z'
-    },
-    {
-      id: 4,
-      title: 'Effective Java',
-      author: 'Joshua Bloch',
-      imageUrl: 'https://m.media-amazon.com/images/I/51WD-F3GobL._SX379_BO1,204,203,200_.jpg',
-      amazonUrl: 'https://www.amazon.co.jp/dp/4621303252',
-      mentionCount: 592,
-      rating: 4.7,
-      category: 'Java',
-      description: 'Javaプログラミングのベストプラクティス集。Java言語の設計者の一人が、効果的なJavaプログラムを書くための90の項目を具体例とともに詳しく解説します。',
-      tags: ['Java', 'ベストプラクティス', 'オブジェクト指向', 'プログラミング'],
-      publishedDate: '2018-10-30',
-      publisher: '丸善出版',
-      pages: 552,
-      isbn: '978-4621303252',
-      uniqueArticleCount: 87,
-      trendScore: 82,
-      firstMentionDate: '2018-11-15T13:45:00Z',
-      lastMentionDate: '2024-12-05T09:12:00Z',
-      articleCount: 87,
-      totalLikes: 2145,
-      newestArticleDate: '2024-12-05T09:12:00Z'
-    },
-    {
-      id: 5,
-      title: 'デザインパターン',
-      author: 'Gang of Four',
-      imageUrl: 'https://m.media-amazon.com/images/I/51szD9HC9pL._SX342_BO1,204,203,200_.jpg',
-      amazonUrl: 'https://www.amazon.co.jp/dp/4797311126',
-      mentionCount: 534,
-      rating: 4.3,
-      category: 'プログラミング',
-      description: 'オブジェクト指向設計における23の基本的なデザインパターンを体系的に解説。ソフトウェア設計の問題に対する再利用可能な解決策を提供します。',
-      tags: ['デザインパターン', 'オブジェクト指向', '設計', 'アーキテクチャ'],
-      publishedDate: '1999-10-01',
-      publisher: 'ソフトバンククリエイティブ',
-      pages: 424,
-      isbn: '978-4797311129',
-      uniqueArticleCount: 76,
-      trendScore: 71,
-      firstMentionDate: '2000-03-12T15:30:00Z',
-      lastMentionDate: '2024-11-20T12:18:00Z',
-      articleCount: 76,
-      totalLikes: 1654,
-      newestArticleDate: '2024-11-20T12:18:00Z'
-    }
-  ]
-
-  // Additional mock books for pagination demo
-  const additionalBooks = Array.from({ length: 45 }, (_, i) => {
-    const mentionCount = Math.floor(Math.random() * 500) + 50
-    const articleCount = Math.floor(Math.random() * 50) + 10
-    const totalLikes = Math.floor(Math.random() * 2000) + 100
-    const firstMentionDate = new Date(2020 + Math.floor(Math.random() * 4), Math.floor(Math.random() * 12), Math.floor(Math.random() * 28) + 1)
-    const lastMentionDate = new Date(2024, Math.floor(Math.random() * 12), Math.floor(Math.random() * 28) + 1)
-    const newestArticleDate = new Date(2024, Math.floor(Math.random() * 12), Math.floor(Math.random() * 28) + 1)
+  try {
+    const id = getRouterParam(event, 'id')
     
-    return {
-      id: i + 6,
-      title: `技術書 ${i + 6}`,
-      author: `著者 ${i + 6}`,
-      imageUrl: 'https://m.media-amazon.com/images/I/51MgH8Jmr+L._SX350_BO1,204,203,200_.jpg',
-      amazonUrl: `https://www.amazon.co.jp/dp/example${i + 6}`,
-      mentionCount,
-      rating: Math.round((Math.random() * 2 + 3) * 10) / 10,
-      category: ['プログラミング', 'Web開発', 'AI・機械学習', 'インフラ'][Math.floor(Math.random() * 4)],
-      description: `技術書 ${i + 6} の詳細説明です。この書籍は技術者にとって重要な知識を提供します。`,
-      tags: ['技術', 'プログラミング', '学習'],
-      publishedDate: '2023-01-01',
-      publisher: 'テスト出版',
-      pages: Math.floor(Math.random() * 400) + 200,
-      isbn: `978-${String(Math.floor(Math.random() * 9000000000) + 1000000000)}`,
-      uniqueArticleCount: articleCount,
-      trendScore: Math.floor(Math.random() * 100),
-      firstMentionDate: firstMentionDate.toISOString(),
-      lastMentionDate: lastMentionDate.toISOString(),
-      articleCount,
-      totalLikes,
-      newestArticleDate: newestArticleDate.toISOString()
+    if (!id) {
+      throw createError({
+        statusCode: 400,
+        statusMessage: 'Book ID is required',
+        data: {
+          success: false,
+          error: 'Missing required parameter',
+          message: 'Book ID must be provided'
+        }
+      })
     }
-  })
 
-  const allBooks = [...mockBooks, ...additionalBooks]
-  const book = allBooks.find(b => b.id === parseInt(id))
+    const bookId = parseInt(id)
+    
+    if (isNaN(bookId) || bookId <= 0) {
+      throw createError({
+        statusCode: 400,
+        statusMessage: 'Invalid Book ID',
+        data: {
+          success: false,
+          error: 'Invalid parameter',
+          message: 'Book ID must be a positive integer'
+        }
+      })
+    }
 
-  if (!book) {
+    console.log(`📖 Book Details API Request: bookId=${bookId}`)
+
+    // Get individual book (in production, this would be a direct database query)
+    const book = getMockBookById(bookId)
+
+    if (!book) {
+      throw createError({
+        statusCode: 404,
+        statusMessage: 'Book not found',
+        data: {
+          success: false,
+          error: 'Book not found',
+          message: `No book found with ID ${bookId}`
+        }
+      })
+    }
+
+    // Add additional computed data for detailed view
+    const bookWithDetails = {
+      ...book,
+      // Add computed fields that might be useful for the detail page
+      averageRating: book.rating || (book.goodBookScore ? Math.round((book.goodBookScore / 100 * 2 + 3) * 10) / 10 : 4.0),
+      publicationYear: new Date(book.publishDate).getFullYear(),
+      daysSinceLastMention: Math.floor((Date.now() - new Date(book.lastMentionDate).getTime()) / (1000 * 60 * 60 * 24)),
+      isPopular: book.mentionCount >= 50,
+      isRecentlyMentioned: (Date.now() - new Date(book.lastMentionDate).getTime()) < (30 * 24 * 60 * 60 * 1000), // within 30 days
+      // Ensure consistent naming with other fields
+      publishedDate: book.publishDate,
+      uniqueArticleCount: book.articleCount,
+      trendScore: book.goodBookScore
+    }
+
+    const result = {
+      success: true,
+      data: bookWithDetails,
+      meta: {
+        bookId,
+        lastUpdated: new Date().toISOString(),
+        source: 'mock_data'
+      }
+    }
+
+    console.log(`📤 Book Details API Response: success=${result.success}, bookTitle="${book.title}"`)
+
+    return result
+
+  } catch (error) {
+    console.error('❌ Book Details API Error:', error)
+    
+    // If it's already a createError, re-throw it
+    if (error && typeof error === 'object' && 'statusCode' in error) {
+      throw error
+    }
+    
+    // Otherwise, create a generic server error
     throw createError({
-      statusCode: 404,
-      statusMessage: 'Book not found'
+      statusCode: 500,
+      statusMessage: 'Internal Server Error',
+      data: {
+        success: false,
+        error: 'Failed to fetch book details',
+        message: error instanceof Error ? error.message : 'Unknown error'
+      }
     })
-  }
-
-  return {
-    success: true,
-    data: book
   }
 })

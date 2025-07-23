@@ -215,29 +215,111 @@ const categories = [
   { value: 'career', label: 'キャリア・スキル' }
 ]
 
-// 無限スクロール機能を使用
-const infiniteScrollInstance = useInfiniteScroll({
-  initialLimit: 24
+// Data and state management for infinite scroll
+const books = ref<any[]>([])
+const loading = ref(false)
+const loadingMore = ref(false)
+const hasMore = ref(true)
+const currentPage = ref(1)
+const totalBooks = ref(4000)
+const error = ref<string | null>(null)
+const targetRef = ref<HTMLElement | null>(null)
+
+// Filters
+const filters = reactive({
+  category: '',
+  period: 'all',
+  search: '',
+  sort: 'mentions'
 })
 
-// 分割代入で関数と状態を取得
-const {
-  state,
-  filters,
-  targetRef,
-  fetchInitialData,
-  fetchNextPage,
-  setupIntersectionObserver,
-  cleanupIntersectionObserver,
-  books,
-  loading,
-  loadingMore,
-  hasMore,
-  currentPage,
-  totalBooks,
-  error,
-  seoMeta
-} = infiniteScrollInstance
+// SEO meta
+const seoMeta = computed(() => ({
+  title: '技術書ランキング（無限スクロール） - TechRank Books',
+  description: 'Qiita記事で言及された技術書のランキング（無限スクロール版）',
+  keywords: '技術書,プログラミング,ランキング,Qiita,無限スクロール'
+}))
+
+// API functions
+const fetchInitialData = async () => {
+  try {
+    loading.value = true
+    error.value = null
+    currentPage.value = 1
+    
+    const response = await $fetch('/api/books', {
+      query: {
+        page: 1,
+        limit: 24,
+        category: filters.category || undefined,
+        period: filters.period !== 'all' ? filters.period : undefined,
+        search: filters.search || undefined,
+        sort: filters.sort
+      }
+    })
+    
+    if (response.success) {
+      books.value = response.data
+      hasMore.value = response.pagination.hasMore
+      totalBooks.value = response.meta.totalBooks
+    }
+  } catch (err) {
+    console.error('Failed to fetch initial data:', err)
+    error.value = 'データの取得に失敗しました'
+  } finally {
+    loading.value = false
+  }
+}
+
+const fetchNextPage = async () => {
+  if (loadingMore.value || !hasMore.value) return
+  
+  try {
+    loadingMore.value = true
+    const nextPage = currentPage.value + 1
+    
+    const response = await $fetch('/api/books', {
+      query: {
+        page: nextPage,
+        limit: 24,
+        category: filters.category || undefined,
+        period: filters.period !== 'all' ? filters.period : undefined,
+        search: filters.search || undefined,
+        sort: filters.sort
+      }
+    })
+    
+    if (response.success) {
+      books.value.push(...response.data)
+      hasMore.value = response.pagination.hasMore
+      currentPage.value = nextPage
+    }
+  } catch (err) {
+    console.error('Failed to fetch next page:', err)
+  } finally {
+    loadingMore.value = false
+  }
+}
+
+const setupIntersectionObserver = () => {
+  if (!targetRef.value) return
+  
+  const observer = new IntersectionObserver((entries) => {
+    const target = entries[0]
+    if (target.isIntersecting && hasMore.value && !loadingMore.value) {
+      fetchNextPage()
+    }
+  }, { threshold: 0.1 })
+  
+  observer.observe(targetRef.value)
+  ;(targetRef.value as any).__observer = observer
+}
+
+const cleanupIntersectionObserver = () => {
+  if (targetRef.value && (targetRef.value as any).__observer) {
+    ;(targetRef.value as any).__observer.disconnect()
+  }
+}
 
 // Mock data - in real app, this would come from API
 const lastUpdate = ref(new Date())
@@ -289,6 +371,11 @@ const openAmazonLink = (amazonUrl: string) => {
   window.open(amazonUrl, '_blank')
 }
 
+// Watch for filter changes
+watch(filters, () => {
+  fetchInitialData()
+}, { deep: true })
+
 // ライフサイクル
 onMounted(() => {
   console.log('🔧 Component mounted')
@@ -298,11 +385,13 @@ onMounted(() => {
     currentPage: currentPage.value
   })
   
-  // 初期データが未読み込みの場合は読み込む
-  if (books.value.length === 0 && !loading.value) {
-    console.log('📚 No books loaded, fetching initial data...')
-    fetchInitialData()
-  }
+  // 初期データを読み込む
+  fetchInitialData()
+  
+  // Intersection observer をセットアップ
+  nextTick(() => {
+    setupIntersectionObserver()
+  })
 })
 
 onBeforeUnmount(() => {

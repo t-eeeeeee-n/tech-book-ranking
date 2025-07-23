@@ -597,28 +597,21 @@ const popoverStyle = ref({})
 const activeTab = ref('details')
 
 // モックの言及データ（実際の実装では API から取得）
-const mentions = ref<Mention[]>([
-  {
-    id: '1',
-    articleTitle: '新人エンジニアに読んでほしい技術書10選',
-    articleUrl: 'https://qiita.com/example/items/1',
-    context: 'リーダブルコードは新人エンジニアに最もおすすめしたい一冊です。コードの可読性について深く学べます。',
-    confidence: 0.95,
-    sentiment: 'positive',
-    mentionedAt: '2024-11-15T10:00:00Z',
-    articleLikes: 45
-  },
-  {
-    id: '2',
-    articleTitle: 'プログラミング学習で読むべき書籍まとめ',
-    articleUrl: 'https://qiita.com/example/items/2',
-    context: 'コーディング規約を学ぶならこの本は必読です。',
-    confidence: 0.88,
-    sentiment: 'positive',
-    mentionedAt: '2024-10-20T15:30:00Z',
-    articleLikes: 23
-  }
-])
+// Fetch mentions data from API
+const { data: mentionsResponse } = await useFetch(`/api/books/${bookId}/mentions`)
+
+const mentions = computed(() => {
+  return mentionsResponse.value?.data?.map((mention: any) => ({
+    id: mention.id,
+    articleTitle: mention.title,
+    articleUrl: mention.url,
+    context: mention.context,
+    confidence: mention.confidence,
+    sentiment: mention.sentiment,
+    mentionedAt: mention.publishedAt,
+    articleLikes: mention.likesCount
+  })) || []
+})
 
 // 現在のランクを取得（モック）
 const currentRank = computed(() => {
