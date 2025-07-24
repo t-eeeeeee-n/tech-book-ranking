@@ -82,6 +82,7 @@
                       Amazon で購入
                     </a>
                     <button 
+                      name="toggle-favorite"
                       @click="toggleFavorite"
                       class="w-10 h-10 rounded-full flex items-center justify-center transition-all duration-200 shadow-md hover:shadow-lg transform hover:-translate-y-0.5 hover:scale-110 focus:outline-none"
                       :class="isFavorite ? 

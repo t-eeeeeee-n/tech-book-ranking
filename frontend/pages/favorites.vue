@@ -33,6 +33,7 @@
           <span class="text-sm font-medium text-gray-700 dark:text-gray-300">並び順：</span>
           <div class="flex bg-white dark:bg-gray-800 rounded-lg p-1 shadow-sm border border-gray-200 dark:border-gray-700">
             <button
+              name="sort-by-added-at"
               @click="sortBy = 'addedAt'"
               :class="sortBy === 'addedAt' ? 'bg-pink-500 text-white' : 'text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200'"
               class="px-3 py-1.5 text-sm font-medium rounded-md transition-all duration-200"
@@ -40,6 +41,7 @@
               お気に入り順
             </button>
             <button
+              name="sort-by-mentions"
               @click="sortBy = 'mentionCount'"
               :class="sortBy === 'mentionCount' ? 'bg-pink-500 text-white' : 'text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200'"
               class="px-3 py-1.5 text-sm font-medium rounded-md transition-all duration-200"

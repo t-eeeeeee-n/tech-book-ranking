@@ -148,6 +148,9 @@
               <path d="M21 21L16.65 16.65" stroke="currentColor" stroke-width="2"/>
             </svg>
             <input
+              id="header-search"
+              name="headerSearch"
+              aria-label="技術書、著者、キーワードを検索"
               ref="searchInput"
               v-model="searchQuery"
               type="text"

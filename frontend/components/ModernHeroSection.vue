@@ -79,13 +79,16 @@
                 </svg>
               </div>
               <input
+                id="hero-search"
+                name="heroSearch"
+                aria-label="技術書、著者、キーワードを検索"
                 v-model="searchQuery"
                 type="text"
                 placeholder="JavaScript、Python、React... で検索"
                 class="w-full pl-14 pr-32 py-4 text-lg bg-white/80 dark:bg-slate-800/80 dark:text-white backdrop-blur-md border border-white/20 dark:border-slate-600/20 rounded-2xl shadow-xl focus:outline-none focus:ring-2 focus:ring-cyan-500 transition-all duration-300"
                 @keydown.enter="performSearch"
               />
-              <button @click="performSearch" class="absolute right-2 flex items-center gap-2 px-6 py-2.5 bg-gradient-to-r from-cyan-500 to-blue-600 text-white rounded-xl font-medium shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300">
+              <button name="hero-search-submit" @click="performSearch" class="absolute right-2 flex items-center gap-2 px-6 py-2.5 bg-gradient-to-r from-cyan-500 to-blue-600 text-white rounded-xl font-medium shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300">
                 <span class="hidden sm:inline">検索</span>
                 <svg width="16" height="16" viewBox="0 0 24 24" class="fill-none">
                   <path d="M7 17L17 7M17 7H7M17 7V17" stroke="currentColor" stroke-width="2"/>
@@ -99,6 +102,7 @@
               <button
                 v-for="category in quickCategories"
                 :key="category.value"
+                name="quick-category"
                 @click="searchCategory(category.value)"
                 class="flex items-center gap-2 px-3 py-2 bg-white/60 dark:bg-slate-800/60 backdrop-blur-md border border-white/20 dark:border-slate-600/20 rounded-lg transition-all duration-300 hover:bg-cyan-500/10 hover:border-cyan-500 hover:-translate-y-0.5"
               >

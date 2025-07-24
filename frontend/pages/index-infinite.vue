@@ -51,10 +51,12 @@
           <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
             <!-- Category Filter -->
             <div>
-              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              <label for="category-filter-infinite" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 カテゴリ
               </label>
               <select 
+                id="category-filter-infinite"
+                name="category"
                 v-model="filters.category"
                 class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               >
@@ -71,10 +73,12 @@
 
             <!-- Period Filter -->
             <div>
-              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              <label for="period-filter-infinite" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 期間
               </label>
               <select 
+                id="period-filter-infinite"
+                name="period"
                 v-model="filters.period"
                 class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               >
@@ -87,12 +91,14 @@
 
             <!-- Search -->
             <div>
-              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              <label for="book-search-infinite" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 検索
               </label>
               <div class="relative">
                 <Icon name="heroicons:magnifying-glass" class="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
                 <input
+                  id="book-search-infinite"
+                  name="search"
                   v-model="filters.search"
                   type="text"
                   placeholder="書籍名・著者名で検索"
@@ -103,10 +109,12 @@
 
             <!-- Sort -->
             <div>
-              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              <label for="sort-filter-infinite" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 並び順
               </label>
               <select 
+                id="sort-filter-infinite"
+                name="sort"
                 v-model="filters.sort"
                 class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               >

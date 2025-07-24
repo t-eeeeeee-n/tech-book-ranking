@@ -42,10 +42,12 @@
           <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
             <!-- Category Filter -->
             <div>
-              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              <label for="category-filter" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 カテゴリ
               </label>
               <select 
+                id="category-filter"
+                name="category"
                 v-model="filters.category"
                 class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               >
@@ -62,10 +64,12 @@
 
             <!-- Period Filter -->
             <div>
-              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              <label for="period-filter" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 期間
               </label>
               <select 
+                id="period-filter"
+                name="period"
                 v-model="filters.period"
                 class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               >
@@ -78,12 +82,14 @@
 
             <!-- Search -->
             <div>
-              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              <label for="book-search" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 検索
               </label>
               <div class="relative">
                 <Icon name="heroicons:magnifying-glass" class="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
                 <input
+                  id="book-search"
+                  name="search"
                   v-model="filters.search"
                   type="text"
                   placeholder="書籍名・著者名で検索"
@@ -94,10 +100,12 @@
 
             <!-- Sort -->
             <div>
-              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              <label for="sort-filter" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 並び順
               </label>
               <select 
+                id="sort-filter"
+                name="sort"
                 v-model="filters.sort"
                 class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               >
@@ -131,6 +139,7 @@
             <p class="text-red-600 dark:text-red-400 font-medium mb-2">エラーが発生しました</p>
             <p class="text-red-500 dark:text-red-300 text-sm mb-4">{{ error }}</p>
             <button 
+              name="retry-data-fetch"
               @click="fetchInitialData"
               class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg transition-colors"
             >

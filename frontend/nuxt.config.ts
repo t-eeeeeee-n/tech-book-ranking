@@ -61,5 +61,18 @@ export default defineNuxtConfig({
     compilerOptions: {
       isCustomElement: (tag) => tag.includes('-')
     }
-  }
+  },
+  // Router設定でDevTools関連の警告を抑制
+  router: {
+    options: {
+      strict: false
+    }
+  },
+  // サーバー設定でDevTools関連のリクエストを処理
+  serverHandlers: [
+    {
+      route: '/.well-known/**',
+      handler: '~/server/api/well-known.ts'
+    }
+  ]
 })
