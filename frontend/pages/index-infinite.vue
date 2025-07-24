@@ -164,9 +164,6 @@
             class="h-20 flex items-center justify-center"
             v-if="hasMore"
           >
-            <div class="text-sm text-gray-400 bg-gray-100 dark:bg-gray-800 px-4 py-2 rounded-full">
-              📍 スクロールターゲット (デバッグ用)
-            </div>
           </div>
 
           <!-- Loading More -->
@@ -214,6 +211,8 @@
 
 <script setup lang="ts">
 // Categories
+import BookCard from "~/components/BookCard.vue";
+
 const categories = [
   { value: 'programming', label: 'プログラミング' },
   { value: 'web', label: 'Web開発' },
@@ -276,7 +275,6 @@ const fetchInitialData = async () => {
       totalBooks.value = response.meta.totalBooks
     }
   } catch (err) {
-    console.error('Failed to fetch initial data:', err)
     error.value = 'データの取得に失敗しました'
   } finally {
     loading.value = false
@@ -307,7 +305,6 @@ const fetchNextPage = async () => {
       currentPage.value = nextPage
     }
   } catch (err) {
-    console.error('Failed to fetch next page:', err)
   } finally {
     loadingMore.value = false
   }
@@ -315,23 +312,13 @@ const fetchNextPage = async () => {
 
 const setupIntersectionObserver = () => {
   if (!targetRef.value) {
-    console.warn('🔍 targetRef is not available for intersection observer')
     return
   }
   
-  console.log('🔍 Setting up intersection observer (infinite)')
-  
   const observer = new IntersectionObserver((entries) => {
     const target = entries[0]
-    console.log('🔍 Intersection observer triggered (infinite):', {
-      isIntersecting: target.isIntersecting,
-      hasMore: hasMore.value,
-      loadingMore: loadingMore.value,
-      currentPage: currentPage.value
-    })
     
     if (target.isIntersecting && hasMore.value && !loadingMore.value) {
-      console.log('🔍 Fetching next page (infinite)...')
       fetchNextPage()
     }
   }, { 
@@ -379,7 +366,7 @@ const getRankBadgeClass = (rank: number): string => {
 }
 
 const viewBookDetails = (bookId: number) => {
-  navigateTo(`/book/${bookId}`)
+  navigateTo({ name: 'book-id', params: { id: bookId.toString() } })
 }
 
 // SNS Share functions
@@ -411,13 +398,6 @@ watch(filters, () => {
 
 // ライフサイクル
 onMounted(() => {
-  console.log('🔧 Component mounted (infinite)')
-  console.log('📊 Initial state:', {
-    hasMore: hasMore.value,
-    loading: loading.value,
-    currentPage: currentPage.value
-  })
-  
   // 初期データを読み込む
   fetchInitialData().then(() => {
     // データ読み込み後にIntersection observer をセットアップ

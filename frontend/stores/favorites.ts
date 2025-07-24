@@ -84,7 +84,6 @@ export const useFavoritesStore = defineStore('favorites', () => {
           const parsed = JSON.parse(stored)
           favoriteBooks.value.splice(0, favoriteBooks.value.length, ...parsed)
         } catch (error) {
-          console.error('Failed to parse favorites from localStorage:', error)
           favoriteBooks.value.splice(0, favoriteBooks.value.length)
         }
       }

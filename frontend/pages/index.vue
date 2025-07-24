@@ -28,7 +28,21 @@
 
         <!-- Ranking Grid -->
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-6 mb-12">
-          <BookCard-option3
+          <!-- Loading state -->
+          <div v-if="isLoading" class="col-span-full text-center p-8 text-gray-500">
+            <div class="inline-flex items-center gap-2">
+              <div class="w-5 h-5 border-2 border-cyan-500 border-t-transparent rounded-full animate-spin"></div>
+              読み込み中...
+            </div>
+          </div>
+          
+          <!-- No books found -->
+          <div v-else-if="topBooks.length === 0" class="col-span-full text-center p-8 text-gray-500">
+            書籍が見つかりませんでした
+          </div>
+          
+          <!-- TOP10 Books Grid -->
+          <BookCard
             v-for="(book, index) in topBooks" 
             :key="book.id"
             :book="book"
@@ -56,38 +70,55 @@
 </template>
 
 <script setup lang="ts">
-import { getGoodBookScore } from '~/utils/bookScore'
+
+// Import types
+import type {Book} from '~/types'
+import BookCard from "~/components/BookCard.vue";
+
+// Define API response type (simplified to avoid type complexity)
+interface BooksApiResponse {
+  success: boolean
+  data: Book[]
+  pagination: Record<string, any>
+  meta: {
+    totalBooks: number
+    filteredCount: number
+    appliedFilters: Record<string, any>
+    lastUpdated: string
+  }
+}
 
 // Fetch top books data from API
-const { data: topBooksResponse, pending } = await useFetch('/api/books', {
-  query: {
-    limit: 10,
-    sort: 'mentions'
-  }
-})
+const topBooksResponse = ref<BooksApiResponse | null>(null)
+const isLoading = ref(true)
 
 // Extract data from API response
 const topBooks = computed(() => {
   return topBooksResponse.value?.data || []
 })
 
+// Fetch data on client-side only to avoid SSR issues
+onMounted(async () => {
+  try {
+    topBooksResponse.value = await $fetch<BooksApiResponse>('/api/books', {
+      query: {
+        limit: 10,
+        sort: 'mentions'
+      }
+    })
+  } catch (error) {
+  } finally {
+    isLoading.value = false
+  }
+})
+
 const totalBooks = computed(() => {
   return topBooksResponse.value?.meta?.totalBooks || 4000
 })
 
-// Define Book interface
-interface Book {
-  id: number
-  title: string
-  author: string
-  mentionCount: number
-  rating: number
-  amazonUrl: string
-}
-
 // Methods
 const viewBookDetails = (bookId: number) => {
-  navigateTo(`/book/${bookId}`)
+  navigateTo({ name: 'book-id', params: { id: bookId.toString() } })
 }
 
 // SNS Share functions

@@ -1,5 +1,4 @@
-import type { Book } from '~/types'
-import { getMockBookById } from '../../utils/mockData'
+import {getMockBookById} from '../../utils/mockData'
 
 export default defineEventHandler(async (event) => {
   try {
@@ -31,8 +30,6 @@ export default defineEventHandler(async (event) => {
       })
     }
 
-    console.log(`📖 Book Details API Request: bookId=${bookId}`)
-
     // Get individual book (in production, this would be a direct database query)
     const book = getMockBookById(bookId)
 
@@ -53,17 +50,17 @@ export default defineEventHandler(async (event) => {
       ...book,
       // Add computed fields that might be useful for the detail page
       averageRating: book.rating || (book.goodBookScore ? Math.round((book.goodBookScore / 100 * 2 + 3) * 10) / 10 : 4.0),
-      publicationYear: new Date(book.publishDate).getFullYear(),
-      daysSinceLastMention: Math.floor((Date.now() - new Date(book.lastMentionDate).getTime()) / (1000 * 60 * 60 * 24)),
+      publicationYear: book.publishDate ? new Date(book.publishDate as string).getFullYear() : new Date().getFullYear(),
+      daysSinceLastMention: book.lastMentionDate ? Math.floor((Date.now() - new Date(book.lastMentionDate as string).getTime()) / (1000 * 60 * 60 * 24)) : 0,
       isPopular: book.mentionCount >= 50,
-      isRecentlyMentioned: (Date.now() - new Date(book.lastMentionDate).getTime()) < (30 * 24 * 60 * 60 * 1000), // within 30 days
+      isRecentlyMentioned: book.lastMentionDate ? (Date.now() - new Date(book.lastMentionDate as string).getTime()) < (30 * 24 * 60 * 60 * 1000) : false, // within 30 days
       // Ensure consistent naming with other fields
       publishedDate: book.publishDate,
       uniqueArticleCount: book.articleCount,
       trendScore: book.goodBookScore
     }
 
-    const result = {
+    return {
       success: true,
       data: bookWithDetails,
       meta: {
@@ -73,12 +70,7 @@ export default defineEventHandler(async (event) => {
       }
     }
 
-    console.log(`📤 Book Details API Response: success=${result.success}, bookTitle="${book.title}"`)
-
-    return result
-
   } catch (error) {
-    console.error('❌ Book Details API Error:', error)
     
     // If it's already a createError, re-throw it
     if (error && typeof error === 'object' && 'statusCode' in error) {

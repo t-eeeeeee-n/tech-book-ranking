@@ -118,21 +118,6 @@ export function getGoodBookScore(
   // 5. 0-100の範囲に収める
   const finalScore = Math.min(100, Math.max(0, weightedScore))
   
-  // デバッグ用（開発時のみ）
-  if (process.env.NODE_ENV === 'development') {
-    console.debug(`📊 Book Score Calculation for "${book.title}":`, {
-      articleCount: book.articleCount,
-      totalLikes: book.totalLikes,
-      monthsFromNow,
-      scores: {
-        article: Math.round(articleScore * 10) / 10,
-        likes: Math.round(likesScore * 10) / 10,
-        recency: Math.round(recencyScore * 10) / 10
-      },
-      weights,
-      finalScore: Math.round(finalScore * 10) / 10
-    })
-  }
   
   return Math.round(finalScore * 10) / 10 // 小数点1桁で四捨五入
 }

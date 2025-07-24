@@ -28,8 +28,6 @@ export default defineEventHandler(async (event) => {
       })
     }
 
-    console.log(`📄 Book Mentions API Request: bookId=${id}`)
-
     // Mock mentions data - in real app, this would come from database
     const mockMentions = [
       {
@@ -110,9 +108,9 @@ export default defineEventHandler(async (event) => {
     const allMentions = [...mockMentions, ...additionalMentions]
 
     // Sort by published date (newest first)
-    allMentions.sort((a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime())
+    allMentions.sort((a, b) => new Date(b.publishedAt as string).getTime() - new Date(a.publishedAt as string).getTime())
 
-    const result = {
+    return {
       success: true,
       data: allMentions,
       meta: {
@@ -129,12 +127,7 @@ export default defineEventHandler(async (event) => {
       }
     }
 
-    console.log(`📤 Book Mentions API Response: success=${result.success}, totalMentions=${result.meta.totalMentions}`)
-
-    return result
-
   } catch (error) {
-    console.error('❌ Book Mentions API Error:', error)
     
     if (error && typeof error === 'object' && 'statusCode' in error) {
       throw error

@@ -81,7 +81,7 @@
           <!-- Previous Page -->
           <NuxtLink 
             v-if="hasPrev"
-            :to="`/ranking/page/${currentPage - 1}`"
+            :to="currentPage - 1 === 1 ? { name: 'ranking' } : { name: 'ranking-page-id', params: { id: (currentPage - 1).toString() } }"
             class="flex items-center gap-2 px-4 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
           >
             <Icon name="heroicons:chevron-left" class="w-4 h-4" />
@@ -93,7 +93,7 @@
             <NuxtLink 
               v-for="pageNum in visiblePages" 
               :key="pageNum"
-              :to="pageNum === 1 ? '/ranking' : `/ranking/page/${pageNum}`"
+              :to="pageNum === 1 ? { name: 'ranking' } : { name: 'ranking-page-id', params: { id: pageNum.toString() } }"
               class="w-10 h-10 flex items-center justify-center rounded-lg transition-colors"
               :class="pageNum === currentPage 
                 ? 'bg-blue-600 text-white' 
@@ -106,7 +106,7 @@
           <!-- Next Page -->
           <NuxtLink 
             v-if="hasNext"
-            :to="`/ranking/page/${currentPage + 1}`"
+            :to="{ name: 'ranking-page-id', params: { id: (currentPage + 1).toString() } }"
             class="flex items-center gap-2 px-4 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
           >
             <span>次のページ</span>
@@ -114,22 +114,14 @@
           </NuxtLink>
         </div>
 
-        <!-- Infinite Scroll Alternative -->
-        <div class="text-center mt-8">
-          <NuxtLink 
-            to="/ranking" 
-            class="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-cyan-600 text-white rounded-xl font-semibold hover:shadow-lg transition-all duration-200"
-          >
-            <Icon name="heroicons:infinity" class="w-5 h-5" />
-            <span>無限スクロール版に切り替え</span>
-          </NuxtLink>
-        </div>
       </div>
     </section>
   </div>
 </template>
 
 <script setup lang="ts">
+import BookCard from '~/components/BookCard.vue'
+
 // Get page parameter
 const route = useRoute()
 const currentPage = computed(() => parseInt(route.params.page as string) || 1)
@@ -198,7 +190,7 @@ interface Book {
 
 // Methods
 const viewBookDetails = (bookId: number) => {
-  navigateTo(`/book/${bookId}`)
+  navigateTo({ name: 'book-id', params: { id: bookId.toString() } })
 }
 
 const shareOnFacebook = (book: Book) => {

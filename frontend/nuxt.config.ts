@@ -6,7 +6,7 @@ export default defineNuxtConfig({
     host: 'localhost'
   },
   modules: [
-    '@nuxt/fonts',
+    // '@nuxt/fonts', // Temporarily disabled due to dependency issues
     '@nuxt/icon',
     '@nuxt/image',
     '@pinia/nuxt',
@@ -58,8 +58,8 @@ export default defineNuxtConfig({
   },
   // Vue設定でワーニングを抑制
   vue: {
-    config: {
-      silent: true
+    compilerOptions: {
+      isCustomElement: (tag) => tag.includes('-')
     }
   }
 })

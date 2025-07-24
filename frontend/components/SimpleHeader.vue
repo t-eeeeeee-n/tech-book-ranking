@@ -1,5 +1,5 @@
 <template>
-  <header class="sticky top-0 z-50 border-b border-white/20 shadow-sm transition-all duration-300 ease-out bg-white/95 backdrop-blur-2xl">
+  <header class="sticky top-0 z-50 border-b border-white/20 dark:border-gray-700/50 shadow-sm transition-all duration-300 ease-out bg-white/95 dark:bg-gray-900/95 backdrop-blur-2xl">
     <!-- Main Header -->
     <div class="relative">
       <div class="container mx-auto px-6">
@@ -33,10 +33,10 @@
             <div class="flex items-center gap-1">
               <NuxtLink 
                 to="/ranking"
-                class="relative flex items-center gap-2 px-4 py-2 rounded-lg transition-all duration-300 ease-out hover:-translate-y-0.5 hover:bg-cyan-500/10 text-gray-700 hover:text-cyan-500"
+                class="relative flex items-center gap-2 px-4 py-2 rounded-lg transition-all duration-300 ease-out hover:-translate-y-0.5 hover:bg-cyan-500/10 text-gray-700 dark:text-gray-300 hover:text-cyan-500"
                 :class="{ 'bg-cyan-500/15 text-cyan-500': $route.path === '/ranking' }"
               >
-                <div class="text-gray-600 transition-colors duration-300 ease-out" :class="{ 'text-cyan-500': $route.path === '/ranking' }">
+                <div class="text-gray-600 dark:text-gray-400 transition-colors duration-300 ease-out" :class="{ 'text-cyan-500': $route.path === '/ranking' }">
                   <svg width="16" height="16" viewBox="0 0 24 24" class="fill-none">
                     <path d="M3 13L12 3L21 13" stroke="currentColor" stroke-width="2"/>
                     <path d="M8 21V13H16V21" stroke="currentColor" stroke-width="2"/>
@@ -47,10 +47,10 @@
               
               <NuxtLink 
                 to="/about"
-                class="relative flex items-center gap-2 px-4 py-2 rounded-lg transition-all duration-300 ease-out hover:-translate-y-0.5 hover:bg-cyan-500/10 text-gray-700 hover:text-cyan-500"
+                class="relative flex items-center gap-2 px-4 py-2 rounded-lg transition-all duration-300 ease-out hover:-translate-y-0.5 hover:bg-cyan-500/10 text-gray-700 dark:text-gray-300 hover:text-cyan-500"
                 :class="{ 'bg-cyan-500/15 text-cyan-500': $route.path === '/about' }"
               >
-                <div class="text-gray-600 transition-colors duration-300 ease-out" :class="{ 'text-cyan-500': $route.path === '/about' }">
+                <div class="text-gray-600 dark:text-gray-400 transition-colors duration-300 ease-out" :class="{ 'text-cyan-500': $route.path === '/about' }">
                   <svg width="16" height="16" viewBox="0 0 24 24" class="fill-none">
                     <path d="M13 2L3 14H12L11 22L21 10H12L13 2Z" stroke="currentColor" stroke-width="2"/>
                   </svg>
@@ -60,16 +60,16 @@
               
               <NuxtLink 
                 to="/favorites"
-                class="relative flex items-center gap-2 px-4 py-2 rounded-lg transition-all duration-300 ease-out hover:-translate-y-0.5 hover:bg-cyan-500/10 text-gray-700 hover:text-cyan-500"
+                class="relative flex items-center gap-2 px-4 py-2 rounded-lg transition-all duration-300 ease-out hover:-translate-y-0.5 hover:bg-cyan-500/10 text-gray-700 dark:text-gray-300 hover:text-cyan-500"
                 :class="{ 'bg-cyan-500/15 text-cyan-500': $route.path === '/favorites' }"
               >
-                <div class="text-gray-600 transition-colors duration-300 ease-out" :class="{ 'text-cyan-500': $route.path === '/favorites' }">
+                <div class="text-gray-600 dark:text-gray-400 transition-colors duration-300 ease-out" :class="{ 'text-cyan-500': $route.path === '/favorites' }">
                   <svg width="16" height="16" viewBox="0 0 24 24" class="fill-none">
                     <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" stroke="currentColor" stroke-width="2"/>
                   </svg>
                 </div>
                 <span class="text-sm font-medium transition-colors duration-300 ease-out">お気に入り</span>
-                <span v-if="isClient && favoriteCount > 0" class="min-w-4 h-4 bg-gray-200 text-gray-700 rounded-full flex items-center justify-center text-xs font-medium px-1 ml-1 shadow-sm relative transition-transform hover:scale-110">{{ favoriteCount }}</span>
+                <span v-if="isClient && favoriteCount > 0" class="min-w-4 h-4 bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-300 rounded-full flex items-center justify-center text-xs font-medium px-1 ml-1 shadow-sm relative transition-transform hover:scale-110">{{ favoriteCount }}</span>
               </NuxtLink>
             </div>
             
@@ -78,7 +78,7 @@
               <!-- Search Toggle -->
               <button
                 @click="toggleSearch"
-                class="relative p-2.5 rounded-lg border border-white/30 bg-white/80 transition-all duration-300 ease-out hover:-translate-y-0.5 hover:shadow-md hover:bg-cyan-500/10 hover:border-cyan-500 hover:text-cyan-500"
+                class="relative p-2.5 text-gray-800 dark:text-gray-200 rounded-lg border border-white/30 dark:border-gray-700/50 bg-white/80 dark:bg-gray-800/80 transition-all duration-300 ease-out hover:-translate-y-0.5 hover:shadow-md hover:bg-cyan-500/10 hover:border-cyan-500 hover:text-cyan-500"
                 :class="{ 'bg-cyan-500/15 border-cyan-500 text-cyan-500': searchOpen }"
                 aria-label="検索を開く"
               >
@@ -91,7 +91,7 @@
               <!-- Theme Toggle -->
               <button
                 @click="toggleTheme"
-                class="relative p-2.5 rounded-lg border border-white/30 bg-white/80 transition-all duration-300 ease-out hover:-translate-y-0.5 hover:shadow-md hover:bg-cyan-500/10 hover:border-cyan-500 hover:text-cyan-500 hover:rotate-180"
+                class="relative p-2.5 text-gray-800 dark:text-gray-200 rounded-lg border border-white/30 dark:border-gray-700/50 bg-white/80 dark:bg-gray-800/80 transition-all duration-300 ease-out hover:-translate-y-0.5 hover:shadow-md hover:bg-cyan-500/10 hover:border-cyan-500 hover:text-cyan-500 hover:rotate-180"
                 :aria-label="isDark ? 'ライトモードに切り替え' : 'ダークモードに切り替え'"
               >
                 <svg v-if="!isDark" width="18" height="18" viewBox="0 0 24 24" class="theme-icon fill-none">

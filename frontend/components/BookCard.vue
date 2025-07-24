@@ -1,6 +1,6 @@
 <template>
   <div 
-    class="relative rounded-2xl p-4 sm:p-6 shadow-lg hover:shadow-xl border dark:bg-gray-800 dark:border-gray-700 transition-all duration-300 cursor-pointer group hover:-translate-y-1 hover:border-cyan-500 dark:hover:border-cyan-400 flex flex-col min-h-[480px]"
+    class="relative rounded-2xl p-4 sm:p-6 shadow-lg hover:shadow-xl border transition-all duration-300 cursor-pointer group hover:-translate-y-1 hover:border-cyan-500 dark:hover:border-cyan-400 flex flex-col min-h-[480px]"
     :class="cardBackgroundClass"
     @click="$emit('click', book.id)"
   >
@@ -54,16 +54,21 @@
           <div @click.stop>
             <button 
               @click="toggleFavorite"
-              class="w-6 h-6 rounded-full flex items-center justify-center transition-all duration-200 hover:scale-110 focus:outline-none"
-              :class="isFavorite ? 
-                'text-red-500 hover:text-red-600' : 
-                'text-gray-400 hover:text-red-500'"
+              class="w-6 h-6 rounded-full flex items-center justify-center hover:scale-110 active:scale-95 focus:outline-none transition-transform duration-200 ease-out"
               :aria-label="isFavorite ? 'お気に入りから削除' : 'お気に入りに追加'"
             >
-              <Icon 
-                :name="isFavorite ? 'heroicons:heart-solid' : 'heroicons:heart'" 
-                class="w-4 h-4 transition-all duration-200"
-              />
+              <span class="relative w-4 h-4">
+                <!-- 常にソリッドハートを表示し、色で状態を管理 -->
+                <Icon 
+                  name="heroicons:heart-solid"
+                  :class="[
+                    'w-4 h-4 favorite-heart-icon',
+                    isFavorite 
+                      ? 'text-red-500 fill-red-500 heart-filled' 
+                      : 'text-gray-300 fill-gray-300 heart-empty'
+                  ]"
+                />
+              </span>
             </button>
           </div>
         </div>
@@ -137,7 +142,7 @@
             class="flex-1 flex items-center justify-center p-2.5 bg-black hover:bg-gray-800 text-white rounded-lg shadow-md hover:shadow-lg transition-all duration-200 transform hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800"
             title="X(Twitter)でシェア"
           >
-            <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24">
+            <svg class="w-4 h-4  fill-current" viewBox="0 0 24 24">
               <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
             </svg>
           </button>
@@ -218,16 +223,16 @@ const rankBadgeClass = computed(() => {
   }
 })
 
-// カード背景色のクラスを計算
+// カード背景色のクラスを計算（ダークモード対応・区別しやすい色）
 const cardBackgroundClass = computed(() => {
   if (props.rank === 1) {
-    return 'bg-gradient-to-br from-yellow-50 to-yellow-100 border-yellow-200' // 金色背景
+    return 'bg-gradient-to-br from-yellow-50 to-yellow-100 dark:from-yellow-900/50 dark:to-yellow-800/40 border-yellow-300 dark:border-yellow-600/70' // 金色背景
   } else if (props.rank === 2) {
-    return 'bg-gradient-to-br from-gray-50 to-gray-100 border-gray-200' // 銀色背景
+    return 'bg-gradient-to-br from-slate-100 to-slate-200 dark:from-blue-900/60 dark:to-blue-800/50 border-slate-300 dark:border-blue-600/80' // シルバー背景（ダークモードでは青味のあるシルバー）
   } else if (props.rank === 3) {
-    return 'bg-gradient-to-br from-orange-50 to-orange-100 border-orange-200' // 銅色背景
+    return 'bg-gradient-to-br from-orange-50 to-orange-100 dark:from-orange-900/50 dark:to-orange-800/40 border-orange-300 dark:border-orange-600/70' // 銅色背景
   } else {
-    return 'bg-white border-gray-200' // 白背景
+    return 'bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700' // 通常の白背景
   }
 })
 
@@ -308,4 +313,55 @@ const generateLocalSVG = (bookId: number, category: string): string => {
   return `data:image/svg+xml;base64,${btoa(svg)}`
 }
 </script>
+
+<style scoped>
+/* お気に入りハートアイコンの塗りつぶしを確実に制御 */
+:deep(svg) {
+  fill: currentColor !important;
+}
+
+:deep(svg path) {
+  fill: currentColor !important;
+}
+
+/* お気に入り状態のハートアイコンを確実に赤色で塗りつぶし */
+.heart-filled :deep(svg) {
+  color: #ef4444 !important;
+  fill: #ef4444 !important;
+}
+
+.heart-filled :deep(svg path) {
+  fill: #ef4444 !important;
+  stroke: #ef4444 !important;
+}
+
+.heart-empty :deep(svg) {
+  color: #d1d5db !important;
+  fill: #d1d5db !important;
+}
+
+.heart-empty :deep(svg path) {
+  fill: #d1d5db !important;
+  stroke: #d1d5db !important;
+}
+
+/* より具体的なセレクター */
+.favorite-heart-icon.text-red-500 :deep(svg) {
+  color: #ef4444 !important;
+  fill: #ef4444 !important;
+}
+
+.favorite-heart-icon.text-red-500 :deep(svg path) {
+  fill: #ef4444 !important;
+  stroke: #ef4444 !important;
+}
+
+.favorite-heart-icon.fill-red-500 :deep(svg) {
+  fill: #ef4444 !important;
+}
+
+.favorite-heart-icon.fill-red-500 :deep(svg path) {
+  fill: #ef4444 !important;
+}
+</style>
 

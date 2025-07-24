@@ -466,10 +466,6 @@
                   <span class="font-medium text-gray-600 dark:text-gray-400">出版社:</span>
                   <span class="ml-2 text-gray-900 dark:text-white">{{ book.publisher }}</span>
                 </div>
-                <div v-if="book.pages">
-                  <span class="font-medium text-gray-600 dark:text-gray-400">ページ数:</span>
-                  <span class="ml-2 text-gray-900 dark:text-white">{{ book.pages }}ページ</span>
-                </div>
                 <div v-if="book.isbn">
                   <span class="font-medium text-gray-600 dark:text-gray-400">ISBN:</span>
                   <span class="ml-2 text-gray-900 dark:text-white">{{ book.isbn }}</span>
@@ -540,17 +536,6 @@
 
 <script setup lang="ts">
 import { useFavoritesStore } from '~/stores/favorites'
-interface Mention {
-  id: string
-  articleTitle: string
-  articleUrl: string
-  context: string
-  confidence: number
-  sentiment?: 'positive' | 'neutral' | 'negative'
-  mentionedAt: string
-  articleLikes: number
-}
-
 const route = useRoute()
 const bookId = route.params.id
 
@@ -674,7 +659,6 @@ function getRecencyLabel(dateString: string): string {
 
 // スコア詳細の表示切り替え
 function toggleScoreDetails() {
-  console.log('Toggle score details:', !showScoreDetails.value)
   showScoreDetails.value = !showScoreDetails.value
 }
 
@@ -698,12 +682,6 @@ onMounted(() => {
       let left = buttonRect.left
       let top = buttonRect.bottom + 8 // ボタンの下に8px空ける
       
-      console.log('Button position:', {
-        buttonRect,
-        left,
-        top,
-        viewport: { width: viewportWidth, height: viewportHeight }
-      })
       
       // 右端にはみ出る場合は左側に調整
       if (left + popoverWidth > viewportWidth - 20) {
@@ -731,14 +709,6 @@ onMounted(() => {
         top: `${top}px`,
         zIndex: 9999
       }
-      
-      console.log('Final popover position:', popoverStyle.value)
-    } else {
-      console.log('Popover position not updated:', {
-        showScoreDetails: showScoreDetails.value,
-        isMobile: isMobile.value,
-        hasButton: !!scoreButton.value
-      })
     }
   }
 

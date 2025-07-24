@@ -11,6 +11,7 @@
     "clean": "rm -rf .output .nuxt node_modules/.cache"
   },
   "dependencies": {
+    "@capsizecss/metrics": "^3.5.0",
     "@nuxt/fonts": "^0.11.4",
     "@nuxt/icon": "^1.14.0",
     "@nuxt/image": "^1.10.0",
@@ -24,5 +25,8 @@
     "autoprefixer": "^10.4.21",
     "postcss": "^8.5.6",
     "tailwindcss": "^3.4.17"
+  },
+  "optionalDependencies": {
+    "@oxc-parser/binding-linux-x64-gnu": "^0.78.0"
   }
 }

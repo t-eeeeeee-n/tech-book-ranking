@@ -1,4 +1,4 @@
-import { getAllMockBooks } from '../utils/mockData'
+import {getAllMockBooks} from '../utils/mockData'
 
 export default defineEventHandler(async (event) => {
   try {
@@ -9,8 +9,6 @@ export default defineEventHandler(async (event) => {
     const search = query.search as string
     const period = query.period as string
     const sort = query.sort as string || 'mentions'
-
-    console.log('📚 Books API Request:', { page, limit, category, search, period, sort })
 
     const allMockBooks = getAllMockBooks()
     let filteredBooks = [...allMockBooks]
@@ -56,7 +54,7 @@ export default defineEventHandler(async (event) => {
       }
 
       filteredBooks = filteredBooks.filter(book => 
-        new Date(book.lastMentionDate) >= dateThreshold
+        book.lastMentionDate ? new Date(book.lastMentionDate as string) >= dateThreshold : false
       )
     }
 
@@ -72,9 +70,9 @@ export default defineEventHandler(async (event) => {
         case 'author':
           return a.author.localeCompare(b.author, 'ja')
         case 'newest':
-          return new Date(b.publishDate).getTime() - new Date(a.publishDate).getTime()
+          return (b.publishDate ? new Date(b.publishDate as string).getTime() : 0) - (a.publishDate ? new Date(a.publishDate as string).getTime() : 0)
         case 'recent':
-          return new Date(b.lastMentionDate).getTime() - new Date(a.lastMentionDate).getTime()
+          return (b.lastMentionDate ? new Date(b.lastMentionDate as string).getTime() : 0) - (a.lastMentionDate ? new Date(a.lastMentionDate as string).getTime() : 0)
         default:
           return b.mentionCount - a.mentionCount
       }
@@ -97,7 +95,7 @@ export default defineEventHandler(async (event) => {
       rank: startIndex + index + 1
     }))
 
-    const result = {
+    return {
       success: true,
       data: paginatedBooksWithCorrectRank,
       pagination: {
@@ -122,20 +120,7 @@ export default defineEventHandler(async (event) => {
       }
     }
 
-    console.log('📤 Books API Response:', {
-      success: result.success,
-      totalBooks: result.meta.totalBooks,
-      filteredCount: result.meta.filteredCount,
-      page: result.pagination.page,
-      limit: result.pagination.limit,
-      hasMore: result.pagination.hasMore,
-      dataLength: result.data.length
-    })
-
-    return result
-
   } catch (error) {
-    console.error('❌ Books API Error:', error)
     
     throw createError({
       statusCode: 500,

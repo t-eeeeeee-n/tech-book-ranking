@@ -141,15 +141,6 @@
 
         <!-- Books Grid -->
         <div v-else>
-          <!-- Debug info -->
-          <div v-if="books.length === 0" class="text-center py-12 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg mb-6">
-            <p class="text-yellow-700 dark:text-yellow-300">
-              📊 デバッグ情報: books配列は空です (長さ: {{ books.length }})
-            </p>
-            <p class="text-sm text-yellow-600 dark:text-yellow-400 mt-2">
-              Loading: {{ loading }}, Error: {{ error }}, HasMore: {{ hasMore }}
-            </p>
-          </div>
           
           <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-12">
             <BookCard
@@ -170,9 +161,6 @@
             class="h-20 flex items-center justify-center"
             v-if="hasMore"
           >
-            <div class="text-sm text-gray-400 bg-gray-100 dark:bg-gray-800 px-4 py-2 rounded-full">
-              📍 スクロールターゲット (デバッグ用)
-            </div>
           </div>
 
           <!-- Loading More -->
@@ -202,17 +190,6 @@
           </div>
         </div>
 
-        <!-- SEO-friendly Pagination Alternative -->
-        <div class="text-center mt-16">
-          <NuxtLink 
-            to="/ranking/page/1"
-            class="inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-green-600 to-teal-600 text-white rounded-xl font-semibold text-lg hover:shadow-lg hover:-translate-y-1 transition-all duration-200"
-          >
-            <Icon name="heroicons:document-text" class="w-5 h-5" />
-            <span>SEO対応ページネーション版を見る</span>
-            <Icon name="heroicons:arrow-right" class="w-5 h-5" />
-          </NuxtLink>
-        </div>
 
       </div>
     </section>
@@ -221,6 +198,9 @@
 </template>
 
 <script setup lang="ts">
+// Manual component import to fix auto-import issue with hyphenated names
+import BookCard from '~/components/BookCard.vue'
+
 // Define interfaces
 interface Category {
   value: string
@@ -284,18 +264,12 @@ const fetchInitialData = async () => {
       }
     })
     
-    console.log('📤 API Response received:', response)
-    
     if (response.success) {
       books.value = response.data
       hasMore.value = response.pagination.hasMore
       totalBooks.value = response.meta.totalBooks
-      console.log('✅ Books loaded:', books.value.length)
-    } else {
-      console.error('❌ API response indicates failure:', response)
     }
   } catch (err) {
-    console.error('Failed to fetch initial data:', err)
     error.value = 'データの取得に失敗しました'
   } finally {
     loading.value = false
@@ -326,7 +300,6 @@ const fetchNextPage = async () => {
       currentPage.value = nextPage
     }
   } catch (err) {
-    console.error('Failed to fetch next page:', err)
     error.value = 'データの取得に失敗しました'
   } finally {
     loadingMore.value = false
@@ -335,23 +308,13 @@ const fetchNextPage = async () => {
 
 const setupIntersectionObserver = () => {
   if (!targetRef.value) {
-    console.warn('🔍 targetRef is not available for intersection observer')
     return
   }
   
-  console.log('🔍 Setting up intersection observer')
-  
   const observer = new IntersectionObserver((entries) => {
     const target = entries[0]
-    console.log('🔍 Intersection observer triggered:', {
-      isIntersecting: target.isIntersecting,
-      hasMore: hasMore.value,
-      loadingMore: loadingMore.value,
-      currentPage: currentPage.value
-    })
     
     if (target.isIntersecting && hasMore.value && !loadingMore.value) {
-      console.log('🔍 Fetching next page...')
       fetchNextPage()
     }
   }, { 
@@ -390,7 +353,7 @@ const formattedLastUpdate = computed(() => {
 
 // Methods
 const viewBookDetails = (bookId: number) => {
-  navigateTo(`/book/${bookId}`)
+  navigateTo({ name: 'book-id', params: { id: bookId.toString() } })
 }
 
 // Define Book interface locally
@@ -431,13 +394,6 @@ watch(filters, () => {
 
 // ライフサイクル
 onMounted(() => {
-  console.log('🔧 Component mounted')
-  console.log('📊 Initial state:', {
-    hasMore: hasMore.value,
-    loading: loading.value,
-    currentPage: currentPage.value
-  })
-  
   // URLクエリパラメータから検索クエリを取得
   const route = useRoute()
   if (route.query.search) {
