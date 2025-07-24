@@ -121,7 +121,11 @@
 
         <!-- Initial Loading -->
         <div v-if="loading" class="mb-12">
-          <SkeletonLoader :count="24" />
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            <div v-for="n in 24" :key="n" class="animate-pulse">
+              <div class="bg-gray-200 dark:bg-gray-700 rounded-lg h-80"></div>
+            </div>
+          </div>
         </div>
 
         <!-- Error State -->
@@ -154,16 +158,24 @@
             />
           </div>
 
-          <!-- Intersection Observer Target (invisible) -->
+          <!-- Intersection Observer Target -->
           <div 
             ref="targetRef" 
-            class="h-1"
+            class="h-20 flex items-center justify-center"
             v-if="hasMore"
-          ></div>
+          >
+            <div class="text-sm text-gray-400 bg-gray-100 dark:bg-gray-800 px-4 py-2 rounded-full">
+              📍 スクロールターゲット (デバッグ用)
+            </div>
+          </div>
 
           <!-- Loading More -->
           <div v-if="loadingMore" class="mb-12">
-            <SkeletonLoader :count="8" />
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              <div v-for="n in 8" :key="n" class="animate-pulse">
+                <div class="bg-gray-200 dark:bg-gray-700 rounded-lg h-80"></div>
+              </div>
+            </div>
           </div>
 
           <!-- No More Results -->
@@ -302,14 +314,30 @@ const fetchNextPage = async () => {
 }
 
 const setupIntersectionObserver = () => {
-  if (!targetRef.value) return
+  if (!targetRef.value) {
+    console.warn('🔍 targetRef is not available for intersection observer')
+    return
+  }
+  
+  console.log('🔍 Setting up intersection observer (infinite)')
   
   const observer = new IntersectionObserver((entries) => {
     const target = entries[0]
+    console.log('🔍 Intersection observer triggered (infinite):', {
+      isIntersecting: target.isIntersecting,
+      hasMore: hasMore.value,
+      loadingMore: loadingMore.value,
+      currentPage: currentPage.value
+    })
+    
     if (target.isIntersecting && hasMore.value && !loadingMore.value) {
+      console.log('🔍 Fetching next page (infinite)...')
       fetchNextPage()
     }
-  }, { threshold: 0.1 })
+  }, { 
+    threshold: 0.1,
+    rootMargin: '100px'
+  })
   
   observer.observe(targetRef.value)
   ;(targetRef.value as any).__observer = observer
@@ -373,12 +401,17 @@ const openAmazonLink = (amazonUrl: string) => {
 
 // Watch for filter changes
 watch(filters, () => {
-  fetchInitialData()
+  cleanupIntersectionObserver()
+  fetchInitialData().then(() => {
+    nextTick(() => {
+      setupIntersectionObserver()
+    })
+  })
 }, { deep: true })
 
 // ライフサイクル
 onMounted(() => {
-  console.log('🔧 Component mounted')
+  console.log('🔧 Component mounted (infinite)')
   console.log('📊 Initial state:', {
     hasMore: hasMore.value,
     loading: loading.value,
@@ -386,11 +419,11 @@ onMounted(() => {
   })
   
   // 初期データを読み込む
-  fetchInitialData()
-  
-  // Intersection observer をセットアップ
-  nextTick(() => {
-    setupIntersectionObserver()
+  fetchInitialData().then(() => {
+    // データ読み込み後にIntersection observer をセットアップ
+    nextTick(() => {
+      setupIntersectionObserver()
+    })
   })
 })
 

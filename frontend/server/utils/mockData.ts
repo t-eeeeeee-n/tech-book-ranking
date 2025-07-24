@@ -99,7 +99,7 @@ const generateLocalImageUrl = (bookId: number, category: string): string => {
     </svg>
   `
   
-  return `data:image/svg+xml;base64,${Buffer.from(svg).toString('base64')}`
+  return `data:image/svg+xml;charset=utf8,${encodeURIComponent(svg)}`
 }
 
 // 実際の技術書に似たタイトルを生成

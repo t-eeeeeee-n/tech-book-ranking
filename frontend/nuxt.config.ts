@@ -1,6 +1,10 @@
 export default defineNuxtConfig({
   compatibilityDate: '2025-05-15',
   devtools: { enabled: true },
+  devServer: {
+    port: 3000,
+    host: 'localhost'
+  },
   modules: [
     '@nuxt/fonts',
     '@nuxt/icon',
@@ -39,6 +43,9 @@ export default defineNuxtConfig({
       },
       watch: {
         usePolling: true
+      },
+      hmr: {
+        port: 3001
       }
     },
     optimizeDeps: {
@@ -48,5 +55,11 @@ export default defineNuxtConfig({
   // ESM設定の修正
   experimental: {
     payloadExtraction: false
+  },
+  // Vue設定でワーニングを抑制
+  vue: {
+    config: {
+      silent: true
+    }
   }
 })

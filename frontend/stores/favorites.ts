@@ -81,10 +81,11 @@ export const useFavoritesStore = defineStore('favorites', () => {
       const stored = localStorage.getItem('tech-book-favorites')
       if (stored) {
         try {
-          favoriteBooks.value = JSON.parse(stored)
+          const parsed = JSON.parse(stored)
+          favoriteBooks.value.splice(0, favoriteBooks.value.length, ...parsed)
         } catch (error) {
           console.error('Failed to parse favorites from localStorage:', error)
-          favoriteBooks.value = []
+          favoriteBooks.value.splice(0, favoriteBooks.value.length)
         }
       }
     }
@@ -96,7 +97,7 @@ export const useFavoritesStore = defineStore('favorites', () => {
   }
 
   return {
-    favoriteBooks: readonly(favoriteBooks),
+    favoriteBooks: computed(() => favoriteBooks.value),
     favoriteCount,
     addToFavorites,
     removeFromFavorites,

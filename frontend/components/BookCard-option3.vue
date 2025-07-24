@@ -176,8 +176,17 @@ const handleTwitterShare = () => {
 // お気に入りストアを使用
 const favoritesStore = useFavoritesStore()
 
-// お気に入り状態を計算
-const isFavorite = computed(() => favoritesStore.isFavorite(props.book.id))
+// ハイドレーション問題を回避するため、クライアントサイドでのみお気に入り状態を表示
+const isClient = ref(false)
+const isFavorite = computed(() => {
+  if (!isClient.value) return false // SSR時は常にfalse
+  return favoritesStore.isFavorite(props.book.id)
+})
+
+// クライアントサイドでマウント後に状態を更新
+onMounted(() => {
+  isClient.value = true
+})
 
 // お気に入りの切り替え
 const toggleFavorite = () => {

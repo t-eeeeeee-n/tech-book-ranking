@@ -46,32 +46,16 @@
               </NuxtLink>
               
               <NuxtLink 
-                to="/categories"
+                to="/about"
                 class="relative flex items-center gap-2 px-4 py-2 rounded-lg transition-all duration-300 ease-out hover:-translate-y-0.5 hover:bg-cyan-500/10 text-gray-700 hover:text-cyan-500"
-                :class="{ 'bg-cyan-500/15 text-cyan-500': $route.path === '/categories' }"
+                :class="{ 'bg-cyan-500/15 text-cyan-500': $route.path === '/about' }"
               >
-                <div class="text-gray-600 transition-colors duration-300 ease-out" :class="{ 'text-cyan-500': $route.path === '/categories' }">
-                  <svg width="16" height="16" viewBox="0 0 24 24" class="fill-none">
-                    <rect x="3" y="3" width="7" height="7" stroke="currentColor" stroke-width="2"/>
-                    <rect x="14" y="3" width="7" height="7" stroke="currentColor" stroke-width="2"/>
-                    <rect x="3" y="14" width="7" height="7" stroke="currentColor" stroke-width="2"/>
-                    <rect x="14" y="14" width="7" height="7" stroke="currentColor" stroke-width="2"/>
-                  </svg>
-                </div>
-                <span class="text-sm font-medium transition-colors duration-300 ease-out">カテゴリ</span>
-              </NuxtLink>
-              
-              <NuxtLink 
-                to="/trending"
-                class="relative flex items-center gap-2 px-4 py-2 rounded-lg transition-all duration-300 ease-out hover:-translate-y-0.5 hover:bg-cyan-500/10 text-gray-700 hover:text-cyan-500"
-                :class="{ 'bg-cyan-500/15 text-cyan-500': $route.path === '/trending' }"
-              >
-                <div class="text-gray-600 transition-colors duration-300 ease-out" :class="{ 'text-cyan-500': $route.path === '/trending' }">
+                <div class="text-gray-600 transition-colors duration-300 ease-out" :class="{ 'text-cyan-500': $route.path === '/about' }">
                   <svg width="16" height="16" viewBox="0 0 24 24" class="fill-none">
                     <path d="M13 2L3 14H12L11 22L21 10H12L13 2Z" stroke="currentColor" stroke-width="2"/>
                   </svg>
                 </div>
-                <span class="text-sm font-medium transition-colors duration-300 ease-out">トレンド</span>
+                <span class="text-sm font-medium transition-colors duration-300 ease-out">サイトについて</span>
               </NuxtLink>
               
               <NuxtLink 
@@ -85,7 +69,7 @@
                   </svg>
                 </div>
                 <span class="text-sm font-medium transition-colors duration-300 ease-out">お気に入り</span>
-                <span v-if="favoriteCount > 0" class="min-w-4 h-4 bg-gray-200 text-gray-700 rounded-full flex items-center justify-center text-xs font-medium px-1 ml-1 shadow-sm relative transition-transform hover:scale-110">{{ favoriteCount }}</span>
+                <span v-if="isClient && favoriteCount > 0" class="min-w-4 h-4 bg-gray-200 text-gray-700 rounded-full flex items-center justify-center text-xs font-medium px-1 ml-1 shadow-sm relative transition-transform hover:scale-110">{{ favoriteCount }}</span>
               </NuxtLink>
             </div>
             
@@ -197,12 +181,12 @@
               </NuxtLink>
               
               <NuxtLink 
-                to="/categories"
+                to="/ranking"
                 class="flex items-center gap-3 p-3.5 rounded-xl text-gray-700 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-gray-700 transition-colors"
-                :class="{ 'bg-cyan-500/10 text-cyan-500 dark:bg-cyan-500/20': $route.path === '/categories' }"
+                :class="{ 'bg-cyan-500/10 text-cyan-500 dark:bg-cyan-500/20': $route.path === '/ranking' }"
                 @click="toggleMobileMenu"
               >
-                <div class="text-gray-500 dark:text-gray-400" :class="{ 'text-cyan-500': $route.path === '/categories' }">
+                <div class="text-gray-500 dark:text-gray-400" :class="{ 'text-cyan-500': $route.path === '/ranking' }">
                   <svg width="20" height="20" viewBox="0 0 24 24" class="fill-none">
                     <rect x="3" y="3" width="7" height="7" stroke="currentColor" stroke-width="2"/>
                     <rect x="14" y="3" width="7" height="7" stroke="currentColor" stroke-width="2"/>
@@ -210,21 +194,21 @@
                     <rect x="14" y="14" width="7" height="7" stroke="currentColor" stroke-width="2"/>
                   </svg>
                 </div>
-                <span class="text-base font-medium">カテゴリ</span>
+                <span class="text-base font-medium">カテゴリ別ランキング</span>
               </NuxtLink>
               
               <NuxtLink 
-                to="/trending"
+                to="/about"
                 class="flex items-center gap-3 p-3.5 rounded-xl text-gray-700 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-gray-700 transition-colors"
-                :class="{ 'bg-cyan-500/10 text-cyan-500 dark:bg-cyan-500/20': $route.path === '/trending' }"
+                :class="{ 'bg-cyan-500/10 text-cyan-500 dark:bg-cyan-500/20': $route.path === '/about' }"
                 @click="toggleMobileMenu"
               >
-                <div class="text-gray-500 dark:text-gray-400" :class="{ 'text-cyan-500': $route.path === '/trending' }">
+                <div class="text-gray-500 dark:text-gray-400" :class="{ 'text-cyan-500': $route.path === '/about' }">
                   <svg width="20" height="20" viewBox="0 0 24 24" class="fill-none">
                     <path d="M13 2L3 14H12L11 22L21 10H12L13 2Z" stroke="currentColor" stroke-width="2"/>
                   </svg>
                 </div>
-                <span class="text-base font-medium">トレンド</span>
+                <span class="text-base font-medium">サイトについて</span>
               </NuxtLink>
               
               <NuxtLink 
@@ -240,7 +224,7 @@
                 </div>
                 <div class="flex items-center gap-2">
                   <span class="text-base font-medium">お気に入り</span>
-                  <span v-if="favoriteCount > 0" class="px-1.5 py-0.5 bg-gray-300 dark:bg-gray-600 text-gray-700 dark:text-gray-300 text-xs rounded-full shadow-sm">{{ favoriteCount }}</span>
+                  <span v-if="isClient && favoriteCount > 0" class="px-1.5 py-0.5 bg-gray-300 dark:bg-gray-600 text-gray-700 dark:text-gray-300 text-xs rounded-full shadow-sm">{{ favoriteCount }}</span>
                 </div>
               </NuxtLink>
             </nav>
@@ -325,7 +309,13 @@ const searchInput = ref<HTMLInputElement | null>(null)
 
 // お気に入りストアを使用
 const favoritesStore = useFavoritesStore()
-const favoriteCount = computed(() => favoritesStore.favoriteCount)
+
+// ハイドレーション問題を回避するため、クライアントサイドでのみお気に入り数を表示
+const isClient = ref(false)
+const favoriteCount = computed(() => {
+  if (!isClient.value) return 0 // SSR時は常に0
+  return favoritesStore.favoriteCount
+})
 
 // Theme management
 const isDark = ref(false)
@@ -370,7 +360,7 @@ const performSearch = () => {
   if (query) {
     const trimmedQuery = query.trim()
     if (trimmedQuery) {
-      navigateTo(`/search?q=${encodeURIComponent(trimmedQuery)}`)
+      navigateTo(`/ranking?search=${encodeURIComponent(trimmedQuery)}`)
       closeSearch()
     }
   }
@@ -378,6 +368,9 @@ const performSearch = () => {
 
 // Initialize theme and keyboard shortcuts
 onMounted(() => {
+  // Enable client-side rendering for favorites
+  isClient.value = true
+  
   // Check for saved theme preference or default to light mode
   if (import.meta.client) {
     const savedTheme = localStorage.getItem('theme')

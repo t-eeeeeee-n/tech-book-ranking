@@ -1,4 +1,3 @@
-import type { Book, PaginatedResponse } from '~/types'
 import { getAllMockBooks } from '../utils/mockData'
 
 export default defineEventHandler(async (event) => {

@@ -117,7 +117,11 @@
       <div class="container mx-auto px-6">
         <!-- Initial Loading -->
         <div v-if="loading" class="mb-12">
-          <SkeletonLoader :count="24" />
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            <div v-for="n in 24" :key="n" class="animate-pulse">
+              <div class="bg-gray-200 dark:bg-gray-700 rounded-lg h-80"></div>
+            </div>
+          </div>
         </div>
 
         <!-- Error State -->
@@ -137,6 +141,16 @@
 
         <!-- Books Grid -->
         <div v-else>
+          <!-- Debug info -->
+          <div v-if="books.length === 0" class="text-center py-12 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg mb-6">
+            <p class="text-yellow-700 dark:text-yellow-300">
+              📊 デバッグ情報: books配列は空です (長さ: {{ books.length }})
+            </p>
+            <p class="text-sm text-yellow-600 dark:text-yellow-400 mt-2">
+              Loading: {{ loading }}, Error: {{ error }}, HasMore: {{ hasMore }}
+            </p>
+          </div>
+          
           <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-12">
             <BookCard
               v-for="(book, index) in books" 
@@ -150,16 +164,24 @@
             />
           </div>
 
-          <!-- Intersection Observer Target (invisible) -->
+          <!-- Intersection Observer Target -->
           <div 
             ref="targetRef" 
-            class="h-1"
+            class="h-20 flex items-center justify-center"
             v-if="hasMore"
-          ></div>
+          >
+            <div class="text-sm text-gray-400 bg-gray-100 dark:bg-gray-800 px-4 py-2 rounded-full">
+              📍 スクロールターゲット (デバッグ用)
+            </div>
+          </div>
 
           <!-- Loading More -->
           <div v-if="loadingMore" class="mb-12">
-            <SkeletonLoader :count="8" />
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              <div v-for="n in 8" :key="n" class="animate-pulse">
+                <div class="bg-gray-200 dark:bg-gray-700 rounded-lg h-80"></div>
+              </div>
+            </div>
           </div>
 
           <!-- No More Results -->
@@ -178,6 +200,18 @@
               <p class="text-gray-500 dark:text-gray-500 text-sm">検索条件を変更してお試しください</p>
             </div>
           </div>
+        </div>
+
+        <!-- SEO-friendly Pagination Alternative -->
+        <div class="text-center mt-16">
+          <NuxtLink 
+            to="/ranking/page/1"
+            class="inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-green-600 to-teal-600 text-white rounded-xl font-semibold text-lg hover:shadow-lg hover:-translate-y-1 transition-all duration-200"
+          >
+            <Icon name="heroicons:document-text" class="w-5 h-5" />
+            <span>SEO対応ページネーション版を見る</span>
+            <Icon name="heroicons:arrow-right" class="w-5 h-5" />
+          </NuxtLink>
         </div>
 
       </div>
@@ -239,7 +273,7 @@ const fetchInitialData = async () => {
     error.value = null
     currentPage.value = 1
     
-    const { data: response } = await $fetch('/api/books', {
+    const response = await $fetch('/api/books', {
       query: {
         page: 1,
         limit: 24,
@@ -250,10 +284,15 @@ const fetchInitialData = async () => {
       }
     })
     
+    console.log('📤 API Response received:', response)
+    
     if (response.success) {
       books.value = response.data
       hasMore.value = response.pagination.hasMore
       totalBooks.value = response.meta.totalBooks
+      console.log('✅ Books loaded:', books.value.length)
+    } else {
+      console.error('❌ API response indicates failure:', response)
     }
   } catch (err) {
     console.error('Failed to fetch initial data:', err)
@@ -270,7 +309,7 @@ const fetchNextPage = async () => {
     loadingMore.value = true
     const nextPage = currentPage.value + 1
     
-    const { data: response } = await $fetch('/api/books', {
+    const response = await $fetch('/api/books', {
       query: {
         page: nextPage,
         limit: 24,
@@ -295,14 +334,30 @@ const fetchNextPage = async () => {
 }
 
 const setupIntersectionObserver = () => {
-  if (!targetRef.value) return
+  if (!targetRef.value) {
+    console.warn('🔍 targetRef is not available for intersection observer')
+    return
+  }
+  
+  console.log('🔍 Setting up intersection observer')
   
   const observer = new IntersectionObserver((entries) => {
     const target = entries[0]
+    console.log('🔍 Intersection observer triggered:', {
+      isIntersecting: target.isIntersecting,
+      hasMore: hasMore.value,
+      loadingMore: loadingMore.value,
+      currentPage: currentPage.value
+    })
+    
     if (target.isIntersecting && hasMore.value && !loadingMore.value) {
+      console.log('🔍 Fetching next page...')
       fetchNextPage()
     }
-  }, { threshold: 0.1 })
+  }, { 
+    threshold: 0.1,
+    rootMargin: '100px' // Trigger a bit earlier
+  })
   
   observer.observe(targetRef.value)
   
@@ -366,7 +421,12 @@ const openAmazonLink = (amazonUrl: string) => {
 
 // Watch for filter changes
 watch(filters, () => {
-  fetchInitialData()
+  cleanupIntersectionObserver()
+  fetchInitialData().then(() => {
+    nextTick(() => {
+      setupIntersectionObserver()
+    })
+  })
 }, { deep: true })
 
 // ライフサイクル
@@ -378,12 +438,18 @@ onMounted(() => {
     currentPage: currentPage.value
   })
   
-  // 初期データを読み込み
-  fetchInitialData()
+  // URLクエリパラメータから検索クエリを取得
+  const route = useRoute()
+  if (route.query.search) {
+    filters.search = route.query.search as string
+  }
   
-  // Intersection observer をセットアップ
-  nextTick(() => {
-    setupIntersectionObserver()
+  // 初期データを読み込み
+  fetchInitialData().then(() => {
+    // データ読み込み後にIntersection observer をセットアップ
+    nextTick(() => {
+      setupIntersectionObserver()
+    })
   })
 })
 
@@ -402,8 +468,70 @@ useHead(() => ({
     {
       name: 'keywords',
       content: seoMeta.value.keywords
+    },
+    {
+      property: 'og:title',
+      content: seoMeta.value.title
+    },
+    {
+      property: 'og:description',
+      content: seoMeta.value.description
+    },
+    {
+      property: 'og:type',
+      content: 'website'
     }
   ]
 }))
+
+// Client-side structured data
+onMounted(() => {
+  if (import.meta.client) {
+    const structuredData = {
+      "@context": "https://schema.org",
+      "@type": "WebPage",
+      "name": "技術書ランキング",
+      "description": "Qiita記事で言及された技術書のランキング（無限スクロール版）",
+      "url": `${window.location.origin}/ranking`,
+      "mainEntity": {
+        "@type": "ItemList",
+        "numberOfItems": totalBooks.value,
+        "itemListOrder": "https://schema.org/ItemListOrderDescending",
+        "itemListElement": books.value.map((book, index) => ({
+          "@type": "ListItem",
+          "position": index + 1,
+          "item": {
+            "@type": "Book",
+            "name": book.title,
+            "author": book.author,
+            "aggregateRating": book.rating ? {
+              "@type": "AggregateRating",
+              "ratingValue": book.rating,
+              "ratingCount": book.mentionCount
+            } : undefined
+          }
+        }))
+      }
+    }
+
+    // Add structured data script to head
+    const script = document.createElement('script')
+    script.type = 'application/ld+json'
+    script.textContent = JSON.stringify(structuredData)
+    document.head.appendChild(script)
+
+    // Add canonical and alternate links
+    const canonical = document.createElement('link')
+    canonical.rel = 'canonical'
+    canonical.href = `${window.location.origin}/ranking`
+    document.head.appendChild(canonical)
+
+    const alternate = document.createElement('link')
+    alternate.rel = 'alternate'
+    alternate.href = `${window.location.origin}/ranking/page/1`
+    alternate.title = 'ページネーション版'
+    document.head.appendChild(alternate)
+  }
+})
 </script>
 

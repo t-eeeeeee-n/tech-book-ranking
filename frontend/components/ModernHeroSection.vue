@@ -9,7 +9,7 @@
     </div>
     
     <!-- Main Content -->
-    <div class="relative z-10 w-full pt-20 pb-32">
+    <div class="relative z-10 w-full py-20">
       <div class="container mx-auto px-6 relative z-10">
         <!-- Announcement Banner -->
         <div class="flex justify-center mb-12">
@@ -127,15 +127,16 @@
           </div>
         </div>
       </div>
-    </div>
 
-    <!-- Scroll Indicator -->
-    <div class="absolute bottom-8 left-1/2 transform -translate-x-1/2 flex flex-col items-center gap-2 text-gray-400 animate-bounce">
-      <div class="text-sm font-medium">ランキングを見る</div>
-      <div class="animate-pulse">
-        <svg width="16" height="16" viewBox="0 0 24 24" class="fill-none">
-          <path d="M7 13L12 18L17 13M7 6L12 11L17 6" stroke="currentColor" stroke-width="2"/>
-        </svg>
+
+      <!-- Scroll Indicator -->
+      <div class="pt-10 flex flex-col items-center gap-2 text-gray-400 animate-bounce">
+        <div class="text-sm font-medium">ランキングを見る</div>
+        <div class="animate-pulse">
+          <svg width="16" height="16" viewBox="0 0 24 24" class="fill-none">
+            <path d="M7 13L12 18L17 13M7 6L12 11L17 6" stroke="currentColor" stroke-width="2"/>
+          </svg>
+        </div>
       </div>
     </div>
   </section>
