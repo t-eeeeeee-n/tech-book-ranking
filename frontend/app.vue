@@ -2,7 +2,7 @@
   <div>
     <NuxtPage />
     
-    <footer class="bg-gray-900 dark:bg-gray-950 text-white text-center py-12 mt-32 transition-colors duration-300">
+    <footer class="bg-gray-900 dark:bg-gray-950 text-white text-center py-12 transition-colors duration-300">
       <div class="container mx-auto px-6">
         <div class="flex flex-col md:flex-row justify-between items-center gap-6">
           <div class="flex items-center gap-3">

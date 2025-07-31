@@ -62,11 +62,31 @@
                     {{ Array.isArray(book.author) ? book.author.join(', ') : book.author }}
                   </p>
                   
-                  <!-- カテゴリバッジ -->
-                  <div class="flex justify-center sm:justify-start mb-4">
+                  <!-- カテゴリバッジとお気に入りボタン -->
+                  <div class="flex justify-center sm:justify-start items-center gap-3 mb-4">
                     <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800 dark:bg-blue-900/50 dark:text-blue-300">
                       {{ Array.isArray(book.category) ? book.category[0] : book.category }}
                     </span>
+                    
+                    <!-- お気に入りボタン -->
+                    <button
+                      name="toggle-favorite"
+                      @click="toggleFavorite"
+                      class="w-8 h-8 rounded-full flex items-center justify-center hover:scale-110 active:scale-95 focus:outline-none transition-transform duration-200 ease-out"
+                      :aria-label="isFavorite ? 'お気に入りから削除' : 'お気に入りに追加'"
+                    >
+                      <span class="relative w-5 h-5">
+                        <Icon
+                          name="heroicons:heart-solid"
+                          :class="[
+                            'w-5 h-5 favorite-heart-icon',
+                            isFavorite
+                              ? 'text-red-500 fill-red-500 heart-filled'
+                              : 'text-gray-300 fill-gray-300 heart-empty'
+                          ]"
+                        />
+                      </span>
+                    </button>
                   </div>
                   
                   <!-- アクションボタン -->
@@ -81,24 +101,6 @@
                       <Icon name="heroicons:shopping-cart" class="w-5 h-5" />
                       Amazon で購入
                     </a>
-                    <button 
-                      name="toggle-favorite"
-                      @click="toggleFavorite"
-                      class="w-12 h-12 rounded-full flex items-center justify-center hover:scale-110 active:scale-95 focus:outline-none transition-transform duration-200 ease-out"
-                      :aria-label="isFavorite ? 'お気に入りから削除' : 'お気に入りに追加'"
-                    >
-                      <span class="relative w-6 h-6">
-                        <Icon 
-                          name="heroicons:heart-solid"
-                          :class="[
-                            'w-6 h-6 favorite-heart-icon',
-                            isFavorite 
-                              ? 'text-red-500 fill-red-500 heart-filled' 
-                              : 'text-gray-300 fill-gray-300 heart-empty'
-                          ]"
-                        />
-                      </span>
-                    </button>
                   </div>
                 </div>
               </div>

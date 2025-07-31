@@ -14,7 +14,7 @@
               完全ランキング
             </span>
           </h1>
-          <p class="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto mb-8">
+          <p class="text-xl text-gray-600 dark:text-gray-300 max-w-4xl mx-auto mb-8">
             Qiita記事で言及された
             <span class="font-semibold text-blue-600">{{ totalBooks.toLocaleString() }}冊</span>
             の技術書から、実際に参考にされている書籍をランキング形式でご紹介

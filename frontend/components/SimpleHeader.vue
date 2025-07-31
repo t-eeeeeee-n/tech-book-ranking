@@ -114,12 +114,12 @@
           <!-- Mobile Menu Button -->
           <button 
             @click="toggleMobileMenu"
-            class="p-2 rounded-lg border border-white/30 bg-white/80 transition-all duration-300 ease-out w-6 h-6 flex flex-col justify-center gap-1 md:hidden dark:bg-slate-800/80 dark:border-slate-600/30"
+            class="p-2 rounded-lg border border-white/30 bg-white/80 transition-all duration-300 ease-out w-10 h-10 flex flex-col justify-center gap-1 md:hidden dark:bg-slate-800/80 dark:border-slate-600/30"
             :aria-label="mobileMenuOpen ? 'メニューを閉じる' : 'メニューを開く'"
           >
-            <span class="h-0.5 bg-current rounded-full transition-all duration-300 ease-out w-full" :class="{ 'rotate-45 translate-x-1 translate-y-1': mobileMenuOpen }"></span>
-            <span class="h-0.5 bg-current rounded-full transition-all duration-300 ease-out w-3/4" :class="{ 'opacity-0': mobileMenuOpen }"></span>
-            <span class="h-0.5 bg-current rounded-full transition-all duration-300 ease-out w-full" :class="{ '-rotate-45 translate-x-1 -translate-y-1': mobileMenuOpen }"></span>
+            <span class="h-0.5 bg-current rounded-full transition-all duration-300 ease-out w-5" :class="{ 'rotate-45 translate-y-0.5': mobileMenuOpen }"></span>
+            <span class="h-0.5 bg-current rounded-full transition-all duration-300 ease-out w-4" :class="{ 'opacity-0': mobileMenuOpen }"></span>
+            <span class="h-0.5 bg-current rounded-full transition-all duration-300 ease-out w-5" :class="{ '-rotate-45 -translate-y-0.5': mobileMenuOpen }"></span>
           </button>
         </div>
       </div>
@@ -136,10 +136,7 @@
     >
       <div v-if="mobileMenuOpen" class="fixed inset-0 z-[100] bg-black/50 backdrop-blur-sm flex items-start justify-end p-4 pt-20">
         <div class="w-full max-w-sm bg-white dark:bg-gray-800 rounded-2xl shadow-2xl overflow-hidden transform transition-transform duration-300" :class="{ 'translate-x-0': mobileMenuOpen, 'translate-x-full': !mobileMenuOpen }">
-          <div class="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
-            <div>
-              <h3 class="text-lg font-semibold text-gray-900 dark:text-white">メニュー</h3>
-            </div>
+          <div class="flex items-center justify-end p-3 border-b border-gray-200 dark:border-gray-700">
             <button @click="toggleMobileMenu" class="p-2 rounded-lg text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
               <svg width="24" height="24" viewBox="0 0 24 24" class="fill-none">
                 <path d="M18 6L6 18M6 6L18 18" stroke="currentColor" stroke-width="2"/>
@@ -178,23 +175,6 @@
                   </svg>
                 </div>
                 <span class="text-base font-medium">ランキング</span>
-              </NuxtLink>
-              
-              <NuxtLink 
-                to="/ranking"
-                class="flex items-center gap-3 p-3.5 rounded-xl text-gray-700 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-gray-700 transition-colors"
-                :class="{ 'bg-cyan-500/10 text-cyan-500 dark:bg-cyan-500/20': $route.path === '/ranking' }"
-                @click="toggleMobileMenu"
-              >
-                <div class="text-gray-500 dark:text-gray-400" :class="{ 'text-cyan-500': $route.path === '/ranking' }">
-                  <svg width="20" height="20" viewBox="0 0 24 24" class="fill-none">
-                    <rect x="3" y="3" width="7" height="7" stroke="currentColor" stroke-width="2"/>
-                    <rect x="14" y="3" width="7" height="7" stroke="currentColor" stroke-width="2"/>
-                    <rect x="3" y="14" width="7" height="7" stroke="currentColor" stroke-width="2"/>
-                    <rect x="14" y="14" width="7" height="7" stroke="currentColor" stroke-width="2"/>
-                  </svg>
-                </div>
-                <span class="text-base font-medium">カテゴリ別ランキング</span>
               </NuxtLink>
               
               <NuxtLink 
