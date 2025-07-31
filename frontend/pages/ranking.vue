@@ -207,31 +207,16 @@
 </template>
 
 <script setup lang="ts">
+// Import statements
+import type { Book, Category, ExtendedHTMLElement } from '~/types'
+
 // Manual component import to fix auto-import issue with hyphenated names
 import BookCard from '~/components/BookCard.vue'
 
-// Define interfaces
-interface Category {
-  value: string
-  label: string
-}
-
-// Categories
-const categories: Category[] = [
-  { value: 'programming', label: 'プログラミング' },
-  { value: 'web', label: 'Web開発' },
-  { value: 'mobile', label: 'モバイル開発' },
-  { value: 'ai', label: 'AI・機械学習' },
-  { value: 'infrastructure', label: 'インフラ・DevOps' },
-  { value: 'database', label: 'データベース' },
-  { value: 'security', label: 'セキュリティ' },
-  { value: 'design', label: 'デザイン・UI/UX' },
-  { value: 'management', label: 'プロジェクト管理' },
-  { value: 'career', label: 'キャリア・スキル' }
-]
-
 // Data and state management
-const books = ref<any[]>([])
+const categories = ref<Category[]>([])
+const categoriesLoading = ref(true)
+const books = ref<Book[]>([])
 const loading = ref(false)
 const loadingMore = ref(false)
 const hasMore = ref(true)
@@ -256,6 +241,20 @@ const seoMeta = computed(() => ({
 }))
 
 // API functions
+const fetchCategories = async () => {
+  try {
+    categoriesLoading.value = true
+    const response = await $fetch('/api/categories')
+    if (response.success) {
+      categories.value = response.data
+    }
+  } catch (err) {
+    console.error('Failed to fetch categories:', err)
+  } finally {
+    categoriesLoading.value = false
+  }
+}
+
 const fetchInitialData = async () => {
   try {
     loading.value = true
@@ -274,7 +273,7 @@ const fetchInitialData = async () => {
     })
     
     if (response.success) {
-      books.value = response.data
+      books.value = response.data.map(book => book as unknown as Book)
       hasMore.value = response.pagination.hasMore
       totalBooks.value = response.meta.totalBooks
     }
@@ -304,7 +303,7 @@ const fetchNextPage = async () => {
     })
     
     if (response.success) {
-      books.value.push(...response.data)
+      books.value.push(...response.data.map(book => book as unknown as Book))
       hasMore.value = response.pagination.hasMore
       currentPage.value = nextPage
     }
@@ -334,12 +333,13 @@ const setupIntersectionObserver = () => {
   observer.observe(targetRef.value)
   
   // Store observer for cleanup
-  ;(targetRef.value as any).__observer = observer
+  ;(targetRef.value as ExtendedHTMLElement).__observer = observer
 }
 
 const cleanupIntersectionObserver = () => {
-  if (targetRef.value && (targetRef.value as any).__observer) {
-    ;(targetRef.value as any).__observer.disconnect()
+  const element = targetRef.value as ExtendedHTMLElement | null
+  if (element && element.__observer) {
+    element.__observer.disconnect()
   }
 }
 
@@ -362,16 +362,24 @@ const formattedLastUpdate = computed(() => {
 
 // Methods
 const viewBookDetails = (bookId: number) => {
-  navigateTo({ name: 'book-id', params: { id: bookId.toString() } })
-}
-
-// Define Book interface locally
-interface Book {
-  id: number
-  title: string
-  author: string
-  mentionCount: number
-  rating?: number
+  // 現在のフィルター状態をクエリパラメータとして渡す
+  const query: Record<string, string> = {}
+  
+  if (filters.category && filters.category !== '') {
+    query.category = filters.category
+  }
+  if (filters.period && filters.period !== 'all') {
+    query.period = filters.period
+  }
+  if (filters.search && filters.search !== '') {
+    query.search = filters.search
+  }
+  
+  navigateTo({ 
+    name: 'book-id', 
+    params: { id: bookId.toString() },
+    query: Object.keys(query).length > 0 ? query : undefined
+  })
 }
 
 // SNS Share functions
@@ -403,17 +411,31 @@ watch(filters, () => {
 
 // ライフサイクル
 onMounted(() => {
-  // URLクエリパラメータから検索クエリを取得
+  // URLクエリパラメータからフィルタを取得
   const route = useRoute()
   if (route.query.search) {
     filters.search = route.query.search as string
   }
+  if (route.query.category) {
+    filters.category = route.query.category as string
+  }
+  if (route.query.period) {
+    filters.period = route.query.period as string
+  }
+  if (route.query.sort) {
+    filters.sort = route.query.sort as string
+  }
   
-  // 初期データを読み込み
-  fetchInitialData().then(() => {
-    // データ読み込み後にIntersection observer をセットアップ
-    nextTick(() => {
-      setupIntersectionObserver()
+  // カテゴリと初期データを並行して読み込み
+  fetchCategories()
+  
+  // URLパラメータ設定後に初期データを読み込み
+  nextTick(() => {
+    fetchInitialData().then(() => {
+      // データ読み込み後にIntersection observer をセットアップ
+      nextTick(() => {
+        setupIntersectionObserver()
+      })
     })
   })
 })
@@ -479,7 +501,7 @@ onMounted(() => {
       }
     }
 
-    // Add structured data script to head
+    // Add a structured data script to head
     const script = document.createElement('script')
     script.type = 'application/ld+json'
     script.textContent = JSON.stringify(structuredData)

@@ -120,6 +120,7 @@
 </template>
 
 <script setup lang="ts">
+import type { Book, BooksListApiResponse } from '~/types'
 import BookCard from '~/components/BookCard.vue'
 
 // Get page parameter
@@ -128,7 +129,7 @@ const currentPage = computed(() => parseInt(route.params.page as string) || 1)
 
 // Fetch data for specific page
 const limit = 24
-const { data: response, pending, error } = await useFetch('/api/books', {
+const { data: response, pending, error } = await useFetch<BooksListApiResponse>('/api/books', {
   query: {
     page: currentPage,
     limit,
@@ -137,7 +138,7 @@ const { data: response, pending, error } = await useFetch('/api/books', {
   key: `books-page-${currentPage.value}`
 })
 
-// Extract data
+// Extract data with proper typing
 const books = computed(() => response.value?.data || [])
 const totalBooks = computed(() => response.value?.meta?.totalBooks || 0)
 const totalPages = computed(() => response.value?.pagination?.totalPages || 1)
@@ -179,14 +180,7 @@ const visiblePages = computed(() => {
   return pages
 })
 
-// Define Book interface
-interface Book {
-  id: number
-  title: string
-  author: string
-  mentionCount: number
-  rating?: number
-}
+// Remove duplicate Book interface - using the one from ~/types
 
 // Methods
 const viewBookDetails = (bookId: number) => {

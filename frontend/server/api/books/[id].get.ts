@@ -1,4 +1,5 @@
-import {getMockBookById} from '../../utils/mockData'
+import { mockDatabase } from '../../utils/mockDatabase'
+import { addNumericId, convertStringIdToNumber } from '../../utils/idConverter'
 
 export default defineEventHandler(async (event) => {
   try {
@@ -16,22 +17,10 @@ export default defineEventHandler(async (event) => {
       })
     }
 
-    const bookId = parseInt(id)
-    
-    if (isNaN(bookId) || bookId <= 0) {
-      throw createError({
-        statusCode: 400,
-        statusMessage: 'Invalid Book ID',
-        data: {
-          success: false,
-          error: 'Invalid parameter',
-          message: 'Book ID must be a positive integer'
-        }
-      })
-    }
-
-    // Get individual book (in production, this would be a direct database query)
-    const book = getMockBookById(bookId)
+    const book = mockDatabase.books.find(b => {
+      const bookId = convertStringIdToNumber(b._id)
+      return bookId.toString() === id
+    })
 
     if (!book) {
       throw createError({
@@ -40,31 +29,56 @@ export default defineEventHandler(async (event) => {
         data: {
           success: false,
           error: 'Book not found',
-          message: `No book found with ID ${bookId}`
+          message: `No book found with ID ${id}`
         }
       })
     }
 
-    // Add additional computed data for detailed view
+    // Get book mentions with article details
+    const bookMentions = mockDatabase.book_mentions
+      .filter(mention => mention.bookId === id)
+      .map(mention => {
+        const article = mockDatabase.qiita_articles.find(a => a._id === mention.articleId)
+        return {
+          ...mention,
+          article: article || null
+        }
+      })
+      .filter(mention => mention.article !== null)
+      .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+
+    // Get related books (books mentioned in the same articles)
+    const relatedArticleIds = bookMentions.map(mention => mention.articleId)
+    const relatedBookIds = mockDatabase.book_mentions
+      .filter(mention => 
+        relatedArticleIds.includes(mention.articleId) && 
+        mention.bookId !== id
+      )
+      .map(mention => mention.bookId)
+    
+    const uniqueRelatedBookIds = [...new Set(relatedBookIds)]
+    const relatedBooks = uniqueRelatedBookIds
+      .map(bookId => mockDatabase.books.find(b => b._id === bookId))
+      .filter(Boolean)
+      .slice(0, 5) as (typeof mockDatabase.books[0])[]
+
+    // Add computed fields
     const bookWithDetails = {
-      ...book,
-      // Add computed fields that might be useful for the detail page
-      averageRating: book.rating || (book.goodBookScore ? Math.round((book.goodBookScore / 100 * 2 + 3) * 10) / 10 : 4.0),
-      publicationYear: book.publishDate ? new Date(book.publishDate as string).getFullYear() : new Date().getFullYear(),
-      daysSinceLastMention: book.lastMentionDate ? Math.floor((Date.now() - new Date(book.lastMentionDate as string).getTime()) / (1000 * 60 * 60 * 24)) : 0,
+      ...addNumericId(book), // 数値IDを追加
+      mentions: bookMentions,
+      relatedBooks: relatedBooks.map(addNumericId), // 関連書籍にも数値IDを追加
+      daysSinceLastMention: book.lastMentionedAt ? Math.floor((Date.now() - new Date(book.lastMentionedAt).getTime()) / (1000 * 60 * 60 * 24)) : 0,
       isPopular: book.mentionCount >= 50,
-      isRecentlyMentioned: book.lastMentionDate ? (Date.now() - new Date(book.lastMentionDate as string).getTime()) < (30 * 24 * 60 * 60 * 1000) : false, // within 30 days
-      // Ensure consistent naming with other fields
-      publishedDate: book.publishDate,
-      uniqueArticleCount: book.articleCount,
-      trendScore: book.goodBookScore
+      isRecentlyMentioned: book.lastMentionedAt ? (Date.now() - new Date(book.lastMentionedAt).getTime()) < (30 * 24 * 60 * 60 * 1000) : false
     }
 
     return {
       success: true,
       data: bookWithDetails,
       meta: {
-        bookId,
+        bookId: id,
+        mentionCount: bookMentions.length,
+        relatedBooksCount: relatedBooks.length,
         lastUpdated: new Date().toISOString(),
         source: 'mock_data'
       }

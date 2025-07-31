@@ -120,7 +120,7 @@
 const mobileMenuOpen = ref(false)
 const { isDark, toggleTheme } = useTheme()
 
-// Close mobile menu when clicking outside
+// Close the mobile menu when clicking outside
 const closeOnClickOutside = () => {
   mobileMenuOpen.value = false
 }

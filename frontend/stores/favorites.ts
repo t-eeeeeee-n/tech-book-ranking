@@ -22,9 +22,9 @@ export const useFavoritesStore = defineStore('favorites', () => {
       const favoriteBook: FavoriteBook = {
         id: book.id,
         title: book.title,
-        author: book.author,
+        author: Array.isArray(book.author) ? book.author.join(', ') : book.author,
         imageUrl: book.imageUrl,
-        category: book.category,
+        category: Array.isArray(book.category) ? book.category[0] : book.category,
         mentionCount: book.mentionCount,
         goodBookScore: book.goodBookScore,
         addedAt: new Date().toISOString()

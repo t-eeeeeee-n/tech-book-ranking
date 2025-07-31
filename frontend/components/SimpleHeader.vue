@@ -36,7 +36,7 @@
                 class="relative flex items-center gap-2 px-4 py-2 rounded-lg transition-all duration-300 ease-out hover:-translate-y-0.5 hover:bg-cyan-500/10 text-gray-700 dark:text-gray-300 hover:text-cyan-500"
                 :class="{ 'bg-cyan-500/15 text-cyan-500': $route.path === '/ranking' }"
               >
-                <div class="text-gray-600 dark:text-gray-400 transition-colors duration-300 ease-out" :class="{ 'text-cyan-500': $route.path === '/ranking' }">
+                <div class="text-gray-700 dark:text-gray-300 transition-colors duration-300 ease-out" :class="{ 'text-cyan-500': $route.path === '/ranking' }">
                   <svg width="16" height="16" viewBox="0 0 24 24" class="fill-none">
                     <path d="M3 13L12 3L21 13" stroke="currentColor" stroke-width="2"/>
                     <path d="M8 21V13H16V21" stroke="currentColor" stroke-width="2"/>
@@ -50,7 +50,7 @@
                 class="relative flex items-center gap-2 px-4 py-2 rounded-lg transition-all duration-300 ease-out hover:-translate-y-0.5 hover:bg-cyan-500/10 text-gray-700 dark:text-gray-300 hover:text-cyan-500"
                 :class="{ 'bg-cyan-500/15 text-cyan-500': $route.path === '/about' }"
               >
-                <div class="text-gray-600 dark:text-gray-400 transition-colors duration-300 ease-out" :class="{ 'text-cyan-500': $route.path === '/about' }">
+                <div class="text-gray-700 dark:text-gray-300 transition-colors duration-300 ease-out" :class="{ 'text-cyan-500': $route.path === '/about' }">
                   <svg width="16" height="16" viewBox="0 0 24 24" class="fill-none">
                     <path d="M13 2L3 14H12L11 22L21 10H12L13 2Z" stroke="currentColor" stroke-width="2"/>
                   </svg>
@@ -63,7 +63,7 @@
                 class="relative flex items-center gap-2 px-4 py-2 rounded-lg transition-all duration-300 ease-out hover:-translate-y-0.5 hover:bg-cyan-500/10 text-gray-700 dark:text-gray-300 hover:text-cyan-500"
                 :class="{ 'bg-cyan-500/15 text-cyan-500': $route.path === '/favorites' }"
               >
-                <div class="text-gray-600 dark:text-gray-400 transition-colors duration-300 ease-out" :class="{ 'text-cyan-500': $route.path === '/favorites' }">
+                <div class="text-gray-700 dark:text-gray-300 transition-colors duration-300 ease-out" :class="{ 'text-cyan-500': $route.path === '/favorites' }">
                   <svg width="16" height="16" viewBox="0 0 24 24" class="fill-none">
                     <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" stroke="currentColor" stroke-width="2"/>
                   </svg>
@@ -321,18 +321,7 @@ const favoriteCount = computed(() => {
 })
 
 // Theme management
-const isDark = ref(false)
-
-const toggleTheme = () => {
-  isDark.value = !isDark.value
-  if (isDark.value) {
-    document.documentElement.classList.add('dark')
-    localStorage.setItem('theme', 'dark')
-  } else {
-    document.documentElement.classList.remove('dark')
-    localStorage.setItem('theme', 'light')
-  }
-}
+const { isDark, toggleTheme } = useTheme()
 
 // Methods
 const toggleSearch = () => {
@@ -369,37 +358,13 @@ const performSearch = () => {
   }
 }
 
-// Initialize theme and keyboard shortcuts
+// Initialize client state and keyboard shortcuts
 onMounted(() => {
   // Enable client-side rendering for favorites
   isClient.value = true
   
-  // Check for saved theme preference or default to light mode
+  // Keyboard shortcuts (theme initialization is handled by useTheme() composable)
   if (import.meta.client) {
-    const savedTheme = localStorage.getItem('theme')
-    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
-    
-    if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
-      isDark.value = true
-      document.documentElement.classList.add('dark')
-    } else {
-      isDark.value = false
-      document.documentElement.classList.remove('dark')
-    }
-    
-    // Watch for system theme changes
-    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
-    const handleSystemThemeChange = (e: MediaQueryListEvent) => {
-      if (!localStorage.getItem('theme')) {
-        isDark.value = e.matches
-        if (e.matches) {
-          document.documentElement.classList.add('dark')
-        } else {
-          document.documentElement.classList.remove('dark')
-        }
-      }
-    }
-    mediaQuery.addEventListener('change', handleSystemThemeChange)
     
     // Keyboard shortcuts
     const handleKeydown = (e: KeyboardEvent) => {
@@ -419,7 +384,6 @@ onMounted(() => {
     
     onUnmounted(() => {
       document.removeEventListener('keydown', handleKeydown)
-      mediaQuery.removeEventListener('change', handleSystemThemeChange)
     })
   }
 })

@@ -1,5 +1,5 @@
 export default defineEventHandler(async (event) => {
-  const SITE_URL = 'https://techrank-books.com' // Replace with actual domain
+  const SITE_URL = 'https://techrank-books.com' // Replace it with actual domain
   const BOOKS_PER_PAGE = 24
   const TOTAL_BOOKS = 500 // This would come from your API in real implementation
   const TOTAL_PAGES = Math.ceil(TOTAL_BOOKS / BOOKS_PER_PAGE)

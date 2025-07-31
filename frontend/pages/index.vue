@@ -72,24 +72,11 @@
 <script setup lang="ts">
 
 // Import types
-import type {Book} from '~/types'
-import BookCard from "~/components/BookCard.vue";
-
-// Define API response type (simplified to avoid type complexity)
-interface BooksApiResponse {
-  success: boolean
-  data: Book[]
-  pagination: Record<string, any>
-  meta: {
-    totalBooks: number
-    filteredCount: number
-    appliedFilters: Record<string, any>
-    lastUpdated: string
-  }
-}
+import type { Book, BooksListApiResponse } from '~/types'
+import BookCard from "~/components/BookCard.vue"
 
 // Fetch top books data from API
-const topBooksResponse = ref<BooksApiResponse | null>(null)
+const topBooksResponse = ref<BooksListApiResponse | null>(null)
 const isLoading = ref(true)
 
 // Extract data from API response
@@ -97,16 +84,17 @@ const topBooks = computed(() => {
   return topBooksResponse.value?.data || []
 })
 
-// Fetch data on client-side only to avoid SSR issues
+// Fetch data on the client-side only to avoid SSR issues
 onMounted(async () => {
   try {
-    topBooksResponse.value = await $fetch<BooksApiResponse>('/api/books', {
+    topBooksResponse.value = await $fetch<BooksListApiResponse>('/api/books', {
       query: {
         limit: 10,
         sort: 'mentions'
       }
     })
   } catch (error) {
+    console.error('Failed to fetch top books:', error)
   } finally {
     isLoading.value = false
   }
@@ -118,19 +106,22 @@ const totalBooks = computed(() => {
 
 // Methods
 const viewBookDetails = (bookId: number) => {
+  // ホームページからは通常の遷移（フィルター状態なし）
   navigateTo({ name: 'book-id', params: { id: bookId.toString() } })
 }
 
 // SNS Share functions
 const shareOnFacebook = (book: Book) => {
   const url = encodeURIComponent(`${window.location.origin}/book/${book.id}`)
-  const text = encodeURIComponent(`📚 ${book.title} - ${book.author} がQiitaで${book.mentionCount}回言及されています！`)
+  const authorText = Array.isArray(book.author) ? book.author.join(', ') : book.author
+  const text = encodeURIComponent(`📚 ${book.title} - ${authorText} がQiitaで${book.mentionCount}回言及されています！`)
   window.open(`https://www.facebook.com/sharer/sharer.php?u=${url}&quote=${text}`, '_blank', 'width=600,height=400')
 }
 
 const shareOnTwitter = (book: Book) => {
   const url = encodeURIComponent(`${window.location.origin}/book/${book.id}`)
-  const text = encodeURIComponent(`📚 ${book.title} - ${book.author}\nQiitaで${book.mentionCount}回言及されている技術書です！\n⭐ 評価: ${book.rating}\n\n#技術書 #プログラミング #TechRankBooks`)
+  const authorText = Array.isArray(book.author) ? book.author.join(', ') : book.author
+  const text = encodeURIComponent(`📚 ${book.title} - ${authorText}\nQiitaで${book.mentionCount}回言及されている技術書です！\n⭐ 評価: ${book.rating}\n\n#技術書 #プログラミング #TechRankBooks`)
   window.open(`https://twitter.com/intent/tweet?text=${text}&url=${url}`, '_blank', 'width=600,height=400')
 }
 

@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen bg-gray-50 dark:bg-gray-900">
+  <div class="min-h-screen">
     <!-- Header -->
     <SimpleHeader />
     
@@ -65,18 +65,18 @@
                   <!-- カテゴリバッジ -->
                   <div class="flex justify-center sm:justify-start mb-4">
                     <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800 dark:bg-blue-900/50 dark:text-blue-300">
-                      {{ book.category }}
+                      {{ Array.isArray(book.category) ? book.category[0] : book.category }}
                     </span>
                   </div>
                   
                   <!-- アクションボタン -->
-                  <div class="flex flex-col sm:flex-row gap-3 justify-center sm:justify-start items-center sm:items-start">
+                  <div class="flex flex-col sm:flex-row gap-3 justify-center sm:justify-start items-center">
                     <a 
                       v-if="book.amazonUrl"
                       :href="book.amazonUrl"
                       target="_blank"
                       rel="noopener noreferrer"
-                      class="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-orange-500 to-orange-600 text-white rounded-xl font-semibold hover:from-orange-600 hover:to-orange-700 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 hover:scale-105"
+                      class="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-orange-500 to-orange-600 text-white rounded-xl font-semibold hover:from-orange-600 hover:to-orange-700 transition-all duration-200 shadow-md hover:shadow-lg"
                     >
                       <Icon name="heroicons:shopping-cart" class="w-5 h-5" />
                       Amazon で購入
@@ -84,16 +84,20 @@
                     <button 
                       name="toggle-favorite"
                       @click="toggleFavorite"
-                      class="w-10 h-10 rounded-full flex items-center justify-center transition-all duration-200 shadow-md hover:shadow-lg transform hover:-translate-y-0.5 hover:scale-110 focus:outline-none"
-                      :class="isFavorite ? 
-                        'bg-red-500 hover:bg-red-600 text-white' : 
-                        'bg-white border border-gray-300 text-gray-500 hover:bg-red-50 hover:text-red-500 hover:border-red-300 dark:bg-gray-800 dark:border-gray-600 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-red-400'"
+                      class="w-12 h-12 rounded-full flex items-center justify-center hover:scale-110 active:scale-95 focus:outline-none transition-transform duration-200 ease-out"
                       :aria-label="isFavorite ? 'お気に入りから削除' : 'お気に入りに追加'"
                     >
-                      <Icon 
-                        :name="isFavorite ? 'heroicons:heart-solid' : 'heroicons:heart'" 
-                        class="w-5 h-5 transition-all duration-200"
-                      />
+                      <span class="relative w-6 h-6">
+                        <Icon 
+                          name="heroicons:heart-solid"
+                          :class="[
+                            'w-6 h-6 favorite-heart-icon',
+                            isFavorite 
+                              ? 'text-red-500 fill-red-500 heart-filled' 
+                              : 'text-gray-300 fill-gray-300 heart-empty'
+                          ]"
+                        />
+                      </span>
                     </button>
                   </div>
                 </div>
@@ -332,11 +336,53 @@
                         </div>
                     </div>
                   </div>
+
+                  <!-- 右側：ランキング情報 -->
+                  <div class="flex-shrink-0 lg:w-80">
+                    <div class="bg-white dark:bg-gray-800/50 rounded-xl p-5 border border-gray-200 dark:border-gray-700">
+                      <div class="text-center lg:text-left mb-4">
+                        <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-2">🏆 ランキング情報</h3>
+                        <p class="text-sm text-gray-600 dark:text-gray-400">現在の順位</p>
+                      </div>
+                      
+                      <!-- 全体ランキング -->
+                      <div class="space-y-3">
+                        <div class="flex items-center justify-between p-3 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-lg border border-blue-100 dark:border-blue-800/50">
+                          <div>
+                            <div class="text-sm font-medium text-gray-700 dark:text-gray-300">全体ランキング</div>
+                            <div class="text-xs text-gray-500 dark:text-gray-400">全期間・全分野</div>
+                          </div>
+                          <div class="text-right">
+                            <div class="text-xl font-bold text-blue-600 dark:text-blue-400">{{ overallRank }}</div>
+                            <div class="text-xs text-gray-500 dark:text-gray-400">/ {{ overallTotal.toLocaleString() }}冊</div>
+                          </div>
+                        </div>
+
+                        <!-- フィルタリング時のランキング -->
+                        <div v-if="filteredRank !== null" class="flex items-center justify-between p-3 bg-gradient-to-r from-emerald-50 to-green-50 dark:from-emerald-900/20 dark:to-green-900/20 rounded-lg border border-emerald-100 dark:border-emerald-800/50">
+                          <div>
+                            <div class="text-sm font-medium text-gray-700 dark:text-gray-300">{{ filterLabel }}</div>
+                            <div class="text-xs text-gray-500 dark:text-gray-400">条件絞り込み時</div>
+                          </div>
+                          <div class="text-right">
+                            <div class="text-xl font-bold text-emerald-600 dark:text-emerald-400">{{ filteredRank }}</div>
+                            <div class="text-xs text-gray-500 dark:text-gray-400">/ {{ filteredTotal.toLocaleString() }}冊</div>
+                          </div>
+                        </div>
+
+                        <!-- フィルター状態の説明 -->
+                        <div v-if="filteredRank !== null" class="text-xs text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-800/50 rounded-lg p-2 border border-gray-200 dark:border-gray-700">
+                          <Icon name="heroicons:information-circle" class="w-3 h-3 inline mr-1" />
+                          ランキングページからの絞り込み条件を反映
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
 
               <!-- 詳細指標 -->
-              <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+              <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <!-- 言及数 -->
                 <div class="bg-white dark:bg-gray-800 rounded-xl p-4 border border-gray-100 dark:border-gray-700 hover:shadow-md transition-all duration-200 hover:-translate-y-0.5 hover:scale-105">
                   <div class="flex items-center gap-3 mb-2">
@@ -376,18 +422,6 @@
                   </div>
                 </div>
 
-                <!-- ランク -->
-                <div class="bg-white dark:bg-gray-800 rounded-xl p-4 border border-gray-100 dark:border-gray-700 hover:shadow-md transition-all duration-200 hover:-translate-y-0.5 hover:scale-105">
-                  <div class="flex items-center gap-3 mb-2">
-                    <div class="w-10 h-10 bg-blue-100 dark:bg-blue-900/30 rounded-lg flex items-center justify-center">
-                      <Icon name="heroicons:trophy" class="w-5 h-5 text-blue-600 dark:text-blue-400" />
-                    </div>
-                    <div>
-                      <div class="text-2xl font-bold text-gray-900 dark:text-white">#{{ currentRank || '?' }}</div>
-                      <div class="text-xs text-gray-500 dark:text-gray-400">ランク</div>
-                    </div>
-                  </div>
-                </div>
               </div>
             </div>
           </div>
@@ -436,8 +470,12 @@
                 <p class="text-gray-700 dark:text-gray-300 leading-relaxed">{{ book.description }}</p>
               </div>
               <div class="flex flex-wrap gap-2 mb-3">
-                <span class="inline-block bg-blue-100 dark:bg-blue-900/50 text-blue-800 dark:text-blue-300 text-sm px-3 py-1 rounded-full">
-                  {{ book.category }}
+                <span 
+                  v-for="category in (Array.isArray(book.category) ? book.category : [book.category])" 
+                  :key="category"
+                  class="inline-block bg-blue-100 dark:bg-blue-900/50 text-blue-800 dark:text-blue-300 text-sm px-3 py-1 rounded-full"
+                >
+                  {{ category }}
                 </span>
               </div>
             </div>
@@ -536,28 +574,88 @@
 </template>
 
 <script setup lang="ts">
+import type { Book, BookApiResponse, DetailedRankingApiResponse, MentionsApiResponse, RankingItem } from '~/types'
 import { useFavoritesStore } from '~/stores/favorites'
 const route = useRoute()
 const bookId = route.params.id
 
 // 書籍データを取得
-const { data: bookData, pending, error } = await useFetch(`/api/books/${bookId}`)
+const { data: bookResponse, pending, error } = await useFetch<BookApiResponse>(`/api/books/${bookId}`)
 
-// book データを取得
-const book = computed(() => bookData.value?.data || null)
+// URLパラメータからフィルター状態を取得
+const filterCategory = route.query.category as string || ''
+const filterPeriod = route.query.period as string || 'all'
+
+// 全体ランキングデータを取得
+const { data: overallRankingData } = await useFetch<DetailedRankingApiResponse>(`/api/rankings`, {
+  query: {
+    type: 'overall',
+    period: 'all',
+    limit: 1000
+  }
+})
+
+// フィルタリング時の条件付きランキングデータを取得
+const { data: filteredRankingData } = await useFetch<DetailedRankingApiResponse>(`/api/rankings`, {
+  query: {
+    type: 'overall',
+    category: filterCategory || undefined,
+    period: filterPeriod !== 'all' ? filterPeriod : undefined,
+    limit: 1000
+  },
+  default: () => null
+})
+
+// book データを取得（デフォルト値を含む）
+const book = computed((): Book | null => {
+  const rawBook = bookResponse.value?.data
+  if (!rawBook) return null
+  
+  // 型アサーションで明示的にBook型として扱う（unknownを経由して安全に）
+  const typedBook = rawBook as Book
+  
+  // 不足しているプロパティにデフォルト値を設定
+  return {
+    ...typedBook,
+    articleCount: typedBook.articleCount ?? typedBook.uniqueArticleCount ?? 0,
+    totalLikes: typedBook.totalLikes ?? (Math.floor((typedBook.mentionCount || 0) * 10) || 245),
+    newestArticleDate: typedBook.newestArticleDate ?? typedBook.lastMentionedAt ?? new Date().toISOString(),
+    publishedDate: typedBook.publishedDate ?? (typedBook.publishedYear ? `${typedBook.publishedYear}-01-01T00:00:00.000Z` : undefined),
+    isbn: typedBook.isbn ?? typedBook.isbn13 ?? typedBook.isbn10 ?? undefined
+  }
+})
 
 // お気に入りストアを使用
 const favoritesStore = useFavoritesStore()
 
-// お気に入り状態を計算
+// ハイドレーション問題を回避するため、クライアントサイドでのみお気に入り状態を表示
+const isClient = ref(false)
 const isFavorite = computed(() => {
+  if (!isClient.value) return false // SSR時は常にfalse
   return book.value ? favoritesStore.isFavorite(book.value.id) : false
+})
+
+// クライアントサイドでマウント後に状態を更新
+onMounted(() => {
+  isClient.value = true
 })
 
 // お気に入りの切り替え
 const toggleFavorite = () => {
   if (book.value) {
     favoritesStore.toggleFavorite(book.value)
+    
+    // 簡単なフィードバック効果
+    if (typeof window !== 'undefined') {
+      // ハートアニメーション用の一時的なクラス追加
+      const button = document.activeElement as HTMLElement
+      if (button) {
+        button.classList.add('animate-pulse')
+        setTimeout(() => {
+          button.classList.remove('animate-pulse')
+        }, 200)
+      }
+    }
   }
 }
 
@@ -584,10 +682,10 @@ const activeTab = ref('details')
 
 // モックの言及データ（実際の実装では API から取得）
 // Fetch mentions data from API
-const { data: mentionsResponse } = await useFetch(`/api/books/${bookId}/mentions`)
+const { data: mentionsResponse } = await useFetch<MentionsApiResponse>(`/api/books/${bookId}/mentions`)
 
 const mentions = computed(() => {
-  return mentionsResponse.value?.data?.map((mention: any) => ({
+  return mentionsResponse.value?.data?.map((mention) => ({
     id: mention.id,
     articleTitle: mention.title,
     articleUrl: mention.url,
@@ -599,11 +697,84 @@ const mentions = computed(() => {
   })) || []
 })
 
-// 現在のランクを取得（モック）
-const currentRank = computed(() => {
-  if (!book.value) return '?'
-  return book.value.id // 簡単なランク計算
+// ランキング情報を検索するヘルパー関数
+const findRankInData = (rankingData: DetailedRankingApiResponse | null | undefined) => {
+  if (!book.value || !rankingData?.data?.rankings) return null
+  
+  const currentBook = book.value // null チェック後にローカル変数に保存
+  
+  const rankingItem = rankingData.data.rankings.find((item: RankingItem) => {
+    if (!item.book) return false
+    
+    const bookNumericId = currentBook.id
+    const bookStringId = currentBook._id
+    const rankingBookNumericId = item.book.id
+    const rankingBookStringId = item.book._id
+    
+    return (rankingBookNumericId && rankingBookNumericId === bookNumericId) ||
+           (rankingBookStringId && rankingBookStringId === bookStringId)
+  })
+  
+  return rankingItem ? {
+    rank: rankingItem.rank,
+    totalBooks: rankingData.data.rankings.length
+  } : null
+}
+
+// 全体ランクを取得
+const overallRank = computed(() => {
+  const result = findRankInData(overallRankingData.value)
+  return result ? result.rank : 'ランク外'
 })
+
+const overallTotal = computed(() => {
+  const result = findRankInData(overallRankingData.value)
+  return result ? result.totalBooks : 0
+})
+
+// フィルタリング時のランクを取得
+const filteredRank = computed(() => {
+  if (!filterCategory && filterPeriod === 'all') return null
+  const result = findRankInData(filteredRankingData.value)
+  return result ? result.rank : 'ランク外'
+})
+
+const filteredTotal = computed(() => {
+  if (!filterCategory && filterPeriod === 'all') return 0
+  const result = findRankInData(filteredRankingData.value)
+  return result ? result.totalBooks : 0
+})
+
+// 表示用のフィルター条件ラベル
+const filterLabel = computed(() => {
+  const parts = []
+  if (filterCategory) {
+    // カテゴリ名をマッピング
+    const categoryNames: Record<string, string> = {
+      'programming': 'プログラミング',
+      'web-development': 'Web開発', 
+      'ai-machine-learning': 'AI・機械学習',
+      'infrastructure': 'インフラ',
+      'mobile-development': 'モバイル開発',
+      'game-development': 'ゲーム開発',
+      'data-science': 'データサイエンス',
+      'security': 'セキュリティ',
+      'devops': 'DevOps',
+      'design': 'デザイン'
+    }
+    parts.push(categoryNames[filterCategory] || filterCategory)
+  }
+  if (filterPeriod !== 'all') {
+    const periodNames: Record<string, string> = {
+      'year': '過去1年',
+      'month': '過去1ヶ月', 
+      'week': '過去1週間'
+    }
+    parts.push(periodNames[filterPeriod] || filterPeriod)
+  }
+  return parts.join('・')
+})
+
 
 function getSentimentIcon(sentiment: string): string {
   switch (sentiment) {
@@ -774,4 +945,66 @@ useHead({
   ]
 })
 </script>
+
+<style scoped>
+/* お気に入り状態のハートアイコンを確実に赤色で塗りつぶし */
+.heart-filled :deep(svg) {
+  color: #ef4444 !important;
+  fill: #ef4444 !important;
+}
+
+.heart-filled :deep(svg path) {
+  fill: #ef4444 !important;
+  stroke: #ef4444 !important;
+}
+
+.heart-empty :deep(svg) {
+  color: #d1d5db !important;
+  fill: #d1d5db !important;
+}
+
+.heart-empty :deep(svg path) {
+  fill: #d1d5db !important;
+  stroke: #d1d5db !important;
+}
+
+/* より具体的なセレクター */
+.favorite-heart-icon.text-red-500 :deep(svg) {
+  color: #ef4444 !important;
+  fill: #ef4444 !important;
+}
+
+.favorite-heart-icon.text-red-500 :deep(svg path) {
+  fill: #ef4444 !important;
+  stroke: #ef4444 !important;
+}
+
+.favorite-heart-icon.fill-red-500 :deep(svg) {
+  fill: #ef4444 !important;
+}
+
+.favorite-heart-icon.fill-red-500 :deep(svg path) {
+  fill: #ef4444 !important;
+  stroke: #ef4444 !important;
+}
+
+.favorite-heart-icon.text-gray-300 :deep(svg) {
+  color: #d1d5db !important;
+  fill: #d1d5db !important;
+}
+
+.favorite-heart-icon.text-gray-300 :deep(svg path) {
+  fill: #d1d5db !important;
+  stroke: #d1d5db !important;
+}
+
+.favorite-heart-icon.fill-gray-300 :deep(svg) {
+  fill: #d1d5db !important;
+}
+
+.favorite-heart-icon.fill-gray-300 :deep(svg path) {
+  fill: #d1d5db !important;
+  stroke: #d1d5db !important;
+}
+</style>
 

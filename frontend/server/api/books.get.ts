@@ -1,4 +1,5 @@
-import {getAllMockBooks} from '../utils/mockData'
+import { mockDatabase } from '../utils/mockDatabase'
+import { addNumericId } from '../utils/idConverter'
 
 export default defineEventHandler(async (event) => {
   try {
@@ -10,13 +11,32 @@ export default defineEventHandler(async (event) => {
     const period = query.period as string
     const sort = query.sort as string || 'mentions'
 
-    const allMockBooks = getAllMockBooks()
-    let filteredBooks = [...allMockBooks]
+    let filteredBooks = [...mockDatabase.books.filter(book => book.status === 'active')].map(addNumericId)
 
     // Category filter
     if (category && category !== 'all' && category !== '') {
+      // Map English category values to Japanese category names
+      const categoryMapping: Record<string, string> = {
+        'programming': 'プログラミング',
+        'web': 'Web開発',
+        'mobile': 'モバイル開発',
+        'ai': 'AI・機械学習',
+        'infrastructure': 'インフラ・DevOps',
+        'database': 'データベース',
+        'security': 'セキュリティ',
+        'design': 'デザイン・UI/UX',
+        'management': 'プロジェクト管理',
+        'career': 'キャリア・スキル'
+      }
+      
+      const searchCategory = categoryMapping[category.toLowerCase()] || category
       filteredBooks = filteredBooks.filter(book => 
-        book.category.toLowerCase().includes(category.toLowerCase())
+        book.category.some(cat => {
+          const catLower = cat.toLowerCase()
+          const searchLower = searchCategory.toLowerCase()
+          // Try the exact match first, then a partial match
+          return catLower === searchLower || catLower.includes(searchLower)
+        })
       )
     }
 
@@ -25,7 +45,7 @@ export default defineEventHandler(async (event) => {
       const searchLower = search.toLowerCase().trim()
       filteredBooks = filteredBooks.filter(book =>
         book.title.toLowerCase().includes(searchLower) ||
-        book.author.toLowerCase().includes(searchLower) ||
+        book.author.some(author => author.toLowerCase().includes(searchLower)) ||
         book.tags.some(tag => tag.toLowerCase().includes(searchLower)) ||
         (book.description && book.description.toLowerCase().includes(searchLower))
       )
@@ -54,7 +74,7 @@ export default defineEventHandler(async (event) => {
       }
 
       filteredBooks = filteredBooks.filter(book => 
-        book.lastMentionDate ? new Date(book.lastMentionDate as string) >= dateThreshold : false
+        book.lastMentionedAt ? new Date(book.lastMentionedAt) >= dateThreshold : false
       )
     }
 
@@ -63,16 +83,16 @@ export default defineEventHandler(async (event) => {
       switch (sort) {
         case 'mentions':
           return b.mentionCount - a.mentionCount
-        case 'rating':
-          return (b.goodBookScore || 0) - (a.goodBookScore || 0)
+        case 'trend':
+          return b.trendScore - a.trendScore
         case 'title':
           return a.title.localeCompare(b.title, 'ja')
         case 'author':
-          return a.author.localeCompare(b.author, 'ja')
+          return a.author[0].localeCompare(b.author[0], 'ja')
         case 'newest':
-          return (b.publishDate ? new Date(b.publishDate as string).getTime() : 0) - (a.publishDate ? new Date(a.publishDate as string).getTime() : 0)
+          return (b.publishedYear || 0) - (a.publishedYear || 0)
         case 'recent':
-          return (b.lastMentionDate ? new Date(b.lastMentionDate as string).getTime() : 0) - (a.lastMentionDate ? new Date(a.lastMentionDate as string).getTime() : 0)
+          return (b.lastMentionedAt ? new Date(b.lastMentionedAt).getTime() : 0) - (a.lastMentionedAt ? new Date(a.lastMentionedAt).getTime() : 0)
         default:
           return b.mentionCount - a.mentionCount
       }
@@ -108,7 +128,7 @@ export default defineEventHandler(async (event) => {
         hasPrev: page > 1
       },
       meta: {
-        totalBooks: allMockBooks.length,
+        totalBooks: mockDatabase.books.length,
         filteredCount: filteredBooks.length,
         appliedFilters: {
           category: category || null,

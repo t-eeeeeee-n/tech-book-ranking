@@ -110,7 +110,7 @@
                 />
                 <div v-else class="w-full h-full flex flex-col items-center justify-center text-gray-400 dark:text-gray-500">
                   <Icon name="heroicons:book-open" class="w-16 h-16 mb-2" />
-                  <span class="text-xs text-center px-2">{{ book.category }}</span>
+                  <span class="text-xs text-center px-2">{{ Array.isArray(book.category) ? book.category[0] : book.category }}</span>
                 </div>
                 
                 <!-- 人気度バッジ -->
@@ -142,14 +142,14 @@
                   {{ book.title }}
                 </h3>
                 <p class="text-sm text-gray-600 dark:text-gray-400 truncate">
-                  {{ book.author }}
+                  {{ Array.isArray(book.author) ? book.author.join(', ') : book.author }}
                 </p>
               </div>
               
               <!-- Category & Added Date -->
               <div class="flex items-center justify-between mb-4">
                 <span class="inline-flex items-center px-2.5 py-1 text-xs font-medium bg-gradient-to-r from-blue-100 to-purple-100 text-blue-800 dark:from-blue-900/50 dark:to-purple-900/50 dark:text-blue-300 rounded-full">
-                  {{ book.category }}
+                  {{ Array.isArray(book.category) ? book.category[0] : book.category }}
                 </span>
                 <span class="text-xs text-gray-500 dark:text-gray-400 font-medium">
                   {{ formatDate(book.addedAt) }}

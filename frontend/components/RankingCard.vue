@@ -187,7 +187,7 @@
         <!-- Actions Row -->
         <div class="flex items-center justify-between">
           <div class="text-xs text-muted">
-            {{ book.publisher }} • {{ formatYear(book.publishDate) }}
+            {{ getPublisherInfo(book.publisher, book.publishDate) }}
           </div>
           
           <!-- Desktop Amazon Button -->
@@ -208,8 +208,10 @@
 </template>
 
 <script setup lang="ts">
+import type { Book } from '~/types'
+
 interface Props {
-  book: any
+  book: Book
   rank: number
   isTopThree: boolean
 }
@@ -229,12 +231,29 @@ const categoryLabels: Record<string, string> = {
   'security': 'セキュリティ'
 }
 
-const getCategoryLabel = (category: string): string => {
-  return categoryLabels[category] || category
+const getCategoryLabel = (category: string | string[]): string => {
+  const categoryStr = Array.isArray(category) ? category[0] : category
+  return categoryLabels[categoryStr] || categoryStr
 }
 
-const formatYear = (dateString: string): string => {
-  return new Date(dateString).getFullYear().toString()
+const formatYear = (dateString: string | undefined): string => {
+  if (!dateString) return ''
+  try {
+    return new Date(dateString).getFullYear().toString()
+  } catch (error) {
+    return ''
+  }
+}
+
+// 出版社情報の表示用ヘルパー
+const getPublisherInfo = (publisher: string | undefined, publishDate: string | undefined): string => {
+  const publisherText = publisher || 'Unknown Publisher'
+  const yearText = formatYear(publishDate)
+  
+  if (yearText) {
+    return `${publisherText} • ${yearText}`
+  }
+  return publisherText
 }
 
 // Ranking-specific styling

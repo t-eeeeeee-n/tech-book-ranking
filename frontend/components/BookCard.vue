@@ -85,13 +85,13 @@
 
       <!-- Author -->
       <p class="text-xs sm:text-sm text-gray-600 dark:text-gray-400 truncate mb-3">
-        {{ book.author }}
+        {{ Array.isArray(book.author) ? book.author.join(', ') : book.author }}
       </p>
 
       <!-- Category Tag -->
       <div class="flex justify-center mb-3">
         <span class="inline-flex items-center px-2 py-1 text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300 rounded-full">
-          {{ book.category }}
+          {{ Array.isArray(book.category) ? book.category[0] : book.category }}
         </span>
       </div>
 
@@ -263,7 +263,8 @@ const handleImageError = (event: Event) => {
   if (!fallbackImageUsed.value) {
     // 最初のエラー時は完全にローカルなSVG画像を使用
     fallbackImageUsed.value = true
-    target.src = generateLocalSVG(props.book.id, props.book.category)
+    const categoryString = Array.isArray(props.book.category) ? props.book.category[0] : props.book.category
+    target.src = generateLocalSVG(props.book.id, categoryString)
   } else {
     // 2回目のエラー時も画像を非表示にして代替表示
     imageError.value = true
@@ -302,15 +303,33 @@ const generateLocalSVG = (bookId: number, category: string): string => {
   const icons = ['📚', '📖', '📝', '💻', '⚡']
   const icon = icons[bookId % icons.length]
   
+  // 日本語文字を含むカテゴリ名を英語に変換
+  const categoryEn = getCategoryKey(category).replace('_', ' ')
+  
   const svg = `
     <svg width="300" height="400" xmlns="http://www.w3.org/2000/svg">
       <rect width="300" height="400" style="fill:${color}"/>
       <text x="150" y="200" font-family="Arial" font-size="60" style="fill:white" text-anchor="middle" dominant-baseline="middle">${icon}</text>
-      <text x="150" y="280" font-family="Arial" font-size="16" style="fill:white" text-anchor="middle" dominant-baseline="middle">${category}</text>
+      <text x="150" y="280" font-family="Arial" font-size="16" style="fill:white" text-anchor="middle" dominant-baseline="middle">${categoryEn}</text>
     </svg>
   `
   
-  return `data:image/svg+xml;base64,${btoa(svg)}`
+  // 現代的な方法でUTF-8文字列をBase64エンコード
+  if (typeof window !== 'undefined' && 'TextEncoder' in window) {
+    try {
+      // Uint8Array から文字列への変換をより効率的に行う
+      const encoder = new TextEncoder()
+      const uint8Array = encoder.encode(svg)
+      const binaryString = Array.from(uint8Array, byte => String.fromCharCode(byte)).join('')
+      return `data:image/svg+xml;base64,${btoa(binaryString)}`
+    } catch (error) {
+      // フォールバック: URLエンコード版
+      return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`
+    }
+  } else {
+    // SSR環境やTextEncoderが利用できない場合のフォールバック
+    return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`
+  }
 }
 </script>
 
