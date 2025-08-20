@@ -2,7 +2,7 @@
   <div 
     class="relative rounded-2xl p-4 sm:p-6 shadow-lg hover:shadow-xl border transition-all duration-300 cursor-pointer group hover:-translate-y-1 hover:border-cyan-500 dark:hover:border-cyan-400 flex flex-col min-h-[480px]"
     :class="cardBackgroundClass"
-    @click="$emit('click', book.id)"
+    @click="$emit('click', book._id)"
   >
     <!-- Rank Badge -->
     <div 
@@ -29,7 +29,7 @@
       <!-- 通常の画像表示 -->
       <img 
         v-else
-        :src="book.imageUrl" 
+        :src="book.imageUrl || undefined" 
         :alt="book.title"
         class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
         loading="lazy"
@@ -74,13 +74,13 @@
         </div>
       </div>
       
-      <!-- Good Book Score (if available) -->
+      <!-- Trend Score (if available) -->
       <div 
-        v-if="book.goodBookScore !== undefined" 
+        v-if="book.trendScore !== undefined" 
         class="text-xs mb-2 font-medium text-gray-700 dark:text-gray-300"
       >
-        📊 いい本スコア: 
-        <span class="font-bold" :class="getScoreTextClass(book.goodBookScore)">{{ Math.round(book.goodBookScore) }}</span>
+        📊 トレンドスコア: 
+        <span class="font-bold" :class="getScoreTextClass(book.trendScore)">{{ Math.round(book.trendScore) }}</span>
       </div>
 
       <!-- Author -->
@@ -105,10 +105,10 @@
           <span>{{ book.mentionCount }}回言及</span>
         </div>
         
-        <!-- Fallback Rating (if no good book score) -->
-        <div v-if="book.goodBookScore === undefined" class="flex items-center justify-center space-x-1 text-xs text-gray-600 dark:text-gray-400">
-          <Icon name="heroicons:star" class="w-4 h-4 text-yellow-500" />
-          <span>{{ book.rating || 'N/A' }}</span>
+        <!-- Additional Info -->
+        <div v-if="book.uniqueArticleCount" class="flex items-center justify-center space-x-1 text-xs text-gray-600 dark:text-gray-400">
+          <Icon name="heroicons:document-text" class="w-4 h-4 text-blue-500" />
+          <span>{{ book.uniqueArticleCount }}記事</span>
         </div>
       </div>
 
@@ -185,7 +185,7 @@ const favoritesStore = useFavoritesStore()
 const isClient = ref(false)
 const isFavorite = computed(() => {
   if (!isClient.value) return false // SSR時は常にfalse
-  return favoritesStore.isFavorite(props.book.id)
+  return favoritesStore.isFavorite(props.book.id || parseInt(props.book._id.slice(-8), 16))
 })
 
 // クライアントサイドでマウント後に状態を更新
@@ -252,7 +252,7 @@ const imageError = ref(false)
 const fallbackImageUsed = ref(false)
 
 // 書籍が変わった時に状態をリセット
-watch(() => props.book.id, () => {
+watch(() => props.book._id, () => {
   imageError.value = false
   fallbackImageUsed.value = false
 })
@@ -273,7 +273,8 @@ const handleImageError = (event: Event) => {
 }
 
 // ローカルでSVG画像を生成する関数
-const generateLocalSVG = (bookId: number, category: string): string => {
+const generateLocalSVG = (bookId: number | undefined, category: string): string => {
+  const id = bookId || 1
   // カテゴリ表示名から内部キーへのマッピング関数
   const getCategoryKey = (category: string): string => {
     if (category === 'プログラミング') return 'programming'
@@ -301,7 +302,7 @@ const generateLocalSVG = (bookId: number, category: string): string => {
   const categoryKey = getCategoryKey(category)
   const color = categoryColors[categoryKey] || '#6b7280'
   const icons = ['📚', '📖', '📝', '💻', '⚡']
-  const icon = icons[bookId % icons.length]
+  const icon = icons[id % icons.length]
   
   // 日本語文字を含むカテゴリ名を英語に変換
   const categoryEn = getCategoryKey(category).replace('_', ' ')

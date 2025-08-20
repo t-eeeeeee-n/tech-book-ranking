@@ -208,13 +208,13 @@
 
 <script setup lang="ts">
 // Import statements
-import type { Book, Category, ExtendedHTMLElement } from '~/types'
+import type { Book, CategoryOption, ExtendedHTMLElement } from '~/types'
 
 // Manual component import to fix auto-import issue with hyphenated names
 import BookCard from '~/components/BookCard.vue'
 
 // Data and state management
-const categories = ref<Category[]>([])
+const categories = ref<CategoryOption[]>([])
 const categoriesLoading = ref(true)
 const books = ref<Book[]>([])
 const loading = ref(false)

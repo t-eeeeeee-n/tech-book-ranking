@@ -1,58 +1,85 @@
 export interface Book {
-    id: number
-    _id?: string
+    _id: string
     title: string
-    author: string | string[]
-    isbn?: string
-    isbn10?: string
-    isbn13?: string
-    publisher?: string
-    publishDate?: string
-    publishedDate?: string
-    publishedYear?: number
-    mentionCount: number
-    uniqueArticleCount?: number
-    category: string | string[]
+    titleNormalized: string
+    author: string[]
+    publisher?: string | null
+    isbn10?: string | null
+    isbn13?: string | null
+    publishedYear?: number | null
+    category: string[]
     tags: string[]
-    imageUrl?: string
-    amazonUrl?: string
-    rakutenUrl?: string
-    description?: string
-    firstMentionDate?: string
-    lastMentionDate?: string
-    firstMentionedAt?: string
-    lastMentionedAt?: string
-    trendScore?: number
+    mentionCount: number
+    uniqueArticleCount: number
+    firstMentionedAt?: string | null
+    lastMentionedAt?: string | null
+    trendScore: number
+    amazonUrl?: string | null
+    rakutenUrl?: string | null
+    imageUrl?: string | null
+    description?: string | null
+    status: 'active' | 'inactive' | 'merged'
+    mergedTo?: string | null
+    createdAt: string
+    updatedAt: string
+    // Additional fields for compatibility
+    id?: number
     rank?: number
     topQiitaArticles?: QiitaArticle[]
-    status?: string
-    mergedTo?: string | null
-    createdAt?: string
-    updatedAt?: string
-    // 「いい本スコア」関連フィールド
-    articleCount?: number        // 紹介記事数
-    totalLikes?: number         // 記事のいいね合計
-    newestArticleDate?: string  // 最新記事日（ISO形式）
-    goodBookScore?: number      // 「いい本スコア」（0-100）
-    rating?: number             // 既存の評価（互換性維持）
+    goodBookScore?: number
+    rating?: number
+    articleCount?: number
+    totalLikes?: number
+    newestArticleDate?: string
+    publishDate?: string
+    publishedDate?: string
+    isbn?: string
 }
 
 export interface QiitaArticle {
-    id: string
+    _id: string
+    qiitaId: string
     title: string
     url: string
-    author: string
-    publishedAt: string
+    authorId: string
+    authorName: string
     likesCount: number
+    stocksCount: number
+    commentsCount: number
+    body?: string | null
+    excerpt: string
     tags: string[]
+    publishedAt: string
+    updatedAt: string
+    processed: boolean
+    processedAt?: string | null
+    bookExtractionStatus: 'pending' | 'completed' | 'failed'
+    createdAt: string
+    lastCheckedAt: string
+    // Compatibility fields
+    id?: string
+    author?: string
 }
 
 export interface BookMention {
-    id: string
-    bookId: number
+    _id: string
+    bookId: string
     articleId: string
-    mentionedAt: string
-    context?: string
+    mentionText: string
+    context: string
+    confidence: number
+    extractionMethod: 'regex' | 'nlp' | 'manual'
+    sentiment?: 'positive' | 'neutral' | 'negative' | null
+    recommendationLevel?: number | null
+    articlePopularity: number
+    authorCredibility: number
+    mentionWeight: number
+    createdAt: string
+    verifiedAt?: string | null
+    verifiedBy?: string | null
+    // Compatibility fields
+    id?: string
+    mentionedAt?: string
 }
 
 export interface RankingPeriod {
@@ -61,9 +88,30 @@ export interface RankingPeriod {
 }
 
 export interface Category {
-    label: string
+    _id: string
+    name: string
+    slug: string
+    description?: string | null
+    parentId?: string | null
+    displayOrder: number
+    isActive: boolean
+    color?: string | null
+    icon?: string | null
+    bookCount: number
+    createdAt: string
+    updatedAt: string
+    // Compatibility fields
+    label?: string
+    value?: string
+}
+
+export interface CategoryOption {
     value: string
-    description?: string
+    label: string
+    description?: string | null
+    color?: string | null
+    icon?: string | null
+    bookCount: number
 }
 
 export interface ApiResponse<T> {
@@ -237,6 +285,41 @@ export interface SearchApiResponse {
         limit: number
         searchTime: number
     }
+}
+
+// New MongoDB-based interfaces
+export interface Ranking {
+    _id: string
+    type: 'overall' | 'category' | 'trending' | 'newcomer'
+    categoryId?: string | null
+    period: 'all' | 'year' | 'month' | 'week'
+    rankings: RankingItem[]
+    totalBooks: number
+    generatedAt: string
+    expiresAt: string
+    createdAt: string
+}
+
+export interface Favorite {
+    _id: string
+    userId: string
+    bookId: string
+    createdAt: string
+}
+
+export interface BatchLog {
+    _id: string
+    batchType: 'qiita_fetch' | 'book_extraction' | 'ranking_update' | 'cache_update'
+    status: 'running' | 'completed' | 'failed' | 'cancelled'
+    startedAt: string
+    completedAt?: string | null
+    duration?: number | null
+    processedCount: number
+    successCount: number
+    errorCount: number
+    errors?: any[] | null
+    config?: any | null
+    createdAt: string
 }
 
 // Filter Types

@@ -17,10 +17,7 @@ export default defineEventHandler(async (event) => {
       })
     }
 
-    const book = mockDatabase.books.find(b => {
-      const bookId = convertStringIdToNumber(b._id)
-      return bookId.toString() === id
-    })
+    const book = mockDatabase.books.find(b => b._id === id)
 
     if (!book) {
       throw createError({
@@ -36,7 +33,7 @@ export default defineEventHandler(async (event) => {
 
     // Get book mentions with article details
     const bookMentions = mockDatabase.book_mentions
-      .filter(mention => mention.bookId === id)
+      .filter(mention => mention.bookId === book._id)
       .map(mention => {
         const article = mockDatabase.qiita_articles.find(a => a._id === mention.articleId)
         return {
@@ -52,7 +49,7 @@ export default defineEventHandler(async (event) => {
     const relatedBookIds = mockDatabase.book_mentions
       .filter(mention => 
         relatedArticleIds.includes(mention.articleId) && 
-        mention.bookId !== id
+        mention.bookId !== book._id
       )
       .map(mention => mention.bookId)
     

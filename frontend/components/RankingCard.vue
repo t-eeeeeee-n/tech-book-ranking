@@ -78,7 +78,7 @@
         </div>
 
         <!-- Action Button -->
-        <AmazonButton :amazon-url="book.amazonUrl" compact @click.stop />
+        <AmazonButton :amazon-url="book.amazonUrl || undefined" compact @click.stop />
       </div>
     </div>
 
@@ -187,12 +187,12 @@
         <!-- Actions Row -->
         <div class="flex items-center justify-between">
           <div class="text-xs text-muted">
-            {{ getPublisherInfo(book.publisher, book.publishDate) }}
+            {{ getPublisherInfo(book.publisher || undefined, book.publishDate) }}
           </div>
           
           <!-- Desktop Amazon Button -->
           <div class="hidden md:block">
-            <AmazonButton :amazon-url="book.amazonUrl" compact @click.stop />
+            <AmazonButton :amazon-url="book.amazonUrl || undefined" compact @click.stop />
           </div>
         </div>
       </div>

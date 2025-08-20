@@ -215,7 +215,7 @@
                                 <div class="w-3 h-3 bg-green-500 rounded-full"></div>
                                 <div>
                                   <div class="font-medium text-green-700 dark:text-green-400 text-sm">記事数</div>
-                                  <div class="text-xs text-green-600 dark:text-green-300">{{ book.articleCount || 0 }}件</div>
+                                  <div class="text-xs text-green-600 dark:text-green-300">{{ book.uniqueArticleCount || 0 }}件</div>
                                 </div>
                               </div>
                               <div class="flex items-center gap-2">
@@ -231,7 +231,7 @@
                                 <div class="w-3 h-3 bg-purple-500 rounded-full"></div>
                                 <div>
                                   <div class="font-medium text-purple-700 dark:text-purple-400 text-sm">LGTM数</div>
-                                  <div class="text-xs text-purple-600 dark:text-purple-300">{{ book.totalLikes || 245 }}件</div>
+                                  <div class="text-xs text-purple-600 dark:text-purple-300">{{ mentions.reduce((sum, m) => sum + m.articleLikes, 0) || 245 }}件</div>
                                 </div>
                               </div>
                               <div class="flex items-center gap-2">
@@ -247,7 +247,7 @@
                                 <div class="w-3 h-3 bg-orange-500 rounded-full"></div>
                                 <div>
                                   <div class="font-medium text-orange-700 dark:text-orange-400 text-sm">最新性</div>
-                                  <div class="text-xs text-orange-600 dark:text-orange-300">{{ getRecencyLabel(book.newestArticleDate || new Date().toISOString()) }}</div>
+                                  <div class="text-xs text-orange-600 dark:text-orange-300">{{ getRecencyLabel(book.lastMentionedAt || new Date().toISOString()) }}</div>
                                 </div>
                               </div>
                               <div class="flex items-center gap-2">
@@ -291,7 +291,7 @@
                                   <div class="w-3 h-3 bg-green-500 rounded-full"></div>
                                   <div>
                                     <div class="font-medium text-green-700 dark:text-green-400 text-sm">記事数</div>
-                                    <div class="text-xs text-green-600 dark:text-green-300">{{ book.articleCount || 0 }}件</div>
+                                    <div class="text-xs text-green-600 dark:text-green-300">{{ book.uniqueArticleCount || 0 }}件</div>
                                   </div>
                                 </div>
                                 <div class="flex items-center gap-2">
@@ -307,7 +307,7 @@
                                   <div class="w-3 h-3 bg-purple-500 rounded-full"></div>
                                   <div>
                                     <div class="font-medium text-purple-700 dark:text-purple-400 text-sm">LGTM数</div>
-                                    <div class="text-xs text-purple-600 dark:text-purple-300">{{ book.totalLikes || 245 }}件</div>
+                                    <div class="text-xs text-purple-600 dark:text-purple-300">{{ mentions.reduce((sum, m) => sum + m.articleLikes, 0) || 245 }}件</div>
                                   </div>
                                 </div>
                                 <div class="flex items-center gap-2">
@@ -323,7 +323,7 @@
                                   <div class="w-3 h-3 bg-orange-500 rounded-full"></div>
                                   <div>
                                     <div class="font-medium text-orange-700 dark:text-orange-400 text-sm">最新性</div>
-                                    <div class="text-xs text-orange-600 dark:text-orange-300">{{ getRecencyLabel(book.newestArticleDate || new Date().toISOString()) }}</div>
+                                    <div class="text-xs text-orange-600 dark:text-orange-300">{{ getRecencyLabel(book.lastMentionedAt || new Date().toISOString()) }}</div>
                                   </div>
                                 </div>
                                 <div class="flex items-center gap-2">
@@ -418,7 +418,7 @@
                       <Icon name="heroicons:heart" class="w-5 h-5 text-purple-600 dark:text-purple-400" />
                     </div>
                     <div>
-                      <div class="text-2xl font-bold text-gray-900 dark:text-white">{{ book.totalLikes || 245 }}</div>
+                      <div class="text-2xl font-bold text-gray-900 dark:text-white">{{ mentions.reduce((sum, m) => sum + m.articleLikes, 0) || 245 }}</div>
                       <div class="text-xs text-gray-500 dark:text-gray-400">LGTM</div>
                     </div>
                   </div>
@@ -499,17 +499,17 @@
             <!-- 出版情報タブ -->
             <div v-if="activeTab === 'publication'">
               <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
-                <div v-if="book.publishedDate">
-                  <span class="font-medium text-gray-600 dark:text-gray-400">出版日:</span>
-                  <span class="ml-2 text-gray-900 dark:text-white">{{ formatDate(book.publishedDate) }}</span>
+                <div v-if="book.publishedYear">
+                  <span class="font-medium text-gray-600 dark:text-gray-400">出版年:</span>
+                  <span class="ml-2 text-gray-900 dark:text-white">{{ book.publishedYear }}年</span>
                 </div>
                 <div v-if="book.publisher">
                   <span class="font-medium text-gray-600 dark:text-gray-400">出版社:</span>
                   <span class="ml-2 text-gray-900 dark:text-white">{{ book.publisher }}</span>
                 </div>
-                <div v-if="book.isbn">
+                <div v-if="book.isbn13 || book.isbn10">
                   <span class="font-medium text-gray-600 dark:text-gray-400">ISBN:</span>
-                  <span class="ml-2 text-gray-900 dark:text-white">{{ book.isbn }}</span>
+                  <span class="ml-2 text-gray-900 dark:text-white">{{ book.isbn13 || book.isbn10 }}</span>
                 </div>
               </div>
             </div>
@@ -619,11 +619,8 @@ const book = computed((): Book | null => {
   // 不足しているプロパティにデフォルト値を設定
   return {
     ...typedBook,
-    articleCount: typedBook.articleCount ?? typedBook.uniqueArticleCount ?? 0,
-    totalLikes: typedBook.totalLikes ?? (Math.floor((typedBook.mentionCount || 0) * 10) || 245),
-    newestArticleDate: typedBook.newestArticleDate ?? typedBook.lastMentionedAt ?? new Date().toISOString(),
-    publishedDate: typedBook.publishedDate ?? (typedBook.publishedYear ? `${typedBook.publishedYear}-01-01T00:00:00.000Z` : undefined),
-    isbn: typedBook.isbn ?? typedBook.isbn13 ?? typedBook.isbn10 ?? undefined
+    // Map old fields to new structure for compatibility
+    id: typedBook.id || parseInt(typedBook._id.slice(-8), 16)
   }
 })
 
@@ -634,7 +631,7 @@ const favoritesStore = useFavoritesStore()
 const isClient = ref(false)
 const isFavorite = computed(() => {
   if (!isClient.value) return false // SSR時は常にfalse
-  return book.value ? favoritesStore.isFavorite(book.value.id) : false
+  return book.value ? favoritesStore.isFavorite(book.value.id!) : false
 })
 
 // クライアントサイドでマウント後に状態を更新

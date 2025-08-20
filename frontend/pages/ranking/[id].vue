@@ -81,7 +81,7 @@
           <!-- Previous Page -->
           <NuxtLink 
             v-if="hasPrev"
-            :to="currentPage - 1 === 1 ? { name: 'ranking' } : { name: 'ranking-page-id', params: { id: (currentPage - 1).toString() } }"
+            :to="currentPage - 1 === 1 ? { name: 'ranking' } : { name: 'ranking-id', params: { id: (currentPage - 1).toString() } }"
             class="flex items-center gap-2 px-4 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
           >
             <Icon name="heroicons:chevron-left" class="w-4 h-4" />
@@ -93,7 +93,7 @@
             <NuxtLink 
               v-for="pageNum in visiblePages" 
               :key="pageNum"
-              :to="pageNum === 1 ? { name: 'ranking' } : { name: 'ranking-page-id', params: { id: pageNum.toString() } }"
+              :to="pageNum === 1 ? { name: 'ranking' } : { name: 'ranking-id', params: { id: pageNum.toString() } }"
               class="w-10 h-10 flex items-center justify-center rounded-lg transition-colors"
               :class="pageNum === currentPage 
                 ? 'bg-blue-600 text-white' 
@@ -106,7 +106,7 @@
           <!-- Next Page -->
           <NuxtLink 
             v-if="hasNext"
-            :to="{ name: 'ranking-page-id', params: { id: (currentPage + 1).toString() } }"
+            :to="{ name: 'ranking-id', params: { id: (currentPage + 1).toString() } }"
             class="flex items-center gap-2 px-4 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
           >
             <span>次のページ</span>
@@ -125,7 +125,7 @@ import BookCard from '~/components/BookCard.vue'
 
 // Get page parameter
 const route = useRoute()
-const currentPage = computed(() => parseInt(route.params.page as string) || 1)
+const currentPage = computed(() => parseInt(route.params.id as string) || 1)
 
 // Fetch data for specific page
 const limit = 24

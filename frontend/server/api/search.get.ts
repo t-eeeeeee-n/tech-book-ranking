@@ -57,14 +57,12 @@ export default defineEventHandler(async (event) => {
           rakutenUrl: book.rakutenUrl || undefined, // Convert null to undefined
           amazonUrl: book.amazonUrl || undefined, // Convert null to undefined
           imageUrl: book.imageUrl || undefined, // Convert null to undefined
-          isbn: book.isbn || undefined, // Convert null to undefined
           isbn10: book.isbn10 || undefined, // Convert null to undefined
           isbn13: book.isbn13 || undefined, // Convert null to undefined
           publisher: book.publisher || undefined, // Convert null to undefined
-          publishedDate: book.publishedDate || undefined, // Convert null to undefined
           description: book.description || undefined, // Convert null to undefined
           type: 'book' as const
-        }))
+        } as import('~/types').BookSearchResult))
     }
 
     // Search articles
@@ -94,7 +92,7 @@ export default defineEventHandler(async (event) => {
           likesCount: article.likesCount,
           tags: [...article.tags] as string[], // Convert readonly to mutable
           type: 'article' as const
-        }))
+        } as import('~/types').ArticleSearchResult))
     }
 
     // Search categories

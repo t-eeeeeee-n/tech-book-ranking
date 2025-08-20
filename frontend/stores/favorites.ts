@@ -17,13 +17,15 @@ export const useFavoritesStore = defineStore('favorites', () => {
 
   // お気に入りに追加
   const addToFavorites = (book: Book) => {
+    if (!book.id) return // idが存在しない場合は早期リターン
+    
     const existingIndex = favoriteBooks.value.findIndex(fav => fav.id === book.id)
     if (existingIndex === -1) {
       const favoriteBook: FavoriteBook = {
         id: book.id,
         title: book.title,
         author: Array.isArray(book.author) ? book.author.join(', ') : book.author,
-        imageUrl: book.imageUrl,
+        imageUrl: book.imageUrl || undefined,
         category: Array.isArray(book.category) ? book.category[0] : book.category,
         mentionCount: book.mentionCount,
         goodBookScore: book.goodBookScore,
@@ -50,6 +52,8 @@ export const useFavoritesStore = defineStore('favorites', () => {
 
   // お気に入りの切り替え
   const toggleFavorite = (book: Book) => {
+    if (!book.id) return // idが存在しない場合は早期リターン
+    
     if (isFavorite(book.id)) {
       removeFromFavorites(book.id)
       // 削除時のフィードバック

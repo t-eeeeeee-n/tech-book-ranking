@@ -44,7 +44,7 @@
           <!-- TOP10 Books Grid -->
           <BookCard
             v-for="(book, index) in topBooks" 
-            :key="book.id"
+            :key="book._id"
             :book="book"
             :rank="index + 1"
             @click="viewBookDetails"
@@ -105,23 +105,26 @@ const totalBooks = computed(() => {
 })
 
 // Methods
-const viewBookDetails = (bookId: number) => {
+const viewBookDetails = (bookId: string | number) => {
   // ホームページからは通常の遷移（フィルター状態なし）
-  navigateTo({ name: 'book-id', params: { id: bookId.toString() } })
+  const id = typeof bookId === 'string' ? bookId : bookId.toString()
+  navigateTo({ name: 'book-id', params: { id } })
 }
 
 // SNS Share functions
 const shareOnFacebook = (book: Book) => {
-  const url = encodeURIComponent(`${window.location.origin}/book/${book.id}`)
+  const bookId = book.id || book._id
+  const url = encodeURIComponent(`${window.location.origin}/book/${bookId}`)
   const authorText = Array.isArray(book.author) ? book.author.join(', ') : book.author
   const text = encodeURIComponent(`📚 ${book.title} - ${authorText} がQiitaで${book.mentionCount}回言及されています！`)
   window.open(`https://www.facebook.com/sharer/sharer.php?u=${url}&quote=${text}`, '_blank', 'width=600,height=400')
 }
 
 const shareOnTwitter = (book: Book) => {
-  const url = encodeURIComponent(`${window.location.origin}/book/${book.id}`)
+  const bookId = book.id || book._id
+  const url = encodeURIComponent(`${window.location.origin}/book/${bookId}`)
   const authorText = Array.isArray(book.author) ? book.author.join(', ') : book.author
-  const text = encodeURIComponent(`📚 ${book.title} - ${authorText}\nQiitaで${book.mentionCount}回言及されている技術書です！\n⭐ 評価: ${book.rating}\n\n#技術書 #プログラミング #TechRankBooks`)
+  const text = encodeURIComponent(`📚 ${book.title} - ${authorText}\nQiitaで${book.mentionCount}回言及されている技術書です！\n⭐ トレンドスコア: ${book.trendScore}\n\n#技術書 #プログラミング #TechRankBooks`)
   window.open(`https://twitter.com/intent/tweet?text=${text}&url=${url}`, '_blank', 'width=600,height=400')
 }
 

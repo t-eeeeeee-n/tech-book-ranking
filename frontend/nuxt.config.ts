@@ -74,5 +74,17 @@ export default defineNuxtConfig({
       route: '/.well-known/**',
       handler: '~/server/api/well-known.ts'
     }
-  ]
+  ],
+  // Runtime config for API keys and backend URL
+  runtimeConfig: {
+    // Private keys (only available on server-side)
+    private: {
+      backendApiKey: process.env.BACKEND_API_KEY || 'dev-api-key-2024'
+    },
+    // Public keys (exposed to client-side)
+    public: {
+      apiKey: process.env.NUXT_PUBLIC_API_KEY || 'dev-api-key-2024',
+      backendUrl: process.env.NUXT_PUBLIC_BACKEND_URL || 'http://localhost:3001'
+    }
+  }
 })
