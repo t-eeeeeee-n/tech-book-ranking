@@ -1,0 +1,30 @@
+/cache
+node_modules/
+../frontend/node_modules/
+../backend/node_modules/
+./frontend/node_modules/
+./backend/node_modules/
+dist/
+build/
+.out/
+.out-tsc/
+.next/
+.turbo/
+coverage/
+.pnpm-store/
+.yarn/cache/
+.yarn/unplugged/
+.yarn/build-state.yml
+.cache/
+tmp/
+temp/
+# VCS / metadata
+.git/
+.DS_Store
+# big/minified/bundled stuff
+**/*.min.js
+**/*.bundle.js
+**/*.map
+# keep Serena’s own config, but ignore its heavy bits
+/cache/
+logs/

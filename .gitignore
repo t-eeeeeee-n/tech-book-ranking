@@ -26,11 +26,8 @@ yarn-debug.log*
 yarn-error.log*
 
 # local env files
-.env
-.env.local
-.env.docker
-
-# vercel
+.env*
+!.env.example
 .vercel
 
 # typescript
@@ -39,5 +36,77 @@ next-env.d.ts
 
 .idea
 .claude
-
 CLAUDE.md
+
+# dependencies (any depth)
+**/node_modules/
+**/.pnpm-store/
+**/.yarn/cache/
+**/.yarn/unplugged/
+**/.yarn/build-state.yml
+**/.pnp
+**/.pnp.*
+
+# build outputs / caches (any depth)
+**/.nuxt/
+**/.next/
+**/.output/
+**/dist/
+**/build/
+**/out/
+**/.turbo/
+**/.cache/
+**/coverage/
+**/tmp/
+**/temp/
+**/logs/
+
+# --- Editor / OS junk ---
+**/.vscode/
+**/.history/
+**/*.swp
+**/*.swo
+**/*.tmp
+Thumbs.db
+desktop.ini
+
+# --- Logs (any tool) ---
+**/*.log
+**/pnpm-debug.log*
+**/lerna-debug.log*
+
+# --- Build caches ---
+**/.nitro/
+**/.vite/
+**/.eslintcache
+**/.stylelintcache
+**/.swc/
+
+# --- Docker / certs / backups ---
+docker/nginx/ssl/**
+!docker/nginx/ssl/.gitkeep
+**/*.crt
+**/*.key
+**/*.pfx
+**/*.p12
+**/*.csr
+/backup/**
+**/*backup*.tar.gz
+**/*dump*.tar.gz
+
+# --- Serena / MCP ---
+.serena/*
+!.serena/.gitignore
+!.serena/project.yml
+!.serena/config.*
+
+.mcp.json
+
+# (TS→ビルド運用なら) scripts 生成物は除外
+backend/scripts/**/*.js
+backend/scripts/**/*.js.map
+backend/scripts/**/*.d.ts
+backend/scripts/**/*.d.ts.map
+
+# うっかり置いた単発HTML（必要なら public/ へ）
+frontend/test.html

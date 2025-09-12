@@ -61,7 +61,7 @@
             class="inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-blue-600 to-cyan-600 text-white rounded-xl font-semibold text-lg hover:shadow-lg hover:-translate-y-1 transition-all duration-200"
           >
             <span>全ランキングを見る</span>
-            <Icon name="heroicons:arrow-right" class="w-5 h-5" />
+            <Icon name="heroicons-outline:arrow-right" class="w-5 h-5" />
           </NuxtLink>
         </div>
       </div>

@@ -1,0 +1,45 @@
+# Docker Compose Override for Development
+# This file is automatically loaded in development mode
+# Use: docker-compose up -d (loads both docker-compose.yml and this file)
+
+services:
+  mongodb:
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_dev_data:/data/db
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.dev
+    environment:
+      - NODE_ENV=development
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
+      - backend_dev_logs:/app/logs
+    command: ["npm", "run", "dev"]
+    
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.dev
+    environment:
+      - NODE_ENV=development
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+      - /app/.nuxt
+    command: ["npm", "run", "dev"]
+
+  # Remove nginx in development
+  nginx:
+    profiles:
+      - disabled
+
+volumes:
+  mongodb_dev_data:
+    name: techbook-mongodb-dev-data
+  backend_dev_logs:
+    name: techbook-backend-dev-logs

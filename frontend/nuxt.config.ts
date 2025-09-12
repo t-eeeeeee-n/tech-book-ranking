@@ -12,6 +12,11 @@ export default defineNuxtConfig({
     '@pinia/nuxt',
     '@nuxtjs/tailwindcss',
   ],
+  icon: {
+    mode: 'svg',
+    serverBundle: false,
+    provider: 'iconify'
+  },
   css: ['~/assets/css/main.css'],
   tailwindcss: {
     configPath: '~/tailwind.config.js'
@@ -25,6 +30,16 @@ export default defineNuxtConfig({
     },
     experimental: {
       wasm: true
+    },
+    // API Proxy configuration
+    routeRules: {
+      '/api/_nuxt_icon/**': {
+        // @nuxt/icon internal endpoints - no proxy
+      },
+      '/api/**': { 
+        proxy: process.env.NUXT_PUBLIC_BACKEND_URL + '/api/**' || 'http://localhost:3001/api/**',
+        cors: true
+      }
     }
   },
   // 開発時のパフォーマンス向上とWSL対応
