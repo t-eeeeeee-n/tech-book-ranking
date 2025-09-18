@@ -84,7 +84,8 @@ const batchLogSchema = new Schema<BatchLogDocument>({
         type: Schema.Types.Mixed
     }
 }, {
-    timestamps: true
+    timestamps: true,
+    collection: 'batch_logs'
 })
 
 // Compound indexes for efficient querying

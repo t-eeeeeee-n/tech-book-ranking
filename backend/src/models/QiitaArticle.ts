@@ -119,7 +119,8 @@ const qiitaArticleSchema = new Schema<QiitaArticleDocument>({
         maxlength: 100
     }
 }, {
-    timestamps: true
+    timestamps: true,
+    collection: 'qiita_articles'
 })
 
 // Indexes

@@ -92,7 +92,8 @@ const bookMentionSchema = new Schema<BookMentionDocument>({
         maxlength: 100
     }
 }, {
-    timestamps: true
+    timestamps: true,
+    collection: 'book_mentions'
 })
 
 // Compound indexes

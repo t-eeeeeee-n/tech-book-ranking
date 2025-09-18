@@ -677,11 +677,12 @@ print('Created indexes for optimal query performance based on table definition')
 print('Collections: books, qiita_articles, book_mentions, categories, rankings, batch_logs, favorites');
 
 // =============================================================================
-// INITIAL DATA INSERTION (Optional)
+// INITIAL DATA INSERTION
 // =============================================================================
-// You can add initial data here if needed
-/*
-// Example: Insert initial categories
+print('Inserting initial data...');
+
+// Insert initial categories
+print('Inserting categories...');
 db.categories.insertMany([
   {
     name: "プログラミング言語",
@@ -708,6 +709,148 @@ db.categories.insertMany([
     bookCount: 0,
     createdAt: new Date(),
     updatedAt: new Date()
+  },
+  {
+    name: "AI・機械学習",
+    slug: "ai-ml",
+    description: "AI・機械学習・データサイエンス関連の技術書",
+    parentId: null,
+    displayOrder: 3,
+    isActive: true,
+    color: "#ff6b35",
+    icon: "brain",
+    bookCount: 0,
+    createdAt: new Date(),
+    updatedAt: new Date()
+  },
+  {
+    name: "インフラ・DevOps",
+    slug: "infrastructure-devops",
+    description: "インフラ・DevOps・クラウド関連の技術書",
+    parentId: null,
+    displayOrder: 4,
+    isActive: true,
+    color: "#6c757d",
+    icon: "server",
+    bookCount: 0,
+    createdAt: new Date(),
+    updatedAt: new Date()
+  },
+  {
+    name: "アーキテクチャ・設計",
+    slug: "architecture-design",
+    description: "システムアーキテクチャ・設計に関する技術書",
+    parentId: null,
+    displayOrder: 5,
+    isActive: true,
+    color: "#17a2b8",
+    icon: "blueprint",
+    bookCount: 0,
+    createdAt: new Date(),
+    updatedAt: new Date()
   }
 ]);
-*/
+
+// Insert sample books
+print('Inserting sample books...');
+db.books.insertMany([
+  {
+    title: "リーダブルコード",
+    titleNormalized: "readable code",
+    author: ["Dustin Boswell", "Trevor Foucher"],
+    publisher: "オライリージャパン",
+    isbn13: "9784873115658",
+    publishedYear: 2012,
+    category: ["プログラミング言語", "アーキテクチャ・設計"],
+    tags: ["コード品質", "プログラミング", "ベストプラクティス"],
+    mentionCount: 145,
+    uniqueArticleCount: 98,
+    firstMentionedAt: new Date('2023-01-15'),
+    lastMentionedAt: new Date('2024-11-20'),
+    trendScore: 89.5,
+    status: "active",
+    description: "より良いコードを書くための実践的なテクニック集",
+    createdAt: new Date(),
+    updatedAt: new Date()
+  },
+  {
+    title: "Clean Code アジャイルソフトウェア達人の技",
+    titleNormalized: "clean code",
+    author: ["Robert C. Martin"],
+    publisher: "KADOKAWA",
+    isbn13: "9784048930598",
+    publishedYear: 2017,
+    category: ["プログラミング言語", "アーキテクチャ・設計"],
+    tags: ["Clean Code", "アジャイル", "プログラミング"],
+    mentionCount: 87,
+    uniqueArticleCount: 56,
+    firstMentionedAt: new Date('2023-02-10'),
+    lastMentionedAt: new Date('2024-11-18'),
+    trendScore: 76.3,
+    status: "active",
+    description: "保守しやすく読みやすいコードを書くための原則と実践",
+    createdAt: new Date(),
+    updatedAt: new Date()
+  },
+  {
+    title: "JavaScript 第7版",
+    titleNormalized: "javascript",
+    author: ["David Flanagan"],
+    publisher: "オライリージャパン",
+    isbn13: "9784873119700",
+    publishedYear: 2021,
+    category: ["プログラミング言語", "Web開発"],
+    tags: ["JavaScript", "Web開発", "フロントエンド"],
+    mentionCount: 67,
+    uniqueArticleCount: 43,
+    firstMentionedAt: new Date('2023-03-05'),
+    lastMentionedAt: new Date('2024-11-15'),
+    trendScore: 82.1,
+    status: "active",
+    description: "JavaScriptの基礎から応用まで包括的に学べる決定版",
+    createdAt: new Date(),
+    updatedAt: new Date()
+  },
+  {
+    title: "機械学習エンジニアになりたい人のための本",
+    titleNormalized: "machine learning engineer",
+    author: ["石井大輔"],
+    publisher: "翔泳社",
+    isbn13: "9784798165646",
+    publishedYear: 2021,
+    category: ["AI・機械学習"],
+    tags: ["機械学習", "AI", "データサイエンス", "Python"],
+    mentionCount: 34,
+    uniqueArticleCount: 28,
+    firstMentionedAt: new Date('2023-04-20'),
+    lastMentionedAt: new Date('2024-11-12'),
+    trendScore: 71.8,
+    status: "active",
+    description: "機械学習エンジニアに必要なスキルと実践的な知識",
+    createdAt: new Date(),
+    updatedAt: new Date()
+  },
+  {
+    title: "Kubernetes完全ガイド",
+    titleNormalized: "kubernetes complete guide",
+    author: ["青山真也"],
+    publisher: "インプレス",
+    isbn13: "9784295009092",
+    publishedYear: 2020,
+    category: ["インフラ・DevOps"],
+    tags: ["Kubernetes", "コンテナ", "DevOps", "インフラ"],
+    mentionCount: 52,
+    uniqueArticleCount: 38,
+    firstMentionedAt: new Date('2023-05-10'),
+    lastMentionedAt: new Date('2024-11-10'),
+    trendScore: 68.9,
+    status: "active",
+    description: "Kubernetesの基礎から運用まで徹底解説",
+    createdAt: new Date(),
+    updatedAt: new Date()
+  }
+]);
+
+print('Initial data insertion completed successfully!');
+print('Inserted categories: 5');
+print('Inserted sample books: 5');
