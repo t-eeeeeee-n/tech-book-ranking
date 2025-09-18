@@ -66,7 +66,6 @@ const sampleData = {
 async function insertData() {
   try {
     await mongoose.connect(uri);
-    console.log('Connected to MongoDB');
     
     // Clear existing data
     await mongoose.connection.db.collection('categories').deleteMany({});
@@ -76,13 +75,10 @@ async function insertData() {
     
     // Insert sample data
     const categoriesResult = await mongoose.connection.db.collection('categories').insertMany(sampleData.categories);
-    console.log(`${categoriesResult.insertedCount} categories inserted`);
     
     const booksResult = await mongoose.connection.db.collection('books').insertMany(sampleData.books);
-    console.log(`${booksResult.insertedCount} books inserted`);
     
     const articlesResult = await mongoose.connection.db.collection('qiita_articles').insertMany(sampleData.articles);
-    console.log(`${articlesResult.insertedCount} articles inserted`);
     
     // Create a book mention
     const bookMention = {
@@ -92,7 +88,6 @@ async function insertData() {
     };
     
     const mentionResult = await mongoose.connection.db.collection('book_mentions').insertOne(bookMention);
-    console.log(`1 book mention inserted`);
     
     // Show final counts
     const stats = {
@@ -102,7 +97,6 @@ async function insertData() {
       mentions: await mongoose.connection.db.collection('book_mentions').countDocuments()
     };
     
-    console.log('Final database stats:', stats);
     
   } catch (error) {
     console.error('Error:', error);

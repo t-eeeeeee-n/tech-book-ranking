@@ -30,7 +30,6 @@ export const useUserSession = () => {
           return session
         } catch (error) {
           // パースエラーの場合は新しいセッションを作成
-          console.warn('Failed to parse user session, creating new one')
         }
       }
 

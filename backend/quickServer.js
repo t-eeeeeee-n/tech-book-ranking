@@ -226,9 +226,4 @@ const server = http.createServer((req, res) => {
 
 const PORT = 3001;
 server.listen(PORT, () => {
-  console.log(`🚀 Quick Backend Server running on port ${PORT}`);
-  console.log(`🔗 API Base URL: http://localhost:${PORT}/api`);
-  console.log(`❤️  Health Check: http://localhost:${PORT}/health`);
-  console.log(`📊 Sample Data: ${sampleData.books.length} books, ${sampleData.categories.length} categories`);
-  console.log('✅ MongoDB connection: localhost:27017 (detected)');
 });
