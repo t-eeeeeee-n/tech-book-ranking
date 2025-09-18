@@ -1,26 +1,28 @@
 # Development Dockerfile for Frontend
 FROM node:20-alpine
 
-# Set working directory
-WORKDIR /app
-
-# Install dependencies needed for native modules
+# Set npm cache directory and install system dependencies
+ENV NPM_CONFIG_CACHE=/tmp/.npm
 RUN apk add --no-cache libc6-compat
 
-# Copy package files
-COPY package*.json ./
+# Create non-root user early
+RUN addgroup -g 1001 -S nodejs && adduser -S nuxt -u 1001 -G nodejs
 
-# Install dependencies (including dev dependencies)
-RUN npm ci
+# Set working directory and change ownership
+WORKDIR /app
+RUN chown nuxt:nodejs /app
 
-# Copy source code
-COPY . .
-
-# Create non-root user
-RUN addgroup -g 1001 -S nodejs
-RUN adduser -S nuxt -u 1001
-RUN chown -R nuxt:nodejs /app
+# Switch to non-root user for all subsequent operations
 USER nuxt
+
+# Copy package files with correct ownership
+COPY --chown=nuxt:nodejs package*.json ./
+
+# Install dependencies with clean cache and production optimizations
+RUN npm ci --only=production=false --no-audit --no-fund && npm cache clean --force
+
+# Source code will be mounted as volume in docker-compose.override.yml
+# No need to copy source code for development
 
 # Set environment variables
 ENV NODE_ENV=development

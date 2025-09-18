@@ -93,3 +93,41 @@ export const rankingsQuerySchema = Joi.object({
     period: Joi.string().valid('all', 'year', 'month', 'week').default('all'),
     limit: Joi.number().integer().min(1).max(100).default(20)
 })
+
+// Favorites validation schemas
+export const favoritesQuerySchema = Joi.object({
+    userId: Joi.string().pattern(/^[0-9a-fA-F]{24}$/).required().messages({
+        'string.pattern.base': 'Invalid userId format - must be a valid ObjectId',
+        'any.required': 'userId query parameter is required'
+    })
+})
+
+export const addFavoriteSchema = Joi.object({
+    userId: Joi.string().pattern(/^[0-9a-fA-F]{24}$/).required().messages({
+        'string.pattern.base': 'Invalid userId format - must be a valid ObjectId',
+        'any.required': 'userId is required'
+    }),
+    bookId: Joi.alternatives().try(
+        Joi.string().pattern(/^[0-9a-fA-F]{24}$/), // ObjectId format
+        Joi.string().pattern(/^[0-9]+$/), // Numeric string format
+        Joi.number().integer().min(1) // Numeric format
+    ).required().messages({
+        'alternatives.match': 'Invalid bookId format - must be ObjectId or numeric value',
+        'any.required': 'bookId is required'
+    })
+})
+
+export const removeFavoriteSchema = Joi.object({
+    userId: Joi.string().pattern(/^[0-9a-fA-F]{24}$/).required().messages({
+        'string.pattern.base': 'Invalid userId format - must be a valid ObjectId',
+        'any.required': 'userId is required'
+    }),
+    bookId: Joi.alternatives().try(
+        Joi.string().pattern(/^[0-9a-fA-F]{24}$/), // ObjectId format
+        Joi.string().pattern(/^[0-9]+$/), // Numeric string format
+        Joi.number().integer().min(1) // Numeric format
+    ).required().messages({
+        'alternatives.match': 'Invalid bookId format - must be ObjectId or numeric value',
+        'any.required': 'bookId is required'
+    })
+})

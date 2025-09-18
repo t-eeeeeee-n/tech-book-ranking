@@ -13,17 +13,13 @@
     "test": "jest",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
-    "seed": "ts-node scripts/seedData.ts",
     "fetch-qiita": "ts-node -r tsconfig-paths/register scripts/fetchQiita.ts",
     "enrich-books": "ts-node -r tsconfig-paths/register scripts/enrichBooks.ts",
     "cron-runner": "ts-node -r tsconfig-paths/register scripts/cronRunner.ts",
     "cron-daemon": "ts-node -r tsconfig-paths/register scripts/cronRunner.ts daemon",
     "cron-app": "ts-node -r tsconfig-paths/register src/cronApp.ts",
     "test-slack": "ts-node -r tsconfig-paths/register scripts/testSlack.ts",
-    "seed": "ts-node -r tsconfig-paths/register scripts/seedDatabase.ts",
-    "simple": "ts-node src/simpleServer.ts",
-    "real": "ts-node -r tsconfig-paths/register src/realServer.ts",
-    "mongo": "ts-node src/mongoServer.ts"
+    "seed": "ts-node -r tsconfig-paths/register scripts/seedDatabase.ts"
   },
   "dependencies": {
     "express": "^4.18.2",

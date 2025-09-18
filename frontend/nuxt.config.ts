@@ -35,11 +35,9 @@ export default defineNuxtConfig({
     routeRules: {
       '/api/_nuxt_icon/**': {
         // @nuxt/icon internal endpoints - no proxy
-      },
-      '/api/**': { 
-        proxy: process.env.NUXT_PUBLIC_BACKEND_URL + '/api/**' || 'http://localhost:3001/api/**',
-        cors: true
       }
+      // Removed global /api/** proxy to allow local server/api endpoints to work
+      // If you need backend proxy, add specific routes instead
     }
   },
   // 開発時のパフォーマンス向上とWSL対応
@@ -57,10 +55,12 @@ export default defineNuxtConfig({
         allow: ['..']
       },
       watch: {
-        usePolling: true
+        usePolling: true,
+        interval: 1000,
+        ignored: ['**/node_modules/**', '**/.git/**']
       },
       hmr: {
-        port: 3001
+        port: 24678
       }
     },
     optimizeDeps: {

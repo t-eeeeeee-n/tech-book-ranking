@@ -13,3 +13,9 @@ export function addNumericId<T extends { _id: string }>(item: T): T & { id: numb
     id: convertStringIdToNumber(item._id)
   }
 }
+
+// 数値IDから文字列IDを検索するヘルパー関数（モックデータ用）
+export function findBookIdByNumericId(numericId: number, books: Array<{ _id: string }>): string | null {
+  const foundBook = books.find(book => convertStringIdToNumber(book._id) === numericId)
+  return foundBook?._id || null
+}

@@ -356,8 +356,6 @@ const handleSaveBook = async (bookData: Partial<Book>) => {
       
       // Show success message
       const message = isEditing.value ? 'Book updated successfully' : 'Book created successfully'
-      // Note: You could add a toast/notification system here
-      console.log(message)
     }
   } catch (error) {
     console.error('Error saving book:', error)
@@ -381,8 +379,7 @@ const handleDeleteBook = async () => {
     showDeleteModal.value = false
     bookToDelete.value = null
     refresh()
-    
-    console.log('Book deleted successfully')
+
   } catch (error) {
     console.error('Error deleting book:', error)
     showDeleteModal.value = false

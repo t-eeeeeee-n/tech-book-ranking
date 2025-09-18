@@ -163,12 +163,6 @@ export class SeedController {
         QiitaArticle.deleteMany({})
       ])
       
-      console.log('Delete results:', {
-        mentions: deleteResults[0].deletedCount,
-        books: deleteResults[1].deletedCount,
-        categories: deleteResults[2].deletedCount,
-        articles: deleteResults[3].deletedCount
-      })
 
       // カテゴリーの投入
       const categories = await Category.insertMany(sampleCategories)

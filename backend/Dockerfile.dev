@@ -1,29 +1,35 @@
 # Development Dockerfile for Backend
 FROM node:20-slim
 
-# Set working directory
-WORKDIR /app
+# Set npm cache directory
+ENV NPM_CONFIG_CACHE=/tmp/.npm
 
-# Install system dependencies
+# Install system dependencies and clean up in single layer
 RUN apt-get update && apt-get install -y \
     python3 \
     make \
     g++ \
-    && rm -rf /var/lib/apt/lists/*
+    && rm -rf /var/lib/apt/lists/* \
+    && apt-get clean
 
-# Copy package files
-COPY package*.json ./
+# Create non-root user early with home directory
+RUN groupadd -r appuser && useradd -r -g appuser -m appuser
 
-# Install dependencies (including dev dependencies)
-RUN npm ci
+# Set working directory and change ownership
+WORKDIR /app
+RUN chown appuser:appuser /app
 
-# Copy source code
-COPY . .
-
-# Create non-root user
-RUN groupadd -r appuser && useradd -r -g appuser appuser
-RUN chown -R appuser:appuser /app
+# Switch to non-root user for all subsequent operations
 USER appuser
+
+# Copy package files with correct ownership
+COPY --chown=appuser:appuser package*.json ./
+
+# Install dependencies with optimizations and clean cache
+RUN npm ci --only=production=false --no-audit --no-fund && npm cache clean --force
+
+# Source code will be mounted as volume in docker-compose.override.yml
+# No need to copy source code for development
 
 # Expose port
 EXPOSE 3001

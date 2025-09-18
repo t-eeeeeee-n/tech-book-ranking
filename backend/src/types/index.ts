@@ -47,6 +47,50 @@ export interface QiitaArticle {
     tags: string[]
 }
 
+export interface Favorite {
+    _id: string
+    userId: string
+    bookId: string
+    createdAt: string
+    book?: FavoriteBook
+}
+
+export interface FavoriteBook {
+    id: number
+    title: string
+    author: string[]
+    imageUrl?: string
+    category: string[]
+    mentionCount: number
+    goodBookScore: number
+}
+
+export interface FavoriteQueryParams {
+    userId?: string
+}
+
+export interface AddFavoriteBody {
+    userId: string
+    bookId: string
+}
+
+export interface RemoveFavoriteBody {
+    userId: string
+    bookId: string
+}
+
+export interface FavoritesApiResponse {
+    success: boolean
+    data: Favorite[]
+    total: number
+}
+
+export interface FavoriteActionResponse {
+    success: boolean
+    message: string
+    data?: Favorite
+}
+
 export interface BookMention {
     id: string
     bookId: number

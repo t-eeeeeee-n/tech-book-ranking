@@ -13,6 +13,7 @@ import rankingsRoutes from '@/routes/rankings'
 import categoriesRoutes from '@/routes/categories'
 import { authRoutes } from '@/routes/auth'
 import seedRoutes from '@/routes/seedRoutes'
+import favoritesRoutes from '@/routes/favorites'
 
 const app = express()
 
@@ -86,6 +87,7 @@ app.use('/api/auth', authRoutes)
 app.use('/api/books', bookRoutes)
 app.use('/api/rankings', rankingsRoutes)
 app.use('/api/categories', categoriesRoutes)
+app.use('/api/favorites', favoritesRoutes)
 app.use('/api/seed', seedRoutes)
 
 // Handle 404 routes
