@@ -25,32 +25,32 @@ describe('/api/rankings', () => {
         mentionCount: 100,
         trendScore: 150,
         category: ['programming'],
-        firstMentionedAt: new Date('2024-01-01'),
-        lastMentionedAt: new Date('2024-01-15')
+        firstMentionedAt: new Date('2024-01-01').toISOString(),
+        lastMentionedAt: new Date('2024-01-15').toISOString()
       }),
       await createTestBook({
         title: 'Design Patterns',
         mentionCount: 80,
         trendScore: 120,
         category: ['programming'],
-        firstMentionedAt: new Date('2024-01-02'),
-        lastMentionedAt: new Date('2024-01-10')
+        firstMentionedAt: new Date('2024-01-02').toISOString(),
+        lastMentionedAt: new Date('2024-01-10').toISOString()
       }),
       await createTestBook({
         title: 'JavaScript Guide',
         mentionCount: 60,
         trendScore: 100,
         category: ['web-development'],
-        firstMentionedAt: new Date('2024-01-03'),
-        lastMentionedAt: new Date('2024-01-12')
+        firstMentionedAt: new Date('2024-01-03').toISOString(),
+        lastMentionedAt: new Date('2024-01-12').toISOString()
       }),
       await createTestBook({
         title: 'New React Book',
         mentionCount: 30,
         trendScore: 80,
         category: ['programming'],
-        firstMentionedAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000), // 5 days ago
-        lastMentionedAt: new Date()
+        firstMentionedAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(), // 5 days ago
+        lastMentionedAt: new Date().toISOString()
       })
     ]
   })
