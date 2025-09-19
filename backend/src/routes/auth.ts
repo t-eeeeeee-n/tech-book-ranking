@@ -1,6 +1,6 @@
 import express from 'express'
 import { authController } from '@/controllers/authController'
-import { authenticateToken, requireAdmin } from '@/middleware/authMiddleware'
+import { authenticateToken /*, requireAdmin */ } from '@/middleware/authMiddleware'
 import rateLimit from 'express-rate-limit'
 
 const router = express.Router()

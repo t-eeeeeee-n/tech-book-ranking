@@ -318,7 +318,7 @@ export class CronService {
             const overallSuccessRate = totalJobs > 0 ? (totalSuccessful / totalJobs) * 100 : 0
 
             // Get additional metrics (you could enhance this with real database queries)
-            const yesterday = new Date(Date.now() - 24 * 60 * 60 * 1000)
+            // const yesterday = new Date(Date.now() - 24 * 60 * 60 * 1000)
             const summaryStats = {
                 totalJobs,
                 successRate: Math.round(overallSuccessRate * 100) / 100,
