@@ -4,6 +4,19 @@ interface User {
   role: string
 }
 
+interface ApiError {
+  data?: {
+    message?: string
+  }
+  message?: string
+  status?: number
+}
+
+function isApiError(error: unknown): error is ApiError {
+  return typeof error === 'object' && error !== null &&
+    ('data' in error || 'message' in error || 'status' in error)
+}
+
 interface LoginCredentials {
   username: string
   password: string
@@ -48,14 +61,14 @@ export const useAuth = () => {
       }
 
       return false
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Login failed:', error)
-      
+
       // Handle specific error messages
-      if (error?.data?.message) {
+      if (isApiError(error) && error.data?.message) {
         throw new Error(error.data.message)
       }
-      
+
       throw new Error('Login failed. Please check your credentials.')
     }
   }
@@ -145,12 +158,12 @@ export const useAuth = () => {
   /**
    * Protected fetch wrapper that includes authentication
    */
-  const authenticatedFetch = async <T = any>(url: string, options: any = {}): Promise<T> => {
+  const authenticatedFetch = async <T = unknown>(url: string, options: Record<string, unknown> = {}): Promise<T> => {
     const defaultOptions = {
-      credentials: 'include',
+      credentials: 'include' as RequestCredentials,
       headers: {
         'Content-Type': 'application/json',
-        ...options.headers
+        ...(options.headers as Record<string, string> || {})
       }
     }
 
@@ -160,9 +173,9 @@ export const useAuth = () => {
         ...options,
         baseURL: backendUrl
       }) as T
-    } catch (error: any) {
+    } catch (error: unknown) {
       // If we get 401, user is not authenticated
-      if (error?.status === 401) {
+      if (isApiError(error) && error.status === 401) {
         user.value = null
         await navigateTo('/admin/login')
         throw new Error('Authentication required')

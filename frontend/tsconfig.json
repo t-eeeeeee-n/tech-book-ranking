@@ -1,4 +1,22 @@
 {
   // https://nuxt.com/docs/guide/concepts/typescript
-  "extends": "./.nuxt/tsconfig.json"
+  "extends": "./.nuxt/tsconfig.json",
+  "compilerOptions": {
+    // 型安全性の強化
+    "strict": true,
+    "noImplicitAny": true,
+    "strictNullChecks": true,
+    "strictFunctionTypes": true,
+    "strictBindCallApply": true,
+    "strictPropertyInitialization": true,
+    "noImplicitReturns": true,
+    "noImplicitThis": true,
+    "noUncheckedIndexedAccess": true,
+    // "exactOptionalPropertyTypes": true, // 一時的に無効化 - Nuxtライブラリとの互換性のため
+
+    // その他の型チェック
+    // "noUnusedLocals": true, // 一時的に無効化 - 開発中のため
+    // "noUnusedParameters": true, // 一時的に無効化 - 開発中のため
+    "noFallthroughCasesInSwitch": true
+  }
 }
