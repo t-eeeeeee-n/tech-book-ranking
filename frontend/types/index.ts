@@ -317,9 +317,29 @@ export interface BatchLog {
     processedCount: number
     successCount: number
     errorCount: number
-    errors?: any[] | null
-    config?: any | null
+    errors?: BatchError[] | null
+    config?: BatchConfig | null
     createdAt: string
+}
+
+// Batch Error and Config Types
+export interface BatchError {
+    message: string
+    details?: string
+    timestamp: string
+    code?: string
+}
+
+export interface BatchConfig {
+    source?: string
+    limits?: {
+        maxItems?: number
+        timeout?: number
+    }
+    retryPolicy?: {
+        maxRetries: number
+        backoffMs: number
+    }
 }
 
 // Filter Types

@@ -51,7 +51,13 @@ async function createConfig() {
       },
       rules: {
         'no-unused-vars': 'warn',
-        'no-undef': 'error'
+        'no-undef': 'error',
+        // TypeScript any禁止
+        '@typescript-eslint/no-explicit-any': 'error',
+        '@typescript-eslint/no-unsafe-assignment': 'error',
+        '@typescript-eslint/no-unsafe-member-access': 'error',
+        '@typescript-eslint/no-unsafe-call': 'error',
+        '@typescript-eslint/no-unsafe-return': 'error'
       }
     }
   ]

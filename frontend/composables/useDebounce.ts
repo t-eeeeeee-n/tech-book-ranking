@@ -1,7 +1,7 @@
 /**
  * Simple debounce utility for Vue 3 composables
  */
-export function useDebounceFn<T extends (...args: any[]) => any>(
+export function useDebounceFn<T extends (...args: ReadonlyArray<unknown>) => unknown>(
   fn: T,
   delay: number
 ): (...args: Parameters<T>) => void {

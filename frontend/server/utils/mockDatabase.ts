@@ -571,7 +571,7 @@ export function searchCategories(query: string, limit: number = 5) {
 }
 
 // Pagination helpers
-export function paginateBooks(books: any[], page: number = 1, limit: number = 20) {
+export function paginateBooks<T>(books: T[], page: number = 1, limit: number = 20) {
   const offset = (page - 1) * limit;
   const paginatedBooks = books.slice(offset, offset + limit);
   const total = books.length;

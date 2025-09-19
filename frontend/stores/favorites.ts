@@ -68,8 +68,8 @@ export const useFavoritesStore = defineStore('favorites', () => {
         id: book.id,
         title: book.title,
         author: Array.isArray(book.author) ? book.author.join(', ') : book.author,
-        imageUrl: book.imageUrl || undefined,
-        category: Array.isArray(book.category) ? book.category[0] : book.category,
+        imageUrl: book.imageUrl || '',
+        category: Array.isArray(book.category) ? book.category[0] || '' : book.category || '',
         mentionCount: book.mentionCount,
         goodBookScore: book.goodBookScore,
         addedAt: new Date().toISOString()
@@ -80,9 +80,9 @@ export const useFavoritesStore = defineStore('favorites', () => {
       // ローカルストレージにもバックアップ保存
       saveToLocalStorage()
 
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Failed to add to favorites:', err)
-      error.value = err.message || 'お気に入りの追加に失敗しました'
+      error.value = err instanceof Error ? err.message : 'お気に入りの追加に失敗しました'
     } finally {
       loading.value = false
     }
@@ -114,9 +114,9 @@ export const useFavoritesStore = defineStore('favorites', () => {
       // ローカルストレージも更新
       saveToLocalStorage()
 
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Failed to remove from favorites:', err)
-      error.value = err.message || 'お気に入りの削除に失敗しました'
+      error.value = err instanceof Error ? err.message : 'お気に入りの削除に失敗しました'
     } finally {
       loading.value = false
     }
@@ -174,8 +174,8 @@ export const useFavoritesStore = defineStore('favorites', () => {
           id: parseInt(item.book.id),
           title: item.book.title,
           author: Array.isArray(item.book.author) ? item.book.author.join(', ') : item.book.author,
-          imageUrl: item.book.imageUrl,
-          category: Array.isArray(item.book.category) ? item.book.category[0] : item.book.category,
+          imageUrl: item.book.imageUrl || '',
+          category: Array.isArray(item.book.category) ? item.book.category[0] || '' : item.book.category || '',
           mentionCount: item.book.mentionCount,
           goodBookScore: item.book.goodBookScore,
           addedAt: item.createdAt
@@ -185,7 +185,7 @@ export const useFavoritesStore = defineStore('favorites', () => {
         saveToLocalStorage() // APIデータをローカルにもバックアップ
       }
 
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Failed to load favorites from API:', err)
       // APIで失敗した場合はローカルストレージから読み込み
       loadFromLocalStorage()
