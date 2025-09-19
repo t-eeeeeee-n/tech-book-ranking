@@ -1,0 +1,62 @@
+name: Bug Report
+description: バグレポートを作成する
+title: "[Bug] "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        バグの報告をしていただき、ありがとうございます。
+        できるだけ詳細な情報を提供してください。
+
+  - type: input
+    id: environment
+    attributes:
+      label: 環境 / Environment
+      description: OS, ブラウザ, Node.js バージョンなど
+      placeholder: "例: Windows 11, Chrome 120, Node.js 20.10.0"
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: バグの説明 / Bug Description
+      description: 何が起こったかを詳しく説明してください
+      placeholder: バグの詳細な説明...
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: 再現手順 / Steps to Reproduce
+      description: バグを再現する手順を詳しく記載してください
+      placeholder: |
+        1. ...にアクセスする
+        2. ...をクリックする
+        3. エラーが発生する
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: 期待する動作 / Expected Behavior
+      description: 期待していた動作を説明してください
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: 実際の動作 / Actual Behavior
+      description: 実際に起こった動作を説明してください
+    validations:
+      required: true
+
+  - type: textarea
+    id: additional
+    attributes:
+      label: 追加情報 / Additional Information
+      description: スクリーンショット、ログ、その他の関連情報

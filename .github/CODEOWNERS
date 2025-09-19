@@ -1,0 +1,17 @@
+# Global code owners
+* @t-eeeeeee-n
+
+# Frontend specific
+/frontend/ @t-eeeeeee-n
+
+# Backend specific
+/backend/ @t-eeeeeee-n
+
+# CI/CD configurations
+/.github/ @t-eeeeeee-n
+/docker/ @t-eeeeeee-n
+docker-compose*.yml @t-eeeeeee-n
+
+# Project documentation
+CLAUDE.md @t-eeeeeee-n
+README.md @t-eeeeeee-n
