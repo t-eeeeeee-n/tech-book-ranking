@@ -11,12 +11,19 @@ describe('/api/rankings', () => {
   let testCategory: any
 
   beforeEach(async () => {
-    // Create test category
+    // Create test categories
     testCategory = new Category({
       name: 'Programming',
       slug: 'programming'
     })
     await testCategory.save()
+
+    // Also create web-development category for test data
+    const webDevCategory = new Category({
+      name: 'Web Development',
+      slug: 'web-development'
+    })
+    await webDevCategory.save()
 
     // Create test books with different mention counts and categories
     testBooks = [

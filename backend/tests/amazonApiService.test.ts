@@ -1,5 +1,13 @@
-import { AmazonApiService } from '@/services/amazonApiService'
 import * as dotenv from 'dotenv'
+
+// Set test environment variables BEFORE importing the service
+process.env.AMAZON_ACCESS_KEY = 'test-access-key'
+process.env.AMAZON_SECRET_KEY = 'test-secret-key'
+process.env.AMAZON_ASSOCIATE_TAG = 'test-associate-tag'
+process.env.AMAZON_REGION = 'us-east-1'
+process.env.AMAZON_ENDPOINT = 'webservices.amazon.com'
+
+import { AmazonApiService } from '@/services/amazonApiService'
 
 // Mock axios to avoid making real API calls in tests
 jest.mock('axios', () => ({
@@ -18,13 +26,6 @@ describe('AmazonApiService', () => {
   beforeAll(() => {
     // Save original environment
     originalEnv = { ...process.env }
-    
-    // Set test environment variables
-    process.env.AMAZON_ACCESS_KEY = 'test-access-key'
-    process.env.AMAZON_SECRET_KEY = 'test-secret-key'
-    process.env.AMAZON_ASSOCIATE_TAG = 'test-associate-tag'
-    process.env.AMAZON_REGION = 'us-east-1'
-    process.env.AMAZON_ENDPOINT = 'webservices.amazon.com'
   })
 
   afterAll(() => {
