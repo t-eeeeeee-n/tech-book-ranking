@@ -1,6 +1,6 @@
 import axios, { AxiosInstance } from 'axios'
 import * as crypto from 'crypto'
-import { URL } from 'url'
+// import { URL } from 'url'
 import dotenv from 'dotenv'
 import { AmazonBookData, AmazonApiResponse, AmazonApiCredentials } from '@/types'
 
@@ -59,15 +59,15 @@ interface AmazonApiItem {
     }
 }
 
-interface AmazonApiSearchResponse {
-    SearchResult?: {
-        Items?: AmazonApiItem[]
-    }
-    Errors?: Array<{
-        Code?: string
-        Message?: string
-    }>
-}
+// interface AmazonApiSearchResponse {
+//     SearchResult?: {
+//         Items?: AmazonApiItem[]
+//     }
+//     Errors?: Array<{
+//         Code?: string
+//         Message?: string
+//     }>
+// }
 
 export class AmazonApiService {
     private credentials: AmazonApiCredentials

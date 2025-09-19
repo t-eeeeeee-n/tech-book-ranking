@@ -8,16 +8,17 @@ beforeAll(async () => {
   process.env.API_KEYS = 'test-api-key-123'
   
   // Connect to test database
-  if (process.env.MONGODB_URI) {
-    await mongoose.connect(process.env.MONGODB_URI)
-  }
+  const mongoUrl = process.env.MONGODB_URL || process.env.MONGODB_URI || 'mongodb://localhost:27017/test'
+  await mongoose.connect(mongoUrl)
 })
 
 beforeEach(async () => {
   // Clear all collections before each test
-  const collections = mongoose.connection.collections
-  for (const key in collections) {
-    await collections[key].deleteMany({})
+  if (mongoose.connection.readyState === 1) {
+    const collections = mongoose.connection.collections
+    for (const key in collections) {
+      await collections[key].deleteMany({})
+    }
   }
 })
 
