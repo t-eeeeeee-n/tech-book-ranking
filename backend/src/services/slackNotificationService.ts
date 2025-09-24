@@ -115,7 +115,6 @@ export class SlackNotificationService {
 
     // Status indicators
     const statusEmoji = this.getStatusEmoji(status)
-    const statusColor = this.getStatusColor(status)
     const jobTypeTitle = this.getJobTypeTitle(jobType)
 
     // Duration formatting

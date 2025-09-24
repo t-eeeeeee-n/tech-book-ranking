@@ -19,7 +19,7 @@ interface BookWithNumericId extends IBook {
 }
 
 class BooksController {
-  getBooks = asyncHandler(async (req: Request<{}, {}, {}, BookQueryParams>, res: Response) => {
+  getBooks = asyncHandler(async (req: Request<any, any, any, BookQueryParams>, res: Response) => {
     const {
       page = '1',
       limit = '20',
@@ -34,7 +34,7 @@ class BooksController {
     const limitNum = Math.min(100, Math.max(1, parseInt(limit) || 20))
 
     // Build query
-    let query: any = { status: 'active' }
+    const query: any = { status: 'active' }
 
     // Category filter
     if (category && category !== 'all' && category.trim() !== '') {
@@ -79,7 +79,7 @@ class BooksController {
     }
 
     // Build sort object
-    let sortObj: any = {}
+    const sortObj: any = {}
     switch (sort) {
       case 'mentionCount':
       case 'mentions':
@@ -162,7 +162,7 @@ class BooksController {
     return res.json(response)
   })
 
-  getBookById = asyncHandler(async (req: Request<{ id: string }>, res: Response) => {
+  getBookById = asyncHandler(async (req: Request<any, any, any>, res: Response) => {
     const { id } = req.params
 
     let book

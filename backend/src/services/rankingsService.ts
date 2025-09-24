@@ -145,7 +145,7 @@ export class RankingsService {
         const now = new Date()
         const cacheExpiration = new Date(now.getTime() + 1000 * 60 * 60) // 1 hour cache
 
-        let query: any = { status: 'active' }
+        const query: any = { status: 'active' }
         let sortCriteria: any = {}
         let categoryId: mongoose.Types.ObjectId | undefined
 
@@ -181,12 +181,13 @@ export class RankingsService {
             case 'trending':
                 sortCriteria = { trendScore: -1, mentionCount: -1 }
                 break
-            case 'newcomer':
+            case 'newcomer': {
                 // Books mentioned for the first time recently
                 const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000)
                 query.firstMentionedAt = { $gte: thirtyDaysAgo }
                 sortCriteria = { firstMentionedAt: -1, mentionCount: -1 }
                 break
+            }
         }
 
         // Fetch and rank books
@@ -238,12 +239,13 @@ export class RankingsService {
         switch (type) {
             case 'trending':
                 return book.trendScore || 0
-            case 'newcomer':
+            case 'newcomer': {
                 // Score based on recency and initial popularity
-                const daysSinceFirst = book.firstMentionedAt 
+                const daysSinceFirst = book.firstMentionedAt
                     ? Math.max(1, Math.floor((Date.now() - new Date(book.firstMentionedAt).getTime()) / (1000 * 60 * 60 * 24)))
                     : 365
                 return Math.floor(book.mentionCount * (30 / daysSinceFirst))
+            }
             default:
                 return book.mentionCount || 0
         }

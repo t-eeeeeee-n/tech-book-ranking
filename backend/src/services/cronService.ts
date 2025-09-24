@@ -363,8 +363,8 @@ export class CronService {
         nextRun?: Date
     }> {
         const status: Array<{ name: string, running: boolean, nextRun?: Date }> = []
-        
-        for (const [name, task] of this.jobs) {
+
+        for (const [name] of this.jobs) {
             status.push({
                 name,
                 running: this.runningJobs.has(name),

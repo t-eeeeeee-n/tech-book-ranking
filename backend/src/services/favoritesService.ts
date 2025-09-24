@@ -1,6 +1,5 @@
 import mongoose from 'mongoose'
 import { Book, Favorite } from '@/models'
-import type { IFavorite as FavoriteDocument } from '@/models/Favorite'
 import type {
   FavoritesApiResponse,
   FavoriteActionResponse,

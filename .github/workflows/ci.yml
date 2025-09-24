@@ -86,10 +86,8 @@ jobs:
     - name: Install dependencies
       run: npm ci --prefer-offline --no-audit --timeout=600000
 
-    # Temporarily disable linting to focus on core functionality
-    # - name: Run linting
-    #   run: npm run lint || echo "Lint errors found but continuing..."
-    #   continue-on-error: true
+    - name: Run linting
+      run: npm run lint
 
     - name: Run type checking
       run: npm run typecheck
@@ -98,8 +96,7 @@ jobs:
       run: npm run build
 
     - name: Run tests with coverage
-      run: npm run test:coverage || echo "Tests failed but continuing for coverage..."
-      continue-on-error: true
+      run: npm run test:coverage
       env:
         MONGODB_URL: mongodb://root:password@localhost:27017/test?authSource=admin
         NODE_ENV: test

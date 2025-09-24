@@ -183,7 +183,7 @@ export class AmazonApiService {
      * Make signed request to Amazon Product Advertising API v5
      */
     private async makeSignedRequest(payload: any): Promise<any> {
-        const timestamp = new Date().toISOString().replace(/[:\-]|\.\d{3}/g, '')
+        const timestamp = new Date().toISOString().replace(/[:.-]|\.\d{3}/g, '')
         const endpoint = `https://${this.credentials.endpoint || 'webservices.amazon.com'}`
         
         const headers: Record<string, string> = {

@@ -7,17 +7,19 @@ process.env.AMAZON_ASSOCIATE_TAG = 'test-associate-tag'
 process.env.AMAZON_REGION = 'us-east-1'
 process.env.AMAZON_ENDPOINT = 'webservices.amazon.com'
 
-import { AmazonApiService } from '@/services/amazonApiService'
-
 // Mock axios to avoid making real API calls in tests
+const mockAxiosInstance = {
+  post: jest.fn()
+}
+
 jest.mock('axios', () => ({
-  create: jest.fn(() => ({
-    post: jest.fn()
-  }))
+  create: jest.fn(() => mockAxiosInstance)
 }))
 
 import axios from 'axios'
 const mockedAxios = axios as jest.Mocked<typeof axios>
+
+import { AmazonApiService } from '@/services/amazonApiService'
 
 describe('AmazonApiService', () => {
   let amazonService: AmazonApiService
@@ -146,10 +148,7 @@ describe('AmazonApiService', () => {
         }
       }
 
-      const mockAxiosInstance = {
-        post: jest.fn().mockResolvedValue({ data: mockResponse })
-      }
-      mockedAxios.create.mockReturnValue(mockAxiosInstance as any)
+      mockAxiosInstance.post.mockResolvedValue({ data: mockResponse })
 
       const result = await amazonService.getBookByIsbn('9780132350884')
 
@@ -182,10 +181,7 @@ describe('AmazonApiService', () => {
         }]
       }
 
-      const mockAxiosInstance = {
-        post: jest.fn().mockResolvedValue({ data: mockErrorResponse })
-      }
-      mockedAxios.create.mockReturnValue(mockAxiosInstance as any)
+      mockAxiosInstance.post.mockResolvedValue({ data: mockErrorResponse })
 
       const result = await amazonService.getBookByIsbn('9780132350884')
 
@@ -201,10 +197,7 @@ describe('AmazonApiService', () => {
         }
       }
 
-      const mockAxiosInstance = {
-        post: jest.fn().mockResolvedValue({ data: mockEmptyResponse })
-      }
-      mockedAxios.create.mockReturnValue(mockAxiosInstance as any)
+      mockAxiosInstance.post.mockResolvedValue({ data: mockEmptyResponse })
 
       const result = await amazonService.getBookByIsbn('9780132350884')
 
@@ -213,10 +206,7 @@ describe('AmazonApiService', () => {
     })
 
     it('should handle network errors', async () => {
-      const mockAxiosInstance = {
-        post: jest.fn().mockRejectedValue(new Error('Network error'))
-      }
-      mockedAxios.create.mockReturnValue(mockAxiosInstance as any)
+      mockAxiosInstance.post.mockRejectedValue(new Error('Network error'))
 
       const result = await amazonService.getBookByIsbn('9780132350884')
 
@@ -271,10 +261,7 @@ describe('AmazonApiService', () => {
         }
       }
 
-      const mockAxiosInstance = {
-        post: jest.fn().mockResolvedValue({ data: mockResponse })
-      }
-      mockedAxios.create.mockReturnValue(mockAxiosInstance as any)
+      mockAxiosInstance.post.mockResolvedValue({ data: mockResponse })
 
       const result = await amazonService.searchBooks('JavaScript', 'Douglas Crockford')
 
@@ -298,10 +285,7 @@ describe('AmazonApiService', () => {
         }
       }
 
-      const mockAxiosInstance = {
-        post: jest.fn().mockResolvedValue({ data: mockResponse })
-      }
-      mockedAxios.create.mockReturnValue(mockAxiosInstance as any)
+      mockAxiosInstance.post.mockResolvedValue({ data: mockResponse })
 
       const result = await amazonService.searchBooks('Clean Code')
 
@@ -316,10 +300,7 @@ describe('AmazonApiService', () => {
         }
       }
 
-      const mockAxiosInstance = {
-        post: jest.fn().mockResolvedValue({ data: mockEmptyResponse })
-      }
-      mockedAxios.create.mockReturnValue(mockAxiosInstance as any)
+      mockAxiosInstance.post.mockResolvedValue({ data: mockEmptyResponse })
 
       const result = await amazonService.searchBooks('Non-existent Book')
 
@@ -432,20 +413,14 @@ describe('AmazonApiService', () => {
         }
       }
 
-      const mockAxiosInstance = {
-        post: jest.fn().mockResolvedValue({ data: mockResponse })
-      }
-      mockedAxios.create.mockReturnValue(mockAxiosInstance as any)
+      mockAxiosInstance.post.mockResolvedValue({ data: mockResponse })
 
       const result = await amazonService.testConnection()
       expect(result).toBe(true)
     })
 
     it('should return false for failed connection', async () => {
-      const mockAxiosInstance = {
-        post: jest.fn().mockRejectedValue(new Error('Connection failed'))
-      }
-      mockedAxios.create.mockReturnValue(mockAxiosInstance as any)
+      mockAxiosInstance.post.mockRejectedValue(new Error('Connection failed'))
 
       const result = await amazonService.testConnection()
       expect(result).toBe(false)
