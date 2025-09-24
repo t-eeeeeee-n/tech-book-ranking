@@ -152,7 +152,7 @@ export class RankingGenerationService {
         console.log(`🔄 Generating ${type} ranking for ${period}...`)
 
         // Build query and sort based on type
-        let query: any = { status: 'active' }
+        const query: any = { status: 'active' }
         let sortCriteria: any = {}
 
         // Apply period filter
@@ -169,11 +169,12 @@ export class RankingGenerationService {
             case 'trending':
                 sortCriteria = { trendScore: -1, mentionCount: -1, _id: 1 }
                 break
-            case 'newcomer':
+            case 'newcomer': {
                 const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000)
                 query.firstMentionedAt = { $gte: thirtyDaysAgo }
                 sortCriteria = { firstMentionedAt: -1, mentionCount: -1, _id: 1 }
                 break
+            }
         }
 
         // Fetch and rank books
@@ -246,7 +247,7 @@ export class RankingGenerationService {
         console.log(`🔄 Generating category ranking for ${categorySlug}/${period}...`)
 
         // Build query for category books
-        let query: any = {
+        const query: any = {
             status: 'active',
             category: { $in: [categorySlug] }
         }
@@ -317,11 +318,12 @@ export class RankingGenerationService {
         switch (type) {
             case 'trending':
                 return book.trendScore || 0
-            case 'newcomer':
-                const daysSinceFirst = book.firstMentionedAt 
+            case 'newcomer': {
+                const daysSinceFirst = book.firstMentionedAt
                     ? Math.max(1, Math.floor((Date.now() - new Date(book.firstMentionedAt).getTime()) / (1000 * 60 * 60 * 24)))
                     : 365
                 return Math.floor((book.mentionCount || 0) * (30 / daysSinceFirst))
+            }
             default:
                 return book.mentionCount || 0
         }

@@ -48,7 +48,7 @@ class CategoryController {
         })
     })
 
-    getCategoryById = asyncHandler(async (req: Request<{ id: string }>, res: Response) => {
+    getCategoryById = asyncHandler(async (req: Request<any, any, any>, res: Response) => {
         const { id } = req.params
         
         const category = await Category.findOne({

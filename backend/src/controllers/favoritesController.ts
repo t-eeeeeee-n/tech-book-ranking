@@ -9,7 +9,7 @@ import { asyncHandler } from '@/middleware/errorHandler'
 
 class FavoritesController {
   // GET /api/favorites?userId=xxx
-  getFavorites = asyncHandler(async (req: Request<{}, {}, {}, FavoriteQueryParams>, res: Response) => {
+  getFavorites = asyncHandler(async (req: Request<any, any, any, FavoriteQueryParams>, res: Response) => {
     const { userId } = req.query
 
     const result = await favoritesService.getUserFavorites(userId!)
@@ -17,7 +17,7 @@ class FavoritesController {
   })
 
   // POST /api/favorites
-  addFavorite = asyncHandler(async (req: Request<{}, {}, AddFavoriteBody>, res: Response) => {
+  addFavorite = asyncHandler(async (req: Request<any, any, AddFavoriteBody>, res: Response) => {
     const { userId, bookId } = req.body
 
     const result = await favoritesService.addFavorite(userId, bookId)
@@ -26,7 +26,7 @@ class FavoritesController {
   })
 
   // DELETE /api/favorites
-  removeFavorite = asyncHandler(async (req: Request<{}, {}, RemoveFavoriteBody>, res: Response) => {
+  removeFavorite = asyncHandler(async (req: Request<any, any, RemoveFavoriteBody>, res: Response) => {
     const { userId, bookId } = req.body
 
     const result = await favoritesService.removeFavorite(userId, bookId)

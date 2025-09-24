@@ -5,7 +5,7 @@ import { asyncHandler } from '@/middleware/errorHandler'
 import { BookMention, QiitaArticle } from '@/models'
 
 class BookController {
-    getBooks = asyncHandler(async (req: Request<{}, {}, {}, BookQueryParams>, res: Response) => {
+    getBooks = asyncHandler(async (req: Request<any, any, any, BookQueryParams>, res: Response) => {
         const { 
             page = '1', 
             limit = '20', 
@@ -31,32 +31,32 @@ class BookController {
         res.json(result)
     })
 
-    getBookById = asyncHandler(async (req: Request<{ id: string }>, res: Response) => {
+    getBookById = asyncHandler(async (req: Request<any, any, any>, res: Response) => {
         const { id } = req.params
         const result = await bookService.getBookById(id)
         res.json(result)
     })
 
-    createBook = asyncHandler(async (req: Request<{}, {}, Partial<Book>>, res: Response) => {
+    createBook = asyncHandler(async (req: Request<any, any, Partial<Book>>, res: Response) => {
         const bookData = req.body
         const result = await bookService.createBook(bookData)
         res.status(201).json(result)
     })
 
-    updateBook = asyncHandler(async (req: Request<{ id: string }, {}, Partial<Book>>, res: Response) => {
+    updateBook = asyncHandler(async (req: Request<any, any, Partial<Book>>, res: Response) => {
         const { id } = req.params
         const bookData = req.body
         const result = await bookService.updateBook(id, bookData)
         res.json(result)
     })
 
-    deleteBook = asyncHandler(async (req: Request<{ id: string }>, res: Response) => {
+    deleteBook = asyncHandler(async (req: Request<any, any, any>, res: Response) => {
         const { id } = req.params
         await bookService.deleteBook(id)
         res.status(204).send()
     })
 
-    getBookMentions = asyncHandler(async (req: Request<{ id: string }>, res: Response) => {
+    getBookMentions = asyncHandler(async (req: Request<any, any, any>, res: Response) => {
         const { id } = req.params
 
         // Find book mentions for this book

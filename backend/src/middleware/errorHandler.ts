@@ -10,8 +10,7 @@ export interface AppError extends Error {
 export const errorHandler = (
     error: AppError,
     req: Request,
-    res: Response<ErrorResponse>,
-    _next: NextFunction
+    res: Response<ErrorResponse>
 ): void => {
     const statusCode = error.statusCode || 500
     const message = error.message || 'Internal Server Error'
@@ -47,7 +46,7 @@ export const createError = (message: string, statusCode: number = 500, code?: st
     return error
 }
 
-export const asyncHandler = (fn: Function) => {
+export const asyncHandler = (fn: (req: Request, res: Response, next: NextFunction) => Promise<any>) => {
     return (req: Request, res: Response, next: NextFunction) => {
         Promise.resolve(fn(req, res, next)).catch(next)
     }

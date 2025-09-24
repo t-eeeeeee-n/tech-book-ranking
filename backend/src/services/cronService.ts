@@ -318,7 +318,7 @@ export class CronService {
             const overallSuccessRate = totalJobs > 0 ? (totalSuccessful / totalJobs) * 100 : 0
 
             // Get additional metrics (you could enhance this with real database queries)
-            const yesterday = new Date(Date.now() - 24 * 60 * 60 * 1000)
+            // const yesterday = new Date(Date.now() - 24 * 60 * 60 * 1000)
             const summaryStats = {
                 totalJobs,
                 successRate: Math.round(overallSuccessRate * 100) / 100,
@@ -363,8 +363,8 @@ export class CronService {
         nextRun?: Date
     }> {
         const status: Array<{ name: string, running: boolean, nextRun?: Date }> = []
-        
-        for (const [name, task] of this.jobs) {
+
+        for (const [name] of this.jobs) {
             status.push({
                 name,
                 running: this.runningJobs.has(name),

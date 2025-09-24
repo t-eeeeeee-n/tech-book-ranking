@@ -1,6 +1,6 @@
 import axios, { AxiosInstance } from 'axios'
 import * as crypto from 'crypto'
-import { URL } from 'url'
+// import { URL } from 'url'
 import dotenv from 'dotenv'
 import { AmazonBookData, AmazonApiResponse, AmazonApiCredentials } from '@/types'
 
@@ -59,15 +59,15 @@ interface AmazonApiItem {
     }
 }
 
-interface AmazonApiSearchResponse {
-    SearchResult?: {
-        Items?: AmazonApiItem[]
-    }
-    Errors?: Array<{
-        Code?: string
-        Message?: string
-    }>
-}
+// interface AmazonApiSearchResponse {
+//     SearchResult?: {
+//         Items?: AmazonApiItem[]
+//     }
+//     Errors?: Array<{
+//         Code?: string
+//         Message?: string
+//     }>
+// }
 
 export class AmazonApiService {
     private credentials: AmazonApiCredentials
@@ -183,7 +183,7 @@ export class AmazonApiService {
      * Make signed request to Amazon Product Advertising API v5
      */
     private async makeSignedRequest(payload: any): Promise<any> {
-        const timestamp = new Date().toISOString().replace(/[:\-]|\.\d{3}/g, '')
+        const timestamp = new Date().toISOString().replace(/[:.-]|\.\d{3}/g, '')
         const endpoint = `https://${this.credentials.endpoint || 'webservices.amazon.com'}`
         
         const headers: Record<string, string> = {

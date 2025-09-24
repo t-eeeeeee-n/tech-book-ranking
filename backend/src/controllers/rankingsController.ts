@@ -11,7 +11,7 @@ interface RankingsFilters {
 }
 
 class RankingsController {
-    getRankings = asyncHandler(async (req: Request<{}, {}, {}, RankingsQueryParams>, res: Response) => {
+    getRankings = asyncHandler(async (req: Request<any, any, any, RankingsQueryParams>, res: Response) => {
         const {
             type = 'overall',
             category,
