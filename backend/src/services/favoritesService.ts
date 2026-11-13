@@ -101,7 +101,7 @@ export class FavoritesService {
           const hexSuffix = b._id.toString().slice(-8)
           const derivedNumericId = parseInt(hexSuffix, 16)
           return derivedNumericId === numericId
-        } catch (e) {
+        } catch {
           return false
         }
       })

@@ -156,7 +156,7 @@ jobs:
     - name: Validate docker-compose configuration
       run: |
         cp .env.example .env
-        docker-compose -f docker-compose.yml config
+        docker compose -f docker-compose.yml config
 
   # PR quality gate summary
   quality-gate:

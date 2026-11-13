@@ -19,7 +19,7 @@ interface BookWithNumericId extends IBook {
 }
 
 class BooksController {
-  getBooks = asyncHandler(async (req: Request<{}, any, any, BookQueryParams>, res: Response) => {
+  getBooks = asyncHandler(async (req: Request<Record<string, string>, any, any, BookQueryParams>, res: Response) => {
     const {
       page = '1',
       limit = '20',
