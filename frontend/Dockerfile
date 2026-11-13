@@ -1,5 +1,5 @@
 # Frontend Dockerfile - Nuxt 3 Multi-stage Build
-FROM node:20-alpine AS base
+FROM node:24-alpine AS base
 
 # Set working directory
 WORKDIR /app
@@ -27,7 +27,7 @@ ENV NITRO_PRESET=node-server
 RUN npm run build
 
 # Production stage - Minimal runtime image
-FROM node:20-alpine AS production
+FROM node:24-alpine AS production
 
 # Install dumb-init for proper signal handling
 RUN apk add --no-cache dumb-init

@@ -1,5 +1,5 @@
 # Backend Dockerfile - Express + TypeScript + Node.js
-FROM node:20-slim AS base
+FROM node:24-slim AS base
 
 # Set working directory
 WORKDIR /app

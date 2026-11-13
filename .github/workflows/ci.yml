@@ -21,7 +21,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [18, 20]
+        node-version: [24]
       fail-fast: false
 
     steps:
@@ -55,7 +55,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [18, 20]
+        node-version: [24]
       fail-fast: false
 
     services:
@@ -103,7 +103,7 @@ jobs:
 
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v4
-      if: matrix.node-version == '20'
+      if: matrix.node-version == '24'
       with:
         file: ./backend/coverage/lcov.info
         flags: backend
