@@ -1,5 +1,5 @@
 import { Book, Ranking, Category } from '@/models'
-import mongoose from 'mongoose'
+import mongoose, { Document } from 'mongoose'
 
 interface RankingGenerationOptions {
     periods?: Array<'all' | 'year' | 'month' | 'week'>
@@ -105,13 +105,13 @@ export class RankingGenerationService {
                     processingTimeMs: processingTime
                 }
             }
-        } catch (error: any) {
+        } catch (error: unknown) {
             const processingTime = Date.now() - startTime
             return {
                 success: false,
                 generatedRankings,
                 updatedRankings,
-                errors: [...errors, error.message || 'Unknown error'],
+                errors: [...errors, error instanceof Error ? error.message : 'Unknown error'],
                 summary: 'Ranking generation failed',
                 metadata: {
                     totalBooks: 0,
@@ -152,8 +152,8 @@ export class RankingGenerationService {
         console.log(`🔄 Generating ${type} ranking for ${period}...`)
 
         // Build query and sort based on type
-        let query: any = { status: 'active' }
-        let sortCriteria: any = {}
+        const query: Record<string, unknown> = { status: 'active' }
+        let sortCriteria: { [key: string]: 1 | -1 } = {}
 
         // Apply period filter
         if (period !== 'all') {
@@ -169,11 +169,12 @@ export class RankingGenerationService {
             case 'trending':
                 sortCriteria = { trendScore: -1, mentionCount: -1, _id: 1 }
                 break
-            case 'newcomer':
+            case 'newcomer': {
                 const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000)
                 query.firstMentionedAt = { $gte: thirtyDaysAgo }
                 sortCriteria = { firstMentionedAt: -1, mentionCount: -1, _id: 1 }
                 break
+            }
         }
 
         // Fetch and rank books
@@ -246,7 +247,7 @@ export class RankingGenerationService {
         console.log(`🔄 Generating category ranking for ${categorySlug}/${period}...`)
 
         // Build query for category books
-        let query: any = {
+        const query: Record<string, unknown> = {
             status: 'active',
             category: { $in: [categorySlug] }
         }
@@ -313,17 +314,19 @@ export class RankingGenerationService {
         }
     }
 
-    private calculateScore(book: any, type: string): number {
+    private calculateScore(book: Document, type: string): number {
+        const bookData = book as any
         switch (type) {
             case 'trending':
-                return book.trendScore || 0
-            case 'newcomer':
-                const daysSinceFirst = book.firstMentionedAt 
-                    ? Math.max(1, Math.floor((Date.now() - new Date(book.firstMentionedAt).getTime()) / (1000 * 60 * 60 * 24)))
+                return bookData.trendScore || 0
+            case 'newcomer': {
+                const daysSinceFirst = bookData.firstMentionedAt
+                    ? Math.max(1, Math.floor((Date.now() - new Date(bookData.firstMentionedAt).getTime()) / (1000 * 60 * 60 * 24)))
                     : 365
-                return Math.floor((book.mentionCount || 0) * (30 / daysSinceFirst))
+                return Math.floor((bookData.mentionCount || 0) * (30 / daysSinceFirst))
+            }
             default:
-                return book.mentionCount || 0
+                return bookData.mentionCount || 0
         }
     }
 

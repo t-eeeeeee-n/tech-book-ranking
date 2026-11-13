@@ -134,7 +134,6 @@ class CronRunner {
         console.log('')
         
         const nodeCommand = process.execPath
-        const scriptPath = __filename.replace('.ts', '.js') // Assume compiled JS
         const projectRoot = process.cwd()
         
         console.log('# Fetch Qiita articles hourly')

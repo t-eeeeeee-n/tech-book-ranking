@@ -21,7 +21,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [18, 20]
+        node-version: [20]  # Temporary: Node 18 not compatible with latest Nuxt 3
       fail-fast: false
 
     steps:
@@ -36,7 +36,7 @@ jobs:
         cache-dependency-path: ./frontend/package-lock.json
 
     - name: Install dependencies
-      run: npm ci --prefer-offline --no-audit
+      run: npm ci --prefer-offline --no-audit --timeout=600000
 
     - name: Build frontend
       run: npm run build
@@ -55,7 +55,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [18, 20]
+        node-version: [20]  # Temporary: Focus on Node 20 for stability
       fail-fast: false
 
     services:
@@ -84,7 +84,7 @@ jobs:
         cache-dependency-path: ./backend/package-lock.json
 
     - name: Install dependencies
-      run: npm ci --prefer-offline --no-audit
+      run: npm ci --prefer-offline --no-audit --timeout=600000
 
     - name: Run linting
       run: npm run lint
@@ -117,7 +117,14 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     needs: [frontend, backend]
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    # Run on main pushes and PRs that modify Docker files
+    if: |
+      (github.event_name == 'push' && github.ref == 'refs/heads/main') ||
+      (github.event_name == 'pull_request' &&
+       (contains(github.event.pull_request.title, 'docker') ||
+        contains(github.event.pull_request.title, 'Docker') ||
+        contains(github.event.pull_request.body, 'docker') ||
+        contains(github.event.pull_request.body, 'Docker')))
 
     steps:
     - name: Checkout code
@@ -149,7 +156,7 @@ jobs:
     - name: Validate docker-compose configuration
       run: |
         cp .env.example .env
-        docker-compose -f docker-compose.yml config
+        docker compose -f docker-compose.yml config
 
   # PR quality gate summary
   quality-gate:

@@ -18,4 +18,10 @@ router.get(
   booksController.getBookById
 )
 
+// GET /api/books/:id/mentions - Get mentions for a specific book
+router.get(
+  '/:id/mentions',
+  booksController.getBookMentions
+)
+
 export default router

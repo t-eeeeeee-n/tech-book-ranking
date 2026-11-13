@@ -17,6 +17,18 @@ export default defineNuxtConfig({
     serverBundle: false,
     provider: 'iconify'
   },
+  image: {
+    formats: ['webp', 'avif', 'jpeg'],
+    quality: 80,
+    screens: {
+      xs: 320,
+      sm: 640,
+      md: 768,
+      lg: 1024,
+      xl: 1280,
+      xxl: 1536
+    }
+  },
   css: ['~/assets/css/main.css'],
   tailwindcss: {
     configPath: '~/tailwind.config.js'
@@ -31,10 +43,19 @@ export default defineNuxtConfig({
     experimental: {
       wasm: true
     },
+    // Enable compression
+    compressPublicAssets: true,
+    // Minify HTML and inline critical CSS
+    minify: true,
     // API Proxy configuration
     routeRules: {
       '/api/_nuxt_icon/**': {
         // @nuxt/icon internal endpoints - no proxy
+      },
+      '/**': {
+        headers: {
+          'Cache-Control': 'public, max-age=3600'
+        }
       }
       // Removed global /api/** proxy to allow local server/api endpoints to work
       // If you need backend proxy, add specific routes instead
@@ -47,7 +68,9 @@ export default defineNuxtConfig({
         output: {
           manualChunks: undefined
         }
-      }
+      },
+      cssCodeSplit: true,
+      minify: 'esbuild'
     },
     server: {
       fs: {

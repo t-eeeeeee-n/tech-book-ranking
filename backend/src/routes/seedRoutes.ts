@@ -6,7 +6,7 @@ const router = Router()
 /**
  * @route   POST /api/seed/database
  * @desc    Seed database with sample data
- * @access  Public (開発環境のみ)
+ * @access  Public
  */
 router.post('/database', seedController.seedDatabase)
 

@@ -57,7 +57,6 @@ README.md
 *.md
 
 # Scripts
-scripts/*.ts
 scripts/README.md
 scripts/CRON_README.md
 

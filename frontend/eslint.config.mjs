@@ -24,6 +24,10 @@ async function createConfig() {
       languageOptions: {
         ecmaVersion: 'latest',
         sourceType: 'module',
+        parser: await import('@typescript-eslint/parser'),
+        parserOptions: {
+          ecmaFeatures: { jsx: true }
+        },
         globals: {
           // Nuxt globals
           $fetch: 'readonly',

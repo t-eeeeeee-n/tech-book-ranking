@@ -1,7 +1,7 @@
 import { Book, Ranking, Category } from '@/models'
 import { Book as IBook } from '@/types'
 import { createError } from '@/middleware/errorHandler'
-import mongoose from 'mongoose'
+import mongoose, { Document } from 'mongoose'
 
 interface RankingsFilters {
     type: 'overall' | 'category' | 'trending' | 'newcomer'
@@ -71,7 +71,7 @@ export class RankingsService {
     }
 
     private async getCachedRanking(filters: RankingsFilters) {
-        const query: any = {
+        const query: Record<string, unknown> = {
             type: filters.type,
             period: filters.period,
             expiresAt: { $gt: new Date() } // Not expired
@@ -104,11 +104,12 @@ export class RankingsService {
         return new Date() > expiresAt
     }
 
-    private async getBooksFromRanking(ranking: any, limit: number): Promise<IBook[]> {
+    private async getBooksFromRanking(ranking: Document, limit: number): Promise<IBook[]> {
         // Get book IDs from ranking, limited by requested limit
-        const bookIds = ranking.rankings
+        const rankingData = ranking as any
+        const bookIds = rankingData.rankings
             .slice(0, limit)
-            .map((r: any) => r.bookId)
+            .map((r: { bookId: mongoose.Types.ObjectId }) => r.bookId)
 
         // Fetch full book details
         const books = await Book.find({
@@ -122,8 +123,8 @@ export class RankingsService {
         // Return books in ranking order with rank information
         const rankedBooks: IBook[] = []
         
-        for (let i = 0; i < Math.min(ranking.rankings.length, limit); i++) {
-            const rankingEntry = ranking.rankings[i]
+        for (let i = 0; i < Math.min(rankingData.rankings.length, limit); i++) {
+            const rankingEntry = rankingData.rankings[i]
             const book = bookMap.get(rankingEntry.bookId.toString())
             
             if (book) {
@@ -145,8 +146,8 @@ export class RankingsService {
         const now = new Date()
         const cacheExpiration = new Date(now.getTime() + 1000 * 60 * 60) // 1 hour cache
 
-        let query: any = { status: 'active' }
-        let sortCriteria: any = {}
+        const query: Record<string, unknown> = { status: 'active' }
+        let sortCriteria: { [key: string]: 1 | -1 } = {}
         let categoryId: mongoose.Types.ObjectId | undefined
 
         // Handle category filtering
@@ -181,12 +182,13 @@ export class RankingsService {
             case 'trending':
                 sortCriteria = { trendScore: -1, mentionCount: -1 }
                 break
-            case 'newcomer':
+            case 'newcomer': {
                 // Books mentioned for the first time recently
                 const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000)
                 query.firstMentionedAt = { $gte: thirtyDaysAgo }
                 sortCriteria = { firstMentionedAt: -1, mentionCount: -1 }
                 break
+            }
         }
 
         // Fetch and rank books
@@ -234,18 +236,20 @@ export class RankingsService {
         }
     }
 
-    private calculateScore(book: any, type: string): number {
+    private calculateScore(book: Document, type: string): number {
+        const bookData = book as any
         switch (type) {
             case 'trending':
-                return book.trendScore || 0
-            case 'newcomer':
+                return bookData.trendScore || 0
+            case 'newcomer': {
                 // Score based on recency and initial popularity
-                const daysSinceFirst = book.firstMentionedAt 
-                    ? Math.max(1, Math.floor((Date.now() - new Date(book.firstMentionedAt).getTime()) / (1000 * 60 * 60 * 24)))
+                const daysSinceFirst = bookData.firstMentionedAt
+                    ? Math.max(1, Math.floor((Date.now() - new Date(bookData.firstMentionedAt).getTime()) / (1000 * 60 * 60 * 24)))
                     : 365
-                return Math.floor(book.mentionCount * (30 / daysSinceFirst))
+                return Math.floor(bookData.mentionCount * (30 / daysSinceFirst))
+            }
             default:
-                return book.mentionCount || 0
+                return bookData.mentionCount || 0
         }
     }
 }

@@ -1,6 +1,6 @@
 export default defineNuxtRouteMiddleware(async (to) => {
-  // Skip on server-side
-  if (process.server) return
+  // Skip on the server-side
+  if (import.meta.server) return
 
   const { checkAuth, hasRole } = useAuth()
   

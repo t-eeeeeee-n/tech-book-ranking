@@ -1,3 +1,4 @@
+// eslint-disable-next-line import/no-default-export
 export default defineEventHandler(async (event) => {
   try {
     const config = useRuntimeConfig()
@@ -6,7 +7,7 @@ export default defineEventHandler(async (event) => {
     // Proxy to backend API
     const backendUrl = `${config.public.backendUrl}/api/favorites`
 
-    const response = await $fetch(backendUrl, {
+    return await $fetch(backendUrl, {
       method: 'DELETE',
       headers: {
         'Content-Type': 'application/json',
@@ -14,8 +15,6 @@ export default defineEventHandler(async (event) => {
       },
       body: body
     })
-
-    return response
   } catch (error) {
     console.error('Error proxying favorites delete request:', error)
 

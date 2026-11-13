@@ -156,7 +156,7 @@ export class SeedController {
   seedDatabase = async (req: Request, res: Response) => {
     try {
       // 既存データのクリア
-      const deleteResults = await Promise.all([
+      await Promise.all([
         BookMention.deleteMany({}),
         Book.deleteMany({}),
         Category.deleteMany({}),

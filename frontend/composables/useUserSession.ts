@@ -1,7 +1,7 @@
 // ObjectIdの代替実装（クライアントサイド用）
 function generateObjectId(): string {
   const timestamp = Math.floor(Date.now() / 1000).toString(16)
-  const randomBytes = Math.random().toString(16).substr(2, 16)
+  const randomBytes = Math.random().toString(16).substring(2, 18)
   return timestamp + randomBytes.padEnd(16, '0')
 }
 

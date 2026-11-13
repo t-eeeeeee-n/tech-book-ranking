@@ -4,10 +4,26 @@ import { serverConfig } from '@/utils/config'
 
 export interface SlackMessage {
   text: string
-  blocks?: any[]
+  blocks?: SlackBlock[]
   channel?: string
   username?: string
   icon_emoji?: string
+}
+
+export interface SlackBlock {
+  type: string
+  text?: {
+    type: string
+    text: string
+  }
+  fields?: {
+    type: string
+    text: string
+  }[]
+  elements?: {
+    type: string
+    text: string
+  }[]
 }
 
 export interface JobSummary {
@@ -20,7 +36,7 @@ export interface JobSummary {
   startedAt: Date
   completedAt?: Date
   summary?: string
-  errors?: any[]
+  errors?: Array<{ message?: string } | string>
 }
 
 export class SlackNotificationService {
@@ -115,7 +131,6 @@ export class SlackNotificationService {
 
     // Status indicators
     const statusEmoji = this.getStatusEmoji(status)
-    const statusColor = this.getStatusColor(status)
     const jobTypeTitle = this.getJobTypeTitle(jobType)
 
     // Duration formatting
@@ -126,7 +141,7 @@ export class SlackNotificationService {
 
     const text = `${statusEmoji} ${jobTypeTitle} ${status}`
 
-    const blocks = [
+    const blocks: SlackBlock[] = [
       {
         type: 'header',
         text: {
@@ -197,7 +212,7 @@ export class SlackNotificationService {
     if (status === 'failed' && summary.errors && summary.errors.length > 0) {
       const errorText = summary.errors
         .slice(0, 3) // Show only first 3 errors
-        .map(error => `• ${error.message || error}`)
+        .map(error => `• ${typeof error === 'string' ? error : error.message || 'Unknown error'}`)
         .join('\n')
 
       blocks.push({
@@ -217,7 +232,7 @@ export class SlackNotificationService {
               text: `_... and ${summary.errors.length - 3} more errors_`
             }
           ]
-        } as any)
+        })
       }
     }
 
@@ -256,7 +271,7 @@ export class SlackNotificationService {
   /**
    * Send alert for critical errors
    */
-  async sendErrorAlert(jobType: string, error: Error, context?: any): Promise<void> {
+  async sendErrorAlert(jobType: string, error: Error, context?: Record<string, unknown>): Promise<void> {
     if (!this.enabled) return
 
     const message: SlackMessage = {
@@ -308,7 +323,7 @@ export class SlackNotificationService {
   /**
    * Send daily summary report
    */
-  async sendDailySummary(stats: any): Promise<void> {
+  async sendDailySummary(stats: Record<string, number>): Promise<void> {
     if (!this.enabled) return
 
     const message: SlackMessage = {

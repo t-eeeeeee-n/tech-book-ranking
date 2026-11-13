@@ -71,8 +71,9 @@
         <!-- Search CTA -->
         <div class="mb-16">
           <div class="max-w-2xl mx-auto">
+            <label for="hero-search" class="sr-only">技術書、著者、キーワードを検索</label>
             <div class="relative flex items-center mb-6">
-              <div class="absolute left-4 text-gray-400">
+              <div class="absolute left-4 text-gray-400" aria-hidden="true">
                 <svg width="20" height="20" viewBox="0 0 24 24" class="fill-none">
                   <circle cx="11" cy="11" r="8" stroke="currentColor" stroke-width="2"/>
                   <path d="M21 21L16.65 16.65" stroke="currentColor" stroke-width="2"/>
@@ -88,9 +89,14 @@
                 class="w-full pl-14 pr-32 py-4 text-lg bg-white/80 dark:bg-slate-800/80 dark:text-white backdrop-blur-md border border-white/20 dark:border-slate-600/20 rounded-2xl shadow-xl focus:outline-none focus:ring-2 focus:ring-cyan-500 transition-all duration-300"
                 @keydown.enter="performSearch"
               />
-              <button name="hero-search-submit" @click="performSearch" class="absolute right-2 flex items-center gap-2 px-6 py-2.5 bg-gradient-to-r from-cyan-500 to-blue-600 text-white rounded-xl font-medium shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300">
+              <button
+                name="hero-search-submit"
+                aria-label="検索を実行"
+                @click="performSearch"
+                class="absolute right-2 flex items-center gap-2 px-6 py-2.5 bg-gradient-to-r from-cyan-500 to-blue-600 text-white rounded-xl font-medium shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300"
+              >
                 <span class="hidden sm:inline">検索</span>
-                <svg width="16" height="16" viewBox="0 0 24 24" class="fill-none">
+                <svg width="16" height="16" viewBox="0 0 24 24" class="fill-none" aria-hidden="true">
                   <path d="M7 17L17 7M17 7H7M17 7V17" stroke="currentColor" stroke-width="2"/>
                 </svg>
               </button>
@@ -103,10 +109,11 @@
                 v-for="category in quickCategories"
                 :key="category.value"
                 name="quick-category"
+                :aria-label="`${category.label}カテゴリを検索`"
                 @click="searchCategory(category.value)"
                 class="flex items-center gap-2 px-3 py-2 bg-white/60 dark:bg-slate-800/60 backdrop-blur-md border border-white/20 dark:border-slate-600/20 rounded-lg transition-all duration-300 hover:bg-cyan-500/10 hover:border-cyan-500 hover:-translate-y-0.5"
               >
-                <span class="text-lg">{{ category.icon }}</span>
+                <span class="text-lg" aria-hidden="true">{{ category.icon }}</span>
                 <span class="text-sm font-medium text-gray-700 dark:text-gray-300">{{ category.label }}</span>
               </button>
             </div>
@@ -114,19 +121,22 @@
         </div>
 
         <!-- Feature Highlights -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16">
-          <div 
-            v-for="(feature, index) in features"
-            :key="feature.title"
-            class="p-6 bg-white/40 dark:bg-slate-800/40 backdrop-blur-md rounded-2xl border border-white/20 dark:border-slate-600/20 transition-all duration-300 hover:bg-white/60 dark:hover:bg-slate-800/60 hover:-translate-y-1 hover:shadow-lg animate-fade-in-up"
-            :style="{ 'animation-delay': `${(index + 3) * 100}ms` }"
-          >
-            <div class="w-10 h-10 mb-4 flex items-center justify-center rounded-xl bg-cyan-500/10">
-              <div v-html="feature.icon" class="text-cyan-500"></div>
-            </div>
-            <div>
-              <h3 class="text-lg font-semibold mb-2 text-gray-900 dark:text-white">{{ feature.title }}</h3>
-              <p class="text-sm leading-relaxed text-gray-600 dark:text-gray-400">{{ feature.description }}</p>
+        <div class="mb-16">
+          <h2 class="sr-only">主な機能</h2>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div
+              v-for="(feature, index) in features"
+              :key="feature.title"
+              class="p-6 bg-white/40 dark:bg-slate-800/40 backdrop-blur-md rounded-2xl border border-white/20 dark:border-slate-600/20 transition-all duration-300 hover:bg-white/60 dark:hover:bg-slate-800/60 hover:-translate-y-1 hover:shadow-lg animate-fade-in-up"
+              :style="{ 'animation-delay': `${(index + 3) * 100}ms` }"
+            >
+              <div class="w-10 h-10 mb-4 flex items-center justify-center rounded-xl bg-cyan-500/10">
+                <div v-html="feature.icon" class="text-cyan-500"></div>
+              </div>
+              <div>
+                <h3 class="text-lg font-semibold mb-2 text-gray-900 dark:text-white">{{ feature.title }}</h3>
+                <p class="text-sm leading-relaxed text-gray-600 dark:text-gray-400">{{ feature.description }}</p>
+              </div>
             </div>
           </div>
         </div>

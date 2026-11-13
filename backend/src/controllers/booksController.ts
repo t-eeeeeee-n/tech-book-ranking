@@ -1,5 +1,5 @@
 import { Request, Response } from 'express'
-import { Book } from '@/models'
+import { Book, BookMention, QiitaArticle } from '@/models'
 import { asyncHandler } from '@/middleware/errorHandler'
 import type { Book as IBook } from '@/types'
 
@@ -19,7 +19,7 @@ interface BookWithNumericId extends IBook {
 }
 
 class BooksController {
-  getBooks = asyncHandler(async (req: Request<{}, {}, {}, BookQueryParams>, res: Response) => {
+  getBooks = asyncHandler(async (req: Request<Record<string, string>, any, any, BookQueryParams>, res: Response) => {
     const {
       page = '1',
       limit = '20',
@@ -34,7 +34,7 @@ class BooksController {
     const limitNum = Math.min(100, Math.max(1, parseInt(limit) || 20))
 
     // Build query
-    let query: any = { status: 'active' }
+    const query: any = { status: 'active' }
 
     // Category filter
     if (category && category !== 'all' && category.trim() !== '') {
@@ -79,7 +79,7 @@ class BooksController {
     }
 
     // Build sort object
-    let sortObj: any = {}
+    const sortObj: any = {}
     switch (sort) {
       case 'mentionCount':
       case 'mentions':
@@ -162,7 +162,7 @@ class BooksController {
     return res.json(response)
   })
 
-  getBookById = asyncHandler(async (req: Request<{ id: string }>, res: Response) => {
+  getBookById = asyncHandler(async (req: Request<{ id: string }, any, any>, res: Response) => {
     const { id } = req.params
 
     let book
@@ -214,6 +214,69 @@ class BooksController {
     return res.json({
       success: true,
       data: bookWithNumericId
+    })
+  })
+  getBookMentions = asyncHandler(async (req: Request<{ id: string }, any, any>, res: Response) => {
+    const { id } = req.params
+
+    // Find book mentions for this book
+    const bookMentions = await BookMention.find({ bookId: id })
+      .lean()
+      .exec()
+
+    // Get all article IDs to fetch article details
+    const articleIds = bookMentions.map(mention => mention.articleId)
+    
+    // Fetch all articles in one query
+    const articles = await QiitaArticle.find({ 
+      _id: { $in: articleIds } 
+    }).lean().exec()
+
+    // Create a map for quick lookup
+    const articleMap = new Map(articles.map(article => [article._id.toString(), article]))
+
+    // Transform mentions to include article details
+    const mentionsWithArticles = bookMentions.map(mention => {
+      const article = articleMap.get(mention.articleId)
+      return {
+        id: mention._id.toString(),
+        title: article?.title || 'Unknown Article',
+        url: article?.url || '',
+        context: mention.context,
+        confidence: mention.confidence,
+        sentiment: mention.sentiment || 'neutral',
+        publishedAt: article?.publishedAt || mention.createdAt,
+        likesCount: article?.likesCount || 0,
+        author: article?.authorName || 'Unknown',
+        authorId: article?.authorId || '',
+        mentionText: mention.mentionText,
+        extractionMethod: mention.extractionMethod,
+        recommendationLevel: mention.recommendationLevel,
+        mentionWeight: mention.mentionWeight,
+        tags: article?.tags || []
+      }
+    })
+
+    // Sort by published date (newest first)
+    mentionsWithArticles.sort((a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime())
+
+    res.json({
+      success: true,
+      data: mentionsWithArticles,
+      meta: {
+        bookId: id,
+        totalMentions: mentionsWithArticles.length,
+        sentimentBreakdown: {
+          positive: mentionsWithArticles.filter(m => m.sentiment === 'positive').length,
+          neutral: mentionsWithArticles.filter(m => m.sentiment === 'neutral').length,
+          negative: mentionsWithArticles.filter(m => m.sentiment === 'negative').length
+        },
+        averageConfidence: mentionsWithArticles.length > 0 
+          ? Math.round((mentionsWithArticles.reduce((sum, m) => sum + m.confidence, 0) / mentionsWithArticles.length) * 100) / 100
+          : 0,
+        totalLikes: mentionsWithArticles.reduce((sum, m) => sum + m.likesCount, 0),
+        lastUpdated: new Date().toISOString()
+      }
     })
   })
 }

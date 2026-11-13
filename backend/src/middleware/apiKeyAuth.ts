@@ -56,15 +56,3 @@ function getValidApiKeys(): string[] {
     .filter(key => key.length > 0)
 }
 
-/**
- * Optional: Create a more lenient version for development
- */
-export const validateApiKeyDev = (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
-  // Skip validation in test environment
-  if (process.env.NODE_ENV === 'test') {
-    return next()
-  }
-
-  // Use regular validation in other environments
-  return validateApiKey(req, res, next)
-}

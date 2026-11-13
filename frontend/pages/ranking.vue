@@ -244,7 +244,7 @@ const seoMeta = computed(() => ({
 const fetchCategories = async () => {
   try {
     categoriesLoading.value = true
-    const response = await $fetch('/api/categories')
+    const response = await $fetch('/api/categories') as { success: boolean; data: CategoryOption[] }
     if (response.success) {
       categories.value = response.data
     }
@@ -270,10 +270,10 @@ const fetchInitialData = async () => {
         search: filters.search || undefined,
         sort: filters.sort
       }
-    })
-    
+    }) as { success: boolean; data: Book[]; pagination: { hasMore: boolean }; meta: { totalBooks: number } }
+
     if (response.success) {
-      books.value = response.data.map(book => book as unknown as Book)
+      books.value = response.data
       hasMore.value = response.pagination.hasMore
       totalBooks.value = response.meta.totalBooks
     }
@@ -300,10 +300,10 @@ const fetchNextPage = async () => {
         search: filters.search || undefined,
         sort: filters.sort
       }
-    })
-    
+    }) as { success: boolean; data: Book[]; pagination: { hasMore: boolean }; meta: { totalBooks: number } }
+
     if (response.success) {
-      books.value.push(...response.data.map(book => book as unknown as Book))
+      books.value.push(...response.data)
       hasMore.value = response.pagination.hasMore
       currentPage.value = nextPage
     }
@@ -321,8 +321,8 @@ const setupIntersectionObserver = () => {
   
   const observer = new IntersectionObserver((entries) => {
     const target = entries[0]
-    
-    if (target.isIntersecting && hasMore.value && !loadingMore.value) {
+
+    if (target?.isIntersecting && hasMore.value && !loadingMore.value) {
       fetchNextPage()
     }
   }, { 
@@ -375,9 +375,8 @@ const viewBookDetails = (bookId: number) => {
     query.search = filters.search
   }
   
-  navigateTo({ 
-    name: 'book-id', 
-    params: { id: bookId.toString() },
+  navigateTo({
+    path: `/book/${bookId}`,
     query: Object.keys(query).length > 0 ? query : undefined
   })
 }

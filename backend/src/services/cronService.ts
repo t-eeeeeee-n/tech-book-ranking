@@ -201,10 +201,11 @@ export class CronService {
                 console.log = originalLog
             }
 
-        } catch (error: any) {
-            await logger.fail(error, {
+        } catch (error: unknown) {
+            const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred'
+            await logger.fail(errorMessage, {
                 jobType: 'scheduled',
-                error: error.message
+                error: errorMessage
             })
             throw error
         }
@@ -252,10 +253,11 @@ export class CronService {
                 )
             }
 
-        } catch (error: any) {
-            await logger.fail(error, {
+        } catch (error: unknown) {
+            const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred'
+            await logger.fail(errorMessage, {
                 jobType: 'scheduled',
-                error: error.message
+                error: errorMessage
             })
             throw error
         }
@@ -291,10 +293,11 @@ export class CronService {
                 }
             )
 
-        } catch (error: any) {
-            await logger.fail(error, {
+        } catch (error: unknown) {
+            const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred'
+            await logger.fail(errorMessage, {
                 jobType: 'scheduled',
-                error: error.message
+                error: errorMessage
             })
             throw error
         }
@@ -318,12 +321,12 @@ export class CronService {
             const overallSuccessRate = totalJobs > 0 ? (totalSuccessful / totalJobs) * 100 : 0
 
             // Get additional metrics (you could enhance this with real database queries)
-            const yesterday = new Date(Date.now() - 24 * 60 * 60 * 1000)
+            // const yesterday = new Date(Date.now() - 24 * 60 * 60 * 1000)
             const summaryStats = {
                 totalJobs,
                 successRate: Math.round(overallSuccessRate * 100) / 100,
-                booksUpdated: 'N/A', // Could be calculated from ranking stats
-                articlesProcessed: 'N/A', // Could be calculated from qiita stats
+                booksUpdated: 0, // Could be calculated from ranking stats
+                articlesProcessed: 0, // Could be calculated from qiita stats
                 qiitaFetches: qiitaStats.totalBatches,
                 rankingUpdates: rankingStats.totalBatches,
                 cleanupJobs: cleanupStats.totalBatches,
@@ -339,12 +342,13 @@ export class CronService {
                 console.log('ℹ️ No job activity in the last 24 hours, skipping daily summary')
             }
 
-        } catch (error: any) {
+        } catch (error: unknown) {
             console.error('❌ Failed to send daily summary:', error)
-            
+
             // Send error alert instead
             try {
-                await slackNotificationService.sendErrorAlert('daily_summary', error, {
+                const errorObj = error instanceof Error ? error : new Error('Unknown error occurred during daily summary')
+                await slackNotificationService.sendErrorAlert('daily_summary', errorObj, {
                     task: 'Daily summary generation',
                     time: new Date().toISOString()
                 })
@@ -363,8 +367,8 @@ export class CronService {
         nextRun?: Date
     }> {
         const status: Array<{ name: string, running: boolean, nextRun?: Date }> = []
-        
-        for (const [name, task] of this.jobs) {
+
+        for (const [name] of this.jobs) {
             status.push({
                 name,
                 running: this.runningJobs.has(name),
