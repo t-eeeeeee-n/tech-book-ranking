@@ -70,45 +70,54 @@ export class FavoritesService {
     }
   }
 
+  
+  /**
+   * Validates and converts userId string to ObjectId
+   */
+  private validateUserId(userId: string): mongoose.Types.ObjectId {
+    if (!mongoose.Types.ObjectId.isValid(userId)) {
+      throw createError('Invalid userId format', 400, 'INVALID_USER_ID')
+    }
+    return new mongoose.Types.ObjectId(userId)
+  }
+
+  /**
+   * Converts bookId (string or number) to ObjectId
+   */
+  private async resolveBookId(bookId: string | number): Promise<mongoose.Types.ObjectId> {
+    // Handle bookId - could be ObjectId string or numeric ID
+    if (mongoose.Types.ObjectId.isValid(bookId.toString()) && bookId.toString().length === 24) {
+      // It's already an ObjectId
+      return new mongoose.Types.ObjectId(bookId.toString())
+    } else {
+      // It's a numeric ID, need to find the corresponding ObjectId
+      const numericId = parseInt(bookId.toString())
+
+      // Convert numeric ID to ObjectId by searching for the book
+      const books = await Book.find({}).select('_id title').lean().limit(1000).exec()
+      
+      const book = books.find(b => {
+        try {
+          const hexSuffix = b._id.toString().slice(-8)
+          const derivedNumericId = parseInt(hexSuffix, 16)
+          return derivedNumericId === numericId
+        } catch (e) {
+          return false
+        }
+      })
+
+      if (!book) {
+        throw createError('Book not found', 404, 'BOOK_NOT_FOUND')
+      }
+
+      return book._id as mongoose.Types.ObjectId
+    }
+  }
+
   async addFavorite(userId: string, bookId: string | number): Promise<FavoriteActionResponse> {
     try {
-
-      // Validate userId ObjectId format
-      if (!mongoose.Types.ObjectId.isValid(userId)) {
-        throw createError('Invalid userId format', 400, 'INVALID_USER_ID')
-      }
-
-      const userObjectId = new mongoose.Types.ObjectId(userId)
-      let bookObjectId: mongoose.Types.ObjectId
-
-      // Handle bookId - could be ObjectId string or numeric ID
-      if (mongoose.Types.ObjectId.isValid(bookId.toString()) && bookId.toString().length === 24) {
-        // It's already an ObjectId
-        bookObjectId = new mongoose.Types.ObjectId(bookId.toString())
-      } else {
-        // It's a numeric ID, need to find the corresponding ObjectId
-        const numericId = parseInt(bookId.toString())
-
-        // Convert numeric ID to ObjectId by searching for the book
-        const books = await Book.find({}).select('_id title').lean().limit(1000).exec()
-        
-        const book = books.find(b => {
-          try {
-            const hexSuffix = b._id.toString().slice(-8)
-            const derivedNumericId = parseInt(hexSuffix, 16)
-            return derivedNumericId === numericId
-          } catch (e) {
-            return false
-          }
-        })
-
-        if (!book) {
-          throw createError('Book not found', 404, 'BOOK_NOT_FOUND')
-        }
-
-        bookObjectId = book._id as mongoose.Types.ObjectId
-      }
-
+      const userObjectId = this.validateUserId(userId)
+      const bookObjectId = await this.resolveBookId(bookId)
 
       // 既にお気に入りに追加されているかチェック
       const existingFavorite = await Favorite.findOne({
@@ -150,42 +159,8 @@ export class FavoritesService {
 
   async removeFavorite(userId: string, bookId: string | number): Promise<FavoriteActionResponse> {
     try {
-
-      // Validate userId ObjectId format
-      if (!mongoose.Types.ObjectId.isValid(userId)) {
-        throw createError('Invalid userId format', 400, 'INVALID_USER_ID')
-      }
-
-      const userObjectId = new mongoose.Types.ObjectId(userId)
-      let bookObjectId: mongoose.Types.ObjectId
-
-      // Handle bookId - could be ObjectId string or numeric ID
-      if (mongoose.Types.ObjectId.isValid(bookId.toString()) && bookId.toString().length === 24) {
-        // It's already an ObjectId
-        bookObjectId = new mongoose.Types.ObjectId(bookId.toString())
-      } else {
-        // It's a numeric ID, need to find the corresponding ObjectId
-        const numericId = parseInt(bookId.toString())
-
-        // Convert numeric ID to ObjectId by searching for the book
-        // Use a simple scan approach for now (not efficient but safe)
-        const books = await Book.find({}).select('_id title').lean().limit(1000).exec()
-        const book = books.find(b => {
-          try {
-            const hexSuffix = b._id.toString().slice(-8)
-            const derivedNumericId = parseInt(hexSuffix, 16)
-            return derivedNumericId === numericId
-          } catch (e) {
-            return false
-          }
-        })
-
-        if (!book) {
-          throw createError('Book not found', 404, 'BOOK_NOT_FOUND')
-        }
-
-        bookObjectId = book._id as mongoose.Types.ObjectId
-      }
+      const userObjectId = this.validateUserId(userId)
+      const bookObjectId = await this.resolveBookId(bookId)
 
       const result = await Favorite.deleteOne({
         userId: userObjectId,

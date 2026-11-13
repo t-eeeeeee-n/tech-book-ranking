@@ -299,20 +299,20 @@ const books = computed(() => response.value?.data || [])
 const pagination = computed(() => response.value?.pagination)
 
 // Debounced search
-const debouncedSearch = useDebounceFn(() => {
+const debouncedSearch = useDebounceFn(async () => {
   currentPage.value = 1
-  refresh()
+  await refresh()
 }, 500)
 
 // Methods
-const fetchBooks = () => {
+const fetchBooks = async () => {
   currentPage.value = 1
-  refresh()
+  await refresh()
 }
 
-const changePage = (page: number) => {
+const changePage = async (page: number) => {
   currentPage.value = page
-  refresh()
+  await refresh()
 }
 
 const openCreateModal = () => {
@@ -352,10 +352,10 @@ const handleSaveBook = async (bookData: Partial<Book>) => {
 
     if (response) {
       closeModal()
-      refresh()
-      
-      // Show success message
-      const message = isEditing.value ? 'Book updated successfully' : 'Book created successfully'
+      await refresh()
+
+      // Success - book saved
+      console.log(isEditing.value ? 'Book updated successfully' : 'Book created successfully')
     }
   } catch (error) {
     console.error('Error saving book:', error)
@@ -378,7 +378,7 @@ const handleDeleteBook = async () => {
 
     showDeleteModal.value = false
     bookToDelete.value = null
-    refresh()
+    await refresh()
 
   } catch (error) {
     console.error('Error deleting book:', error)

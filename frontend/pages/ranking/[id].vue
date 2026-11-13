@@ -184,7 +184,7 @@ const visiblePages = computed(() => {
 
 // Methods
 const viewBookDetails = (bookId: number) => {
-  navigateTo({ name: 'book-id', params: { id: bookId.toString() } })
+  navigateTo(`/book/${bookId}`)
 }
 
 const shareOnFacebook = (book: Book) => {

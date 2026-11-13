@@ -1,8 +1,8 @@
-import axios, { AxiosInstance } from 'axios'
+import axios, {AxiosInstance} from 'axios'
 import * as crypto from 'crypto'
 // import { URL } from 'url'
 import dotenv from 'dotenv'
-import { AmazonBookData, AmazonApiResponse, AmazonApiCredentials } from '@/types'
+import {AmazonApiCredentials, AmazonApiResponse, AmazonBookData} from '@/types'
 
 // Load environment variables
 dotenv.config()
@@ -12,8 +12,8 @@ interface AmazonApiItem {
     DetailPageURL?: string
     Images?: {
         Primary?: {
-            Large?: { URL: string }
-            Medium?: { URL: string }
+            Large?: { URL?: string }
+            Medium?: { URL?: string }
         }
     }
     ItemInfo?: {
@@ -59,22 +59,74 @@ interface AmazonApiItem {
     }
 }
 
-// interface AmazonApiSearchResponse {
-//     SearchResult?: {
-//         Items?: AmazonApiItem[]
-//     }
-//     Errors?: Array<{
-//         Code?: string
-//         Message?: string
-//     }>
-// }
+interface AmazonItemResponse {
+    ItemsResult?: {
+        Items?: Array<{
+            ASIN: string
+            ItemInfo?: {
+                Title?: { DisplayValue?: string }
+                ByLineInfo?: {
+                    Contributors?: Array<{
+                        Name?: string
+                        Role?: string
+                    }>
+                }
+            }
+            Images?: {
+                Primary?: {
+                    Large?: { URL?: string }
+                }
+            }
+            Offers?: {
+                Listings?: Array<{
+                    Price?: {
+                        Amount?: number
+                        Currency?: string
+                        DisplayAmount?: string
+                    }
+                    Availability?: { Message?: string }
+                }>
+            }
+        }>
+    }
+    SearchResult?: {
+        Items?: Array<{
+            ASIN: string
+            ItemInfo?: {
+                Title?: { DisplayValue?: string }
+                ByLineInfo?: {
+                    Contributors?: Array<{
+                        Name?: string
+                        Role?: string
+                    }>
+                }
+            }
+            Images?: {
+                Primary?: {
+                    Large?: { URL?: string }
+                }
+            }
+            Offers?: {
+                Listings?: Array<{
+                    Price?: {
+                        Amount?: number
+                        Currency?: string
+                        DisplayAmount?: string
+                    }
+                    Availability?: { Message?: string }
+                }>
+            }
+        }>
+    }
+    Errors?: Array<{
+        Code: string
+        Message: string
+    }>
+}
 
 export class AmazonApiService {
     private credentials: AmazonApiCredentials
     private httpClient: AxiosInstance
-    private serviceName = 'ProductAdvertisingAPI'
-    private version = '20131001'
-
     constructor() {
         this.credentials = this.loadCredentials()
         this.httpClient = axios.create({
@@ -156,7 +208,7 @@ export class AmazonApiService {
 
         // Create string to sign
         const algorithm = 'AWS4-HMAC-SHA256'
-        const credentialScope = `${timestamp.substr(0, 8)}/${region}/execute-api/aws4_request`
+        const credentialScope = `${timestamp.substring(0, 8)}/${region}/execute-api/aws4_request`
         const stringToSign = [
             algorithm,
             timestamp,
@@ -165,24 +217,21 @@ export class AmazonApiService {
         ].join('\n')
 
         // Calculate signature
-        const signingKey = this.getSigningKey(this.credentials.secretKey, timestamp.substr(0, 8), region, 'execute-api')
-        const signature = crypto.createHmac('sha256', signingKey).update(stringToSign).digest('hex')
-
-        return signature
+        const signingKey = this.getSigningKey(this.credentials.secretKey, timestamp.substring(0, 8), region, 'execute-api')
+        return crypto.createHmac('sha256', signingKey).update(stringToSign).digest('hex')
     }
 
     private getSigningKey(secretKey: string, dateStamp: string, region: string, service: string): Buffer {
         const kDate = crypto.createHmac('sha256', 'AWS4' + secretKey).update(dateStamp).digest()
         const kRegion = crypto.createHmac('sha256', kDate).update(region).digest()
         const kService = crypto.createHmac('sha256', kRegion).update(service).digest()
-        const kSigning = crypto.createHmac('sha256', kService).update('aws4_request').digest()
-        return kSigning
+        return crypto.createHmac('sha256', kService).update('aws4_request').digest()
     }
 
     /**
      * Make signed request to Amazon Product Advertising API v5
      */
-    private async makeSignedRequest(payload: any): Promise<any> {
+    private async makeSignedRequest(payload: Record<string, any>): Promise<AmazonItemResponse> {
         const timestamp = new Date().toISOString().replace(/[:.-]|\.\d{3}/g, '')
         const endpoint = `https://${this.credentials.endpoint || 'webservices.amazon.com'}`
         
@@ -204,21 +253,20 @@ export class AmazonApiService {
             this.credentials.region!
         )
 
-        const credentialScope = `${timestamp.substr(0, 8)}/${this.credentials.region}/execute-api/aws4_request`
-        const authHeader = [
+        const credentialScope = `${timestamp.substring(0, 8)}/${this.credentials.region}/execute-api/aws4_request`
+        headers['Authorization'] = [
             `AWS4-HMAC-SHA256 Credential=${this.credentials.accessKey}/${credentialScope}`,
             `SignedHeaders=${Object.keys(headers).sort().map(k => k.toLowerCase()).join(';')}`,
             `Signature=${signature}`
         ].join(', ')
 
-        headers['Authorization'] = authHeader
-
         try {
             const response = await this.httpClient.post(endpoint, payload, { headers })
             return response.data
-        } catch (error: any) {
-            console.error('Amazon API request failed:', error.response?.data || error.message)
-            throw new Error(`Amazon API request failed: ${error.response?.data?.message || error.message}`)
+        } catch (error: unknown) {
+            const errorMessage = error instanceof Error ? error.message : 'Unknown error'
+            console.error('Amazon API request failed:', errorMessage)
+            throw new Error(`Amazon API request failed: ${errorMessage}`)
         }
     }
 
@@ -277,12 +325,12 @@ export class AmazonApiService {
                 data: bookData
             }
 
-        } catch (error: any) {
+        } catch (error: unknown) {
             console.error('Error fetching book from Amazon:', error)
             return {
                 success: false,
                 error: 'API_ERROR',
-                message: error.message || 'Failed to fetch book data from Amazon'
+                message: error instanceof Error ? error.message : 'Failed to fetch book data from Amazon'
             }
         }
     }
@@ -337,12 +385,12 @@ export class AmazonApiService {
                 data: bookData
             }
 
-        } catch (error: any) {
+        } catch (error: unknown) {
             console.error('Error searching books on Amazon:', error)
             return {
                 success: false,
                 error: 'SEARCH_ERROR',
-                message: error.message || 'Failed to search books on Amazon'
+                message: error instanceof Error ? error.message : 'Failed to search books on Amazon'
             }
         }
     }

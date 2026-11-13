@@ -1,6 +1,6 @@
 export default defineNuxtRouteMiddleware(async (to) => {
-  // Skip auth check on server-side to avoid hydration issues
-  if (process.server) return
+  // Skip auth check on the server-side to avoid hydration issues
+  if (import.meta.server) return
 
   const { checkAuth } = useAuth()
   
@@ -8,7 +8,7 @@ export default defineNuxtRouteMiddleware(async (to) => {
     const isAuthenticated = await checkAuth()
     
     if (!isAuthenticated) {
-      // Redirect to login page with return URL
+      // Redirect to the login page with return URL
       return navigateTo({
         path: '/admin/login',
         query: {

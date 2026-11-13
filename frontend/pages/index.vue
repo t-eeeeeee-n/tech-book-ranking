@@ -2,16 +2,17 @@
   <div class="min-h-screen">
     <!-- Header -->
     <SimpleHeader />
-    
+
     <!-- Modern Hero Section -->
-    <ModernHeroSection 
-      :total-books="totalBooks" 
+    <ModernHeroSection
+      :total-books="totalBooks"
       :total-categories="12"
       update-frequency="毎日"
     />
-    
+
     <!-- Ranking Preview Section -->
-    <section class="py-20 bg-white dark:bg-gray-900 transition-colors duration-300">
+    <main>
+      <section class="py-20 bg-white dark:bg-gray-900 transition-colors duration-300">
       <div class="container mx-auto px-6">
         <!-- Section Header -->
         <div class="text-center mb-16">
@@ -65,7 +66,8 @@
           </NuxtLink>
         </div>
       </div>
-    </section>
+      </section>
+    </main>
   </div>
 </template>
 

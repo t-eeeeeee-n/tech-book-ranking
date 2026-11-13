@@ -1,7 +1,7 @@
 import express from 'express'
 import { authController } from '@/controllers/authController'
-import { authenticateToken /*, requireAdmin */ } from '@/middleware/authMiddleware'
-import rateLimit from 'express-rate-limit'
+import { authenticateToken } from '@/middleware/authMiddleware'
+import { rateLimit } from 'express-rate-limit'
 
 const router = express.Router()
 
@@ -36,7 +36,7 @@ const loginRateLimit = rateLimit({
 /**
  * @route POST /api/auth/login
  * @desc Authenticate admin user
- * @access Public (but rate limited)
+ * @access Public
  */
 router.post('/login', loginRateLimit, authController.login.bind(authController))
 
@@ -66,7 +66,7 @@ router.post('/verify', authenticateToken, authController.verifySession.bind(auth
  * @desc Check authentication status (health check)
  * @access Public
  */
-router.get('/status', (req, res) => {
+router.get('/status', (_req, res) => {
   res.status(200).json({
     success: true,
     message: 'Authentication service is operational',

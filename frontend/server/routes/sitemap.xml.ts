@@ -1,3 +1,4 @@
+// eslint-disable-next-line import/no-default-export
 export default defineEventHandler(async (event) => {
   const SITE_URL = 'https://techrank-books.com' // Replace it with actual domain
   const BOOKS_PER_PAGE = 24

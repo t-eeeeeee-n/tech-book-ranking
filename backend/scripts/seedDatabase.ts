@@ -243,7 +243,10 @@ async function seedDatabase() {
 
 // Run the seeder if this file is executed directly
 if (require.main === module) {
-    seedDatabase()
+    seedDatabase().catch((error) => {
+        console.error('Failed to seed database:', error)
+        process.exit(1)
+    })
 }
 
 export default seedDatabase

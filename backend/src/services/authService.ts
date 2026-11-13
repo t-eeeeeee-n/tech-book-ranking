@@ -1,6 +1,6 @@
 import jwt from 'jsonwebtoken'
 import bcrypt from 'bcrypt'
-import { apiConfig } from '@/utils/config'
+import {apiConfig} from '@/utils/config'
 
 export interface AdminUser {
   id: string
@@ -47,10 +47,9 @@ export class AuthService {
     this.initializeAdminUser(defaultPassword)
   }
 
-  private async initializeAdminUser(password: string): Promise<void> {
+  private initializeAdminUser(password: string): void {
     try {
-      const passwordHash = await bcrypt.hash(password, this.saltRounds)
-      this.adminUsers.admin.passwordHash = passwordHash
+      this.adminUsers.admin.passwordHash = bcrypt.hashSync(password, this.saltRounds)
     } catch (error) {
       console.error('Failed to initialize admin user:', error)
       throw new Error('Authentication system initialization failed')
@@ -138,14 +137,6 @@ export class AuthService {
       return null
     }
   }
-
-  /**
-   * Check if user has required role
-   */
-  hasRole(user: AdminUser, requiredRole: string): boolean {
-    return user.role === requiredRole || user.role === 'admin'
-  }
-
   /**
    * Generate secure cookie options
    */

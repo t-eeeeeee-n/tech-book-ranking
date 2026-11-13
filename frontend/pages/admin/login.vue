@@ -133,8 +133,6 @@ const errors = reactive({
   password: ''
 })
 
-// Runtime config
-const config = useRuntimeConfig()
 const isDevelopment = process.env.NODE_ENV === 'development'
 
 // Auth composable

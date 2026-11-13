@@ -1,11 +1,11 @@
 #!/usr/bin/env ts-node
 
-import { program } from 'commander'
+import {program} from 'commander'
 import mongoose from 'mongoose'
 import dotenv from 'dotenv'
-import { Book } from '@/models'
+import {Book} from '@/models'
 import amazonApiService from '@/services/amazonApiService'
-import { enrichBookData, enrichMultipleBooks, needsEnrichment, getEnrichmentPriority } from '@/utils/bookEnrichment'
+import {enrichBookData, getEnrichmentPriority} from '@/utils/bookEnrichment'
 
 // Load environment variables
 dotenv.config()
@@ -114,8 +114,7 @@ class BookEnrichmentRunner {
             const sortedBooks = booksForSorting.sort((a, b) => getEnrichmentPriority(b) - getEnrichmentPriority(a))
             // Map back to original structure but preserve sort order
             books = sortedBooks.map(sortedBook => {
-                const originalBook = books.find(b => b._id.toString() === sortedBook._id)!
-                return originalBook
+                return books.find(b => b._id.toString() === sortedBook._id)!
             })
             console.log('📈 Books sorted by enrichment priority')
         }

@@ -5,7 +5,7 @@ export function useDebounceFn<T extends (...args: ReadonlyArray<unknown>) => unk
   fn: T,
   delay: number
 ): (...args: Parameters<T>) => void {
-  let timeoutId: NodeJS.Timeout | null = null
+  let timeoutId: ReturnType<typeof setTimeout> | null = null
   
   return (...args: Parameters<T>) => {
     if (timeoutId) {
@@ -19,24 +19,3 @@ export function useDebounceFn<T extends (...args: ReadonlyArray<unknown>) => unk
   }
 }
 
-/**
- * Debounce a ref value
- */
-export function useDebounce<T>(value: Ref<T>, delay: number): Ref<T> {
-  const debouncedValue = ref<T>(value.value) as Ref<T>
-  
-  let timeoutId: NodeJS.Timeout | null = null
-  
-  watch(value, (newValue) => {
-    if (timeoutId) {
-      clearTimeout(timeoutId)
-    }
-    
-    timeoutId = setTimeout(() => {
-      debouncedValue.value = newValue
-      timeoutId = null
-    }, delay)
-  })
-  
-  return debouncedValue
-}

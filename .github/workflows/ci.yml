@@ -117,7 +117,14 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     needs: [frontend, backend]
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    # Run on main pushes and PRs that modify Docker files
+    if: |
+      (github.event_name == 'push' && github.ref == 'refs/heads/main') ||
+      (github.event_name == 'pull_request' &&
+       (contains(github.event.pull_request.title, 'docker') ||
+        contains(github.event.pull_request.title, 'Docker') ||
+        contains(github.event.pull_request.body, 'docker') ||
+        contains(github.event.pull_request.body, 'Docker')))
 
     steps:
     - name: Checkout code

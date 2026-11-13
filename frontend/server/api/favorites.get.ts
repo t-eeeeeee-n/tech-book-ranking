@@ -1,3 +1,4 @@
+// eslint-disable-next-line import/no-default-export
 export default defineEventHandler(async (event) => {
   try {
     const config = useRuntimeConfig()
@@ -14,14 +15,12 @@ export default defineEventHandler(async (event) => {
       }
     })
 
-    const response = await $fetch(`${backendUrl}?${searchParams.toString()}`, {
+    return await $fetch(`${backendUrl}?${searchParams.toString()}`, {
       method: 'GET',
       headers: {
         'x-api-key': config.private.backendApiKey
       }
     })
-
-    return response
   } catch (error) {
     console.error('Error proxying favorites request:', error)
     throw createError({

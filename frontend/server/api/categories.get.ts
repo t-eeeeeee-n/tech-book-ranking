@@ -1,3 +1,4 @@
+// eslint-disable-next-line import/no-default-export
 export default defineEventHandler(async (event) => {
   try {
     const config = useRuntimeConfig()
@@ -6,15 +7,13 @@ export default defineEventHandler(async (event) => {
     // Proxy to backend API
     const backendUrl = `${config.public.backendUrl}/api/categories`
 
-    const response = await $fetch(backendUrl, {
+    return await $fetch(backendUrl, {
       method: 'GET',
       headers: {
         'x-api-key': config.private.backendApiKey
       },
       query: query
     })
-
-    return response
   } catch (error) {
     console.error('Error proxying categories request:', error)
 

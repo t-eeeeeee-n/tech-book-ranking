@@ -1,8 +1,13 @@
 <template>
-  <div 
+  <div
+    role="article"
+    tabindex="0"
     class="relative rounded-2xl p-4 sm:p-6 shadow-lg hover:shadow-xl border transition-all duration-300 cursor-pointer group hover:-translate-y-1 hover:border-cyan-500 dark:hover:border-cyan-400 flex flex-col min-h-[480px]"
     :class="cardBackgroundClass"
+    :aria-label="`${rank}位: ${book.title} - ${book.mentionCount}回言及`"
     @click="$emit('click', book._id)"
+    @keydown.enter="$emit('click', book._id)"
+    @keydown.space.prevent="$emit('click', book._id)"
   >
     <!-- Rank Badge -->
     <div 
@@ -14,8 +19,8 @@
     </div>
 
     <!-- Special Crown for 1st place -->
-    <div v-if="rank === 1" class="absolute -top-3 -right-2 text-yellow-500 z-10">
-      <div class="text-lg">👑</div>
+    <div v-if="rank === 1" class="absolute -top-3 -right-2 text-yellow-500 text-lg z-10">
+      👑
     </div>
 
     <!-- Book Cover -->
@@ -27,12 +32,16 @@
       </div>
       
       <!-- 通常の画像表示 -->
-      <img 
+      <NuxtImg
         v-else
-        :src="book.imageUrl || undefined" 
+        :src="book.imageUrl || undefined"
         :alt="book.title"
         class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
         loading="lazy"
+        format="webp"
+        quality="80"
+        width="300"
+        height="400"
         @error="handleImageError"
       />
       
@@ -45,33 +54,26 @@
     <!-- Book Info -->
     <div class="text-center flex flex-col flex-grow">
       <!-- Title with Heart Icon - Fixed Height with proper line clamping -->
-      <div class="mb-3 h-12 flex items-center justify-center">
-        <div class="flex items-center space-x-2">
-          <h3 class="text-sm sm:text-base font-semibold text-gray-900 dark:text-white line-clamp-2 leading-tight text-center">
-            {{ book.title }}
-          </h3>
-          <!-- お気に入りボタン - タイトル右隣にインライン配置 -->
-          <div @click.stop>
-            <button 
-              @click="toggleFavorite"
-              class="w-6 h-6 rounded-full flex items-center justify-center hover:scale-110 active:scale-95 focus:outline-none transition-transform duration-200 ease-out"
-              :aria-label="isFavorite ? 'お気に入りから削除' : 'お気に入りに追加'"
-            >
-              <span class="relative w-4 h-4">
-                <!-- 常にソリッドハートを表示し、色で状態を管理 -->
-                <Icon 
-                  name="heroicons:heart-solid"
-                  :class="[
-                    'w-4 h-4 favorite-heart-icon',
-                    isFavorite 
-                      ? 'text-red-500 fill-red-500 heart-filled' 
-                      : 'text-gray-300 fill-gray-300 heart-empty'
-                  ]"
-                />
-              </span>
-            </button>
-          </div>
-        </div>
+      <div class="mb-3 h-12 flex items-center justify-center space-x-2">
+        <h3 class="text-sm sm:text-base font-semibold text-gray-900 dark:text-white line-clamp-2 leading-tight text-center">
+          {{ book.title }}
+        </h3>
+        <!-- お気に入りボタン - タイトル右隣にインライン配置 -->
+        <button
+          @click.stop="toggleFavorite"
+          class="w-6 h-6 rounded-full flex items-center justify-center hover:scale-110 active:scale-95 focus:outline-none transition-transform duration-200 ease-out"
+          :aria-label="isFavorite ? 'お気に入りから削除' : 'お気に入りに追加'"
+        >
+          <Icon
+            name="heroicons:heart-solid"
+            :class="[
+              'w-4 h-4 favorite-heart-icon',
+              isFavorite
+                ? 'text-red-500 fill-red-500 heart-filled'
+                : 'text-gray-300 fill-gray-300 heart-empty'
+            ]"
+          />
+        </button>
       </div>
       
       <!-- Trend Score (if available) -->
@@ -126,23 +128,25 @@
         <!-- SNS Share Buttons -->
         <div class="flex space-x-2">
           <!-- Facebook Button -->
-          <button 
+          <button
             @click="handleFacebookShare"
-            class="flex-1 flex items-center justify-center p-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg shadow-md hover:shadow-lg transition-all duration-200 transform hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800"
+            class="flex-1 p-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg shadow-md hover:shadow-lg transition-all duration-200 transform hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 flex items-center justify-center"
+            :aria-label="`${book.title}をFacebookでシェア`"
             title="Facebookでシェア"
           >
-            <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24">
+            <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24" aria-hidden="true">
               <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
             </svg>
           </button>
 
           <!-- X (Twitter) Button -->
-          <button 
+          <button
             @click="handleTwitterShare"
-            class="flex-1 flex items-center justify-center p-2.5 bg-black hover:bg-gray-800 text-white rounded-lg shadow-md hover:shadow-lg transition-all duration-200 transform hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800"
+            class="flex-1 p-2.5 bg-black hover:bg-gray-800 text-white rounded-lg shadow-md hover:shadow-lg transition-all duration-200 transform hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 flex items-center justify-center"
+            :aria-label="`${book.title}をX(Twitter)でシェア`"
             title="X(Twitter)でシェア"
           >
-            <svg class="w-4 h-4  fill-current" viewBox="0 0 24 24">
+            <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24" aria-hidden="true">
               <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
             </svg>
           </button>
@@ -183,9 +187,30 @@ const favoritesStore = useFavoritesStore()
 
 // ハイドレーション問題を回避するため、クライアントサイドでのみお気に入り状態を表示
 const isClient = ref(false)
+
+// 安全なID取得関数
+const getBookId = (book: Book): number => {
+  if (book.id) {
+    return book.id
+  }
+  // _idから数値IDを生成（ObjectIdの最後8文字を16進数として解釈）
+  try {
+    return parseInt(book._id.slice(-8), 16)
+  } catch {
+    // フォールバック: _idのハッシュ値を使用
+    let hash = 0
+    for (let i = 0; i < book._id.length; i++) {
+      const char = book._id.charCodeAt(i)
+      hash = ((hash << 5) - hash) + char
+      hash = hash & hash // 32bit整数に変換
+    }
+    return Math.abs(hash)
+  }
+}
+
 const isFavorite = computed(() => {
   if (!isClient.value) return false // SSR時は常にfalse
-  return favoritesStore.isFavorite(props.book.id || parseInt(props.book._id.slice(-8), 16))
+  return favoritesStore.isFavorite(getBookId(props.book))
 })
 
 // クライアントサイドでマウント後に状態を更新
@@ -259,12 +284,12 @@ watch(() => props.book._id, () => {
 
 const handleImageError = (event: Event) => {
   const target = event.target as HTMLImageElement
-  
+
   if (!fallbackImageUsed.value) {
     // 最初のエラー時は完全にローカルなSVG画像を使用
     fallbackImageUsed.value = true
     const categoryString = Array.isArray(props.book.category) ? props.book.category[0] : props.book.category
-    target.src = generateLocalSVG(props.book.id, categoryString)
+    target.src = generateLocalSVG(getBookId(props.book), categoryString || 'プログラミング')
   } else {
     // 2回目のエラー時も画像を非表示にして代替表示
     imageError.value = true
@@ -273,8 +298,8 @@ const handleImageError = (event: Event) => {
 }
 
 // ローカルでSVG画像を生成する関数
-const generateLocalSVG = (bookId: number | undefined, category: string): string => {
-  const id = bookId || 1
+const generateLocalSVG = (bookId: number, category: string): string => {
+  const id = bookId
   // カテゴリ表示名から内部キーへのマッピング関数
   const getCategoryKey = (category: string): string => {
     if (category === 'プログラミング') return 'programming'

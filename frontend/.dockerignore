@@ -54,7 +54,6 @@ README.md
 *.md
 
 # Nuxt specific
-.nuxt
 .cache
 .temp
 
@@ -62,7 +61,6 @@ README.md
 tmp
 .tmp
 temp
-.temp
 
 # Tests (if any)
 tests

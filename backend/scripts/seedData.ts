@@ -1,5 +1,5 @@
 import mongoose from 'mongoose'
-import { databaseConfig } from '../src/utils/config.js'
+import { databaseConfig } from '@/utils/config'
 import { Book, Category, QiitaArticle, BookMention } from '../src/models/index.js'
 
 // サンプルデータ

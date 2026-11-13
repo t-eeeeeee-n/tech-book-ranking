@@ -1,3 +1,4 @@
+// eslint-disable-next-line import/no-default-export
 export default defineEventHandler((event) => {
   // Chrome DevTools の .well-known リクエストを静かに処理
   const url = getRouterParam(event, 'path')

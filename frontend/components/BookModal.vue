@@ -337,7 +337,7 @@ const initializeForm = () => {
     form.isbn13 = props.book.isbn13 || ''
     form.publisher = props.book.publisher || ''
     form.publishedYear = props.book.publishedYear || null
-    form.category = Array.isArray(props.book.category) ? props.book.category[0] : props.book.category || ''
+    form.category = props.book.category?.[0] || ''
     form.tags = Array.isArray(props.book.tags) ? props.book.tags : []
     form.amazonUrl = props.book.amazonUrl || ''
     form.rakutenUrl = props.book.rakutenUrl || ''
